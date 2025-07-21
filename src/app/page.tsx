@@ -57,13 +57,6 @@ const testimonials = [
   },
 ];
 
-const scrollToSection = (id: string) => {
-  if (typeof window !== "undefined") {
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: "smooth" });
-  }
-};
-
 // Optimized animation variants
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
