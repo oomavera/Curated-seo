@@ -87,6 +87,7 @@ export function sanitizeLeadForm(form: LeadPayload): LeadPayload {
   return {
     name: form.name.trim(),
     phone: normalizePhone(form.phone),
+    email: form.email.trim(),
     address: {
       street: form.address.street.trim(),
       city: form.address.city.trim(),

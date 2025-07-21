@@ -15,16 +15,6 @@ function HouseModel({ modelPath }: { modelPath: string }) {
   return <primitive object={scene} scale={[1, 1, 1]} position={[0, 0, 0]} />;
 }
 
-// Fallback component for when model fails to load
-function ModelFallback() {
-  return (
-    <mesh position={[0, 0, 0]}>
-      <boxGeometry args={[1, 0.83, 1]} />
-      <meshStandardMaterial color="#666666" wireframe />
-    </mesh>
-  );
-}
-
 // Loading Fallback Component
 function LoadingFallback() {
   return (

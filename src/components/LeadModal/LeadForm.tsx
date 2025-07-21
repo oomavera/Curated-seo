@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { LeadForm as LeadFormType, Quote } from "../../types/quote";
-import { validateLeadForm } from "../../lib/validation";
-import { CONFIG } from "../../lib/config";
+import { supabase } from "../../lib/supabase";
 
 interface LeadFormProps {
   quote: Quote;
@@ -55,7 +54,7 @@ export default function LeadForm({ quote, onSubmit, onCancel, isSubmitting }: Le
     }
   };
 
-  const handleShowEstimate = (e: React.FormEvent) => {
+  const handleShowEstimate = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Validate just the basic contact info
@@ -87,6 +86,23 @@ export default function LeadForm({ quote, onSubmit, onCancel, isSubmitting }: Le
       return;
     }
     
+    // Store lead in Supabase (contact info + estimated price only)
+    try {
+      const { error } = await supabase.from('leads').insert([
+        {
+          name: formData.name,
+          phone: formData.phone,
+          email: formData.email,
+          estimated_price: quote.subtotal,
+        }
+      ]);
+      if (error) {
+        // Optionally handle/log error
+        console.error('Error saving lead on Show Estimate:', error);
+      }
+    } catch (err) {
+      console.error('Unexpected error saving lead on Show Estimate:', err);
+    }
     // Move to estimate step
     setStep('estimate');
     setErrors({});
@@ -177,7 +193,7 @@ export default function LeadForm({ quote, onSubmit, onCancel, isSubmitting }: Le
 
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-mountain to-midnight text-snow py-3 px-4 rounded-lg font-semibold hover:from-apres-ski hover:to-mountain transition-all duration-300 shadow-lg hover:shadow-xl"
+                  className="w-full bg-black text-white py-3 px-4 rounded-lg font-semibold hover:bg-mountain transition-all duration-300 shadow-lg hover:shadow-xl"
                 >
                   Show Estimate
                 </button>
@@ -214,7 +230,7 @@ export default function LeadForm({ quote, onSubmit, onCancel, isSubmitting }: Le
 
               {/* Services Included */}
               <div className="mb-6">
-                <h3 className="text-lg font-light text-midnight mb-3">What's Included:</h3>
+                <h3 className="text-lg font-light text-midnight mb-3">What&apos;s Included:</h3>
                 <ul className="space-y-2">
                   {STANDARD_SERVICES.map((service, index) => (
                     <li key={index} className="flex items-start gap-2 text-sm text-mountain font-light">
@@ -229,7 +245,7 @@ export default function LeadForm({ quote, onSubmit, onCancel, isSubmitting }: Le
               <button
                 onClick={handleBookNow}
                 disabled={isSubmitting}
-                className="w-full bg-gradient-to-r from-midnight to-mountain text-snow py-3 px-4 rounded-lg font-semibold hover:from-mountain hover:to-midnight transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-black text-white py-3 px-4 rounded-lg font-semibold hover:bg-mountain transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? (
                   <span className="flex items-center justify-center gap-2">
@@ -242,7 +258,7 @@ export default function LeadForm({ quote, onSubmit, onCancel, isSubmitting }: Le
               </button>
 
               <p className="text-xs text-mountain text-center mt-3 font-light">
-                You'll be redirected to schedule your first cleaning
+                You&apos;ll be redirected to schedule your first cleaning
               </p>
             </>
           )}

@@ -34,7 +34,7 @@ export default function EstimatePage() {
 
     // Initialize Cal.com calendar widget
   useEffect(() => {
-    if (typeof window !== 'undefined' && !(window as any).Cal) {
+    if (typeof window !== 'undefined' && !(window as Window & { Cal?: unknown }).Cal) {
       // Create script element with Cal.com initialization
       const script = document.createElement('script');
       script.innerHTML = `
@@ -74,7 +74,7 @@ export default function EstimatePage() {
     }
   }, []);
 
-  const handleQuoteInputChange = (field: keyof QuoteInput, value: any) => {
+  const handleQuoteInputChange = <K extends keyof QuoteInput>(field: K, value: QuoteInput[K]) => {
     setQuoteInput(prev => ({
       ...prev,
       [field]: value
@@ -125,10 +125,9 @@ export default function EstimatePage() {
       setShowLeadModal(false);
       setIsSubmitting(false);
       setSubmitError(null);
-      setSubmitSuccess('✅ Lead saved! Opening calendar to schedule your first clean...');
       
       // Clear success message after 5 seconds
-      setTimeout(() => setSubmitSuccess(null), 5000);
+      // setTimeout(() => setSubmitSuccess(null), 5000);
       
       // Open Cal.com calendar popup
       setTimeout(() => {
@@ -263,7 +262,7 @@ export default function EstimatePage() {
               <h3 className="font-medium text-blue-900 mb-2">What happens next?</h3>
               <ul className="text-sm text-blue-800 space-y-1">
                 <li>• Schedule your first clean at your convenience</li>
-                <li>• We'll confirm your quote and discuss any special requirements</li>
+                <li>• We&apos;ll confirm your quote and discuss any special requirements</li>
                 <li>• Complete your cleaning service (starting from just ${quote.subtotal.toFixed(2)})</li>
               </ul>
             </div>

@@ -1,7 +1,6 @@
 "use client";
 
 import { Frequency } from "../../types/quote";
-import { CONFIG } from "../../lib/config";
 
 interface FrequencyFieldProps {
   value: Frequency;

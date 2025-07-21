@@ -4,7 +4,7 @@ import { FaEnvelope, FaPhone } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { useState, useMemo, useEffect, useRef } from "react";
 import { supabase } from "../lib/supabase";
-import { Lead } from "../types/leads";
+// import { Lead } from "../types/leads";
 
 // Import calculator components
 import { QuoteInput, LeadForm as LeadFormType, LeadPayload } from "../types/quote";
@@ -13,9 +13,9 @@ import { CONFIG } from "../lib/config";
 import FrequencyField from "../components/QuoteForm/FrequencyField";
 import NumberField from "../components/QuoteForm/NumberField";
 import AddonsField from "../components/QuoteForm/AddonsField";
-import EstimateBar from "../components/QuoteForm/EstimateBar";
 import LeadForm from "../components/LeadModal/LeadForm";
 import dynamic from "next/dynamic";
+
 const HouseVisualization = dynamic(() => import("../components/HouseVisualization"), { ssr: false });
 
 const testimonials = [
@@ -73,16 +73,13 @@ const fadeInUp = {
 
 export default function Home() {
   // Original form state
-  const [formData, setFormData] = useState({
-    name: '',
-    address: '',
-    phone: '',
-    email: '',
-    service: ''
-  });
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitMessage, setSubmitMessage] = useState('');
+  // const [formData, setFormData] = useState({
+  //   name: '',
+  //   address: '',
+  //   phone: '',
+  //   email: '',
+  //   service: ''
+  // });
 
   // Calculator state
   const [quoteInput, setQuoteInput] = useState<QuoteInput>({
@@ -105,7 +102,7 @@ export default function Home() {
 
   // Initialize Cal.com calendar widget
   useEffect(() => {
-    if (typeof window !== 'undefined' && !(window as any).Cal) {
+    if (typeof window !== 'undefined' && !(window as Window & { Cal?: unknown }).Cal) {
       // Create script element with Cal.com initialization
       const script = document.createElement('script');
       script.innerHTML = `
@@ -145,15 +142,7 @@ export default function Home() {
     }
   }, []);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleQuoteInputChange = (field: keyof QuoteInput, value: any) => {
+  const handleQuoteInputChange = <K extends keyof QuoteInput>(field: K, value: QuoteInput[K]) => {
     setQuoteInput(prev => ({
       ...prev,
       [field]: value
@@ -252,51 +241,6 @@ export default function Home() {
     setSubmitSuccess(null);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setSubmitMessage('');
-
-    try {
-      // Prepare lead data for Supabase
-      const leadData: Omit<Lead, 'id' | 'created_at'> = {
-        name: formData.name,
-        address: formData.address,
-        phone: formData.phone,
-        email: formData.email,
-        service: formData.service as 'standard' | 'deep'
-      };
-
-      // Insert into Supabase leads table
-      const { data, error } = await supabase
-        .from('leads')
-        .insert([leadData])
-        .select();
-
-      if (error) {
-        throw error;
-      }
-
-      // Success - reset form and show success message
-      setFormData({
-        name: '',
-        address: '',
-        phone: '',
-        email: '',
-        service: ''
-      });
-      
-      setSubmitMessage('Thank you! Your estimate request has been submitted successfully. We\'ll contact you within 2 hours during business hours.');
-      
-      console.log('Lead saved successfully:', data);
-    } catch (error) {
-      console.error('Error saving lead:', error);
-      setSubmitMessage('There was an error submitting your request. Please try again or call us directly at (407) 270-0379.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   // TESTIMONIALS SECTION
   const [carouselX, setCarouselX] = useState(0);
   const carouselAnimRef = useRef<number | null>(null);
@@ -310,7 +254,7 @@ export default function Home() {
       const delta = ts - lastTimestamp;
       lastTimestamp = ts;
       setCarouselX((prev) => {
-        let next = prev - speed * delta;
+        const next = prev - speed * delta;
         if (Math.abs(next) >= cardWidth * testimonials.length) {
           return 0;
         }
@@ -329,10 +273,9 @@ export default function Home() {
       {/* HERO SECTION - ABOVE THE FOLD */}
       <section className="bg-gradient-to-br from-snow via-arctic/50 to-slopes/20 min-h-screen flex flex-col">
         {/* Header */}
-        <header className="flex justify-between items-center py-8 px-8 max-w-7xl mx-auto w-full backdrop-blur-sm">
-          <div className="text-3xl font-bold tracking-wider text-midnight">
-            <span className="block leading-tight">CURATED</span>
-            <span className="block leading-tight text-mountain">CLEANINGS</span>
+        <header className="flex justify-between items-center py-4 px-8 max-w-7xl mx-auto w-full backdrop-blur-sm">
+          <div className="flex items-center">
+            <Image src="/Logo.png" alt="Curated Cleanings Logo" width={320} height={128} className="h-32 w-auto" priority />
           </div>
           <div className="flex items-center gap-6">
             <a 
@@ -569,8 +512,8 @@ export default function Home() {
 
           {/* PACKAGES SECTION */}
           <section id="packages" className="py-12 flex flex-col items-center bg-gradient-to-b from-snow to-arctic/30">
-            {/* Standard Cleaning */}
-            <div className="mb-12 w-full max-w-2xl">
+            {/* Standard Cleaning Card */}
+            <div className="mb-12 w-full max-w-2xl bg-white/90 rounded-2xl shadow-xl border border-slopes/30 p-10 transition-transform duration-300 hover:scale-[1.02] hover:shadow-2xl">
               <h2 className="text-3xl tracking-[0.2em] text-center mb-2 font-light text-midnight">STANDARD HOUSE CLEANING</h2>
               <div className="text-center text-base text-mountain mb-2 font-light">A light clean, thorough clean</div>
               <div className="text-center text-base text-mountain mb-6 font-light">estimate starting at $125</div>
@@ -584,11 +527,16 @@ export default function Home() {
                 <li>Making beds (not changing linens)</li>
               </ul>
               <div className="flex justify-center gap-4 mt-12">
-                <button onClick={() => scrollToSection('estimate-form')} className="rounded-full border border-mountain py-4 px-10 text-base tracking-[0.3em] font-medium bg-mountain text-snow hover:bg-midnight transition-colors">CONTACT FORM</button>
+                <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="rounded-full border border-mountain py-4 px-10 text-base tracking-[0.3em] font-medium bg-mountain text-snow hover:bg-midnight transition-colors">GET ESTIMATE</button>
+                <a href="tel:4072700379" className="flex items-center justify-center w-14 h-14 rounded-full bg-midnight text-snow hover:bg-mountain transition-colors text-2xl shadow-lg" aria-label="Call Curated Cleanings">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-7 h-7">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h2.28a2 2 0 011.94 1.515l.3 1.2a2 2 0 01-.45 1.95l-.96.96a16.001 16.001 0 006.586 6.586l.96-.96a2 2 0 011.95-.45l1.2.3A2 2 0 0121 16.72V19a2 2 0 01-2 2h-1C9.163 21 3 14.837 3 7V5z" />
+                  </svg>
+                </a>
               </div>
             </div>
-            {/* Deep Clean */}
-            <div className="mb-12 w-full max-w-2xl">
+            {/* Deep Clean Card */}
+            <div className="mb-12 w-full max-w-2xl bg-white/90 rounded-2xl shadow-xl border border-slopes/30 p-10 transition-transform duration-300 hover:scale-[1.02] hover:shadow-2xl">
               <h2 className="text-3xl tracking-[0.2em] text-center mb-2 font-light text-midnight">DEEP CLEANING SERVICES</h2>
               <div className="text-center text-base text-mountain mb-2 font-light">Here comes that deep scrubbing</div>
               <div className="text-center text-base text-mountain mb-6 font-light">estimate starting at $150</div>
@@ -600,8 +548,13 @@ export default function Home() {
                 <li>Exterior of Kitchen Cabinets</li>
                 <li>Change Bed Linens</li>
               </ul>
-              <div className="flex justify-center gap-4">
-                <button onClick={() => scrollToSection('estimate-form')} className="rounded-full border border-mountain py-4 px-10 text-base tracking-[0.3em] font-medium bg-mountain text-snow hover:bg-midnight transition-colors">CONTACT FORM</button>
+              <div className="flex justify-center gap-4 mt-12">
+                <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="rounded-full border border-mountain py-4 px-10 text-base tracking-[0.3em] font-medium bg-mountain text-snow hover:bg-midnight transition-colors">GET ESTIMATE</button>
+                <a href="tel:4072700379" className="flex items-center justify-center w-14 h-14 rounded-full bg-midnight text-snow hover:bg-mountain transition-colors text-2xl shadow-lg" aria-label="Call Curated Cleanings">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-7 h-7">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h2.28a2 2 0 011.94 1.515l.3 1.2a2 2 0 01-.45 1.95l-.96.96a16.001 16.001 0 006.586 6.586l.96-.96a2 2 0 011.95-.45l1.2.3A2 2 0 0121 16.72V19a2 2 0 01-2 2h-1C9.163 21 3 14.837 3 7V5z" />
+                  </svg>
+                </a>
               </div>
             </div>
           </section>
@@ -615,127 +568,39 @@ export default function Home() {
               </p>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-base text-midnight">
                 <div className="p-4 bg-snow/80 rounded-lg shadow-sm border border-slopes/20 transform transition-transform duration-200 hover:scale-105">
-                  <strong>Oviedo, FL</strong><br />
-                  <span className="text-sm text-mountain">32765, 32766</span>
+                  <strong>Orlando, FL</strong><br />
+                  <span className="text-sm text-mountain">32801, 32803</span>
                 </div>
                 <div className="p-4 bg-snow/80 rounded-lg shadow-sm border border-slopes/20 transform transition-transform duration-200 hover:scale-105">
                   <strong>Winter Park, FL</strong><br />
                   <span className="text-sm text-mountain">32789, 32792</span>
                 </div>
                 <div className="p-4 bg-snow/80 rounded-lg shadow-sm border border-slopes/20 transform transition-transform duration-200 hover:scale-105">
-                  <strong>Casselberry, FL</strong><br />
-                  <span className="text-sm text-mountain">32707, 32708</span>
+                  <strong>Lake Mary, FL</strong><br />
+                  <span className="text-sm text-mountain">32746</span>
                 </div>
                 <div className="p-4 bg-snow/80 rounded-lg shadow-sm border border-slopes/20 transform transition-transform duration-200 hover:scale-105">
-                  <strong>Winter Springs, FL</strong><br />
-                  <span className="text-sm text-mountain">32708, 32719</span>
+                  <strong>Oviedo, FL</strong><br />
+                  <span className="text-sm text-mountain">32765, 32766</span>
                 </div>
                 <div className="p-4 bg-snow/80 rounded-lg shadow-sm border border-slopes/20 transform transition-transform duration-200 hover:scale-105">
-                  <strong>Altamonte Springs, FL</strong><br />
-                  <span className="text-sm text-mountain">32701, 32714</span>
+                  <strong>Apopka, FL</strong><br />
+                  <span className="text-sm text-mountain">32703, 32712</span>
                 </div>
                 <div className="p-4 bg-snow/80 rounded-lg shadow-sm border border-slopes/20 transform transition-transform duration-200 hover:scale-105">
                   <strong>Longwood, FL</strong><br />
                   <span className="text-sm text-mountain">32750, 32779</span>
                 </div>
+                <div className="p-4 bg-snow/80 rounded-lg shadow-sm border border-slopes/20 transform transition-transform duration-200 hover:scale-105">
+                  <strong>Altamonte Springs, FL</strong><br />
+                  <span className="text-sm text-mountain">32701, 32714</span>
+                </div>
               </div>
-            </div>
-          </section>
-
-          {/* ESTIMATE REQUEST FORM SECTION */}
-          <section id="estimate-form" className="py-24">
-            <div className="max-w-md mx-auto">
-              <h2 className="text-3xl font-medium mb-8 text-center text-black">Request Your Free Estimate</h2>
-              
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="relative">
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    placeholder="Name"
-                    required
-                    disabled={isSubmitting}
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent disabled:opacity-50"
-                  />
-                  <span className="absolute right-3 top-3 text-red-500 text-sm">*</span>
-                </div>
-                
-                <input
-                  type="text"
-                  name="address"
-                  value={formData.address}
-                  onChange={handleInputChange}
-                  placeholder="Address"
-                  required
-                  disabled={isSubmitting}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent disabled:opacity-50"
-                />
-                
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  placeholder="Phone"
-                  required
-                  disabled={isSubmitting}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent disabled:opacity-50"
-                />
-                
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  placeholder="Email"
-                  required
-                  disabled={isSubmitting}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent disabled:opacity-50"
-                />
-                
-                <select
-                  name="service"
-                  value={formData.service}
-                  onChange={handleInputChange}
-                  required
-                  disabled={isSubmitting}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-black bg-white disabled:opacity-50"
-                >
-                  <option value="" disabled>Service Options</option>
-                  <option value="standard">Standard Clean</option>
-                  <option value="deep">Deep Clean</option>
-                </select>
-                
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full bg-black text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isSubmitting ? 'Submitting...' : 'Submit'}
-                </button>
-              </form>
-              
-              {submitMessage && (
-                <div className={`mt-4 p-3 rounded-lg text-sm ${
-                  submitMessage.includes('Thank you') 
-                    ? 'bg-green-100 text-green-800' 
-                    : 'bg-red-100 text-red-800'
-                }`}>
-                  {submitMessage}
-                </div>
-              )}
-              
-              <p className="text-center text-sm text-black mt-4">
-                By submitting your email, you agree to receive emails from us.
-              </p>
             </div>
           </section>
 
           {/* ESTIMATE SECTION */}
           <section id="estimate" className="py-24 flex flex-col items-center">
-            <h2 className="text-3xl tracking-[0.2em] text-center mb-8 font-normal">SELECT A DAY & TIME TO RECEIVE A FREE ESTIMATE</h2>
             <div className="text-center text-base text-black mb-8">Call or text us to schedule your free estimate and receive a detailed cleaning proposal</div>
             
             <div className="flex flex-col md:flex-row gap-8 items-center justify-center mb-12">
@@ -760,18 +625,19 @@ export default function Home() {
           </section>
 
           {/* CONTACT & FOOTER SECTION */}
-          <footer className="flex flex-col items-center gap-6 py-12 border-t border-gray-200 mt-12">
-            <div className="flex gap-8 text-2xl">
+          <footer className="flex flex-col items-center gap-4 py-8 border-t border-gray-200 mt-12">
+            <div className="text-center text-sm text-midnight font-light">
+              Curated Cleanings provides trusted house cleaning and maid services in Oviedo, Winter Park, Lake Mary, and surrounding Central Florida areas. Licensed, insured, and 5-star rated. Call (407) 270-0379 or email admin@curatedcleanings.com for a free estimate.
+            </div>
+            <div className="flex gap-6 text-base mt-2">
               <a href="mailto:admin@curatedcleanings.com" aria-label="Email" className="hover:text-blue-600 transition-colors flex items-center gap-2">
-                <FaEnvelope />
-                <span className="text-base font-medium">admin@curatedcleanings.com</span>
+                <FaEnvelope /> admin@curatedcleanings.com
               </a>
               <a href="tel:4072700379" aria-label="Phone" className="hover:text-blue-600 transition-colors flex items-center gap-2">
-                <FaPhone />
-                <span className="text-base font-medium">(407) 270-0379</span>
+                <FaPhone /> (407) 270-0379
               </a>
             </div>
-            <div className="text-xs text-black mt-4">© Curated Cleanings. All rights reserved.</div>
+            <div className="text-xs text-mountain mt-2">© Curated Cleanings. All rights reserved.</div>
           </footer>
         </div>
 
