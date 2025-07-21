@@ -1,0 +1,109 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* New Color Palette */
+  --midnight: #090F15;
+  --mountain: #262F36;
+  --apres-ski: #6C6D74;
+  --slopes: #B3B7BA;
+  --arctic: #D3D1CE;
+  --snow: #F8F7F4;
+  
+  /* Legacy support */
+  --background: #F8F7F4;
+  --foreground: #090F15;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #090F15;
+    --foreground: #F8F7F4;
+  }
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-inter), Inter, Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 300;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sora), Sora, Inter, Arial, Helvetica, sans-serif;
+  font-weight: 300;
+  letter-spacing: -0.025em;
+}
+
+h1 {
+  font-weight: 200;
+  letter-spacing: -0.04em;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: dark;
+  }
+}
+
+/* Modern Textured Background */
+.textured-background {
+  background-color: #F8F7F4;
+  background-image: 
+    radial-gradient(circle at 25% 75%, rgba(108, 109, 116, 0.04) 0%, transparent 45%),
+    radial-gradient(circle at 75% 25%, rgba(179, 183, 186, 0.03) 0%, transparent 45%),
+    radial-gradient(circle at 50% 50%, rgba(211, 209, 206, 0.02) 0%, transparent 50%),
+    linear-gradient(135deg, rgba(38, 47, 54, 0.01) 0%, transparent 50%, rgba(38, 47, 54, 0.01) 100%);
+  background-size: 
+    400px 400px,
+    300px 300px,
+    500px 500px,
+    150px 150px;
+  background-position:
+    0 0,
+    200px 100px,
+    100px 200px,
+    0 0;
+}
+
+/* Custom utility classes */
+.text-midnight { color: #090F15; }
+.text-mountain { color: #262F36; }
+.text-apres-ski { color: #6C6D74; }
+.text-slopes { color: #B3B7BA; }
+.text-arctic { color: #D3D1CE; }
+.text-snow { color: #F8F7F4; }
+
+.bg-midnight { background-color: #090F15; }
+.bg-mountain { background-color: #262F36; }
+.bg-apres-ski { background-color: #6C6D74; }
+.bg-slopes { background-color: #B3B7BA; }
+.bg-arctic { background-color: #D3D1CE; }
+.bg-snow { background-color: #F8F7F4; }
+
+.border-midnight { border-color: #090F15; }
+.border-mountain { border-color: #262F36; }
+.border-apres-ski { border-color: #6C6D74; }
+.border-slopes { border-color: #B3B7BA; }
+.border-arctic { border-color: #D3D1CE; }
+.border-snow { border-color: #F8F7F4; }
