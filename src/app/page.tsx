@@ -266,20 +266,20 @@ export default function Home() {
       {/* HERO SECTION - ABOVE THE FOLD */}
       <section className="bg-gradient-to-br from-snow via-arctic/50 to-slopes/20 min-h-screen flex flex-col">
         {/* Header */}
-        <header className="flex justify-between items-center py-4 px-8 max-w-7xl mx-auto w-full backdrop-blur-sm">
-          <div className="flex items-center">
-            <Image src="/Logo.png" alt="Curated Cleanings Logo" width={320} height={128} className="h-32 w-auto" priority />
+        <header className="flex flex-col sm:flex-row justify-between items-center py-2 sm:py-4 px-4 sm:px-8 max-w-7xl mx-auto w-full backdrop-blur-sm gap-2 sm:gap-0">
+          <div className="flex items-center w-full sm:w-auto justify-center sm:justify-start">
+            <Image src="/Logo.png" alt="Curated Cleanings Logo" width={160} height={64} className="h-16 w-auto sm:h-32 sm:w-auto max-w-[60vw]" priority />
           </div>
-          <div className="flex items-center gap-6">
+          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-6 w-full sm:w-auto justify-center sm:justify-end">
             <a 
               href="tel:4072700379" 
-              className="text-xl font-semibold tracking-wider text-mountain hover:text-midnight transition-colors duration-300"
+              className="text-base sm:text-xl font-semibold tracking-wider text-mountain hover:text-midnight transition-colors duration-300 whitespace-nowrap"
             >
               (407) 270-0379
             </a>
             <a 
               href="tel:4072700379" 
-              className="bg-midnight text-snow px-8 py-3 rounded-full font-semibold hover:bg-mountain hover:text-snow transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              className="bg-midnight text-snow px-5 py-2 sm:px-8 sm:py-3 rounded-full font-semibold hover:bg-mountain hover:text-snow transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 text-sm sm:text-base"
             >
               CALL NOW
             </a>
@@ -295,7 +295,7 @@ export default function Home() {
             animate="animate"
             variants={fadeInUp}
           >
-            <h1 className="text-3xl md:text-4xl xl:text-5xl font-extralight mb-4 leading-tight text-midnight">
+            <h1 className="text-2xl xs:text-3xl md:text-4xl xl:text-5xl font-extralight mb-4 leading-tight text-midnight">
               Trusted House Cleaning in <span className="text-mountain font-normal">Orlando, Lake Mary, Winter Park, Oviedo & Nearby Cities</span>
             </h1>
           </motion.div>
