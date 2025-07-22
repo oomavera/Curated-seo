@@ -107,3 +107,11 @@ a {
 .border-slopes { border-color: #B3B7BA; }
 .border-arctic { border-color: #D3D1CE; }
 .border-snow { border-color: #F8F7F4; }
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

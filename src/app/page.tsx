@@ -261,19 +261,89 @@ export default function Home() {
     };
   }, []);
 
+  // Add mobile detection at the top of the Home component
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 640);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // 1. Place team photos first in the array
+  const galleryImages = [
+    "/Gallery/cleans/IMG_2538.jpg",
+    "/Gallery/cleans/IMG_2603.jpg",
+    "/Gallery/team/IMG_5963.jpg",
+    "/Gallery/team/IMG_5984.jpg",
+    "/Gallery/cleans/IMG_2587.jpg",
+    "/Gallery/cleans/IMG_0952.jpg",
+    "/Gallery/cleans/IMG_1910.jpg",
+    "/Gallery/cleans/IMG_2422.jpg",
+    "/Gallery/cleans/IMG_1973.jpg",
+    "/Gallery/cleans/IMG_0935.jpg",
+    "/Gallery/cleans/IMG_0959.jpg",
+    "/Gallery/cleans/IMG_1378.jpg",
+    "/Gallery/cleans/IMG_2537.jpg",
+    "/Gallery/cleans/IMG_2529.jpg",
+    "/Gallery/cleans/IMG_2479.jpg",
+    "/Gallery/cleans/IMG_2420.jpg",
+    "/Gallery/cleans/IMG_2361.jpg",
+    "/Gallery/cleans/IMG_2360.jpg"
+  ];
+  // 2. Add state and effect for auto-scrolling
+  const [galleryScroll, setGalleryScroll] = useState(0);
+  const galleryRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setGalleryScroll((prev) => prev + 1);
+    }, 30);
+    return () => clearInterval(interval);
+  }, []);
+  useEffect(() => {
+    if (galleryRef.current) {
+      galleryRef.current.scrollLeft = galleryScroll;
+      // Loop back to start if at end
+      if (galleryRef.current.scrollLeft + galleryRef.current.offsetWidth >= galleryRef.current.scrollWidth) {
+        setGalleryScroll(0);
+      }
+    }
+  }, [galleryScroll]);
+
   return (
     <div className="textured-background min-h-screen w-full font-sans text-midnight">
       {/* HERO SECTION - ABOVE THE FOLD */}
       <section className="bg-gradient-to-br from-snow via-arctic/50 to-slopes/20 min-h-screen flex flex-col">
         {/* Header */}
-        <header className="flex flex-col sm:flex-row justify-between items-center py-2 sm:py-4 px-4 sm:px-8 max-w-7xl mx-auto w-full backdrop-blur-sm gap-2 sm:gap-0">
-          <div className="flex items-center w-full sm:w-auto justify-center sm:justify-start">
-            <Image src="/Logo.png" alt="Curated Cleanings Logo" width={160} height={64} className="h-16 w-auto sm:h-32 sm:w-auto max-w-[60vw]" priority />
-          </div>
-          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-6 w-full sm:w-auto justify-center sm:justify-end">
+        <header className="flex flex-row justify-between items-center py-2 sm:py-4 px-4 sm:px-8 max-w-7xl mx-auto w-full backdrop-blur-sm gap-2 sm:gap-0">
+          {/* Mobile: Phone left, Call Now right, Logo centered below; Desktop: Logo left, phone/button right */}
+          <div className="flex flex-1 items-center sm:hidden">
             <a 
               href="tel:4072700379" 
-              className="text-base sm:text-xl font-semibold tracking-wider text-mountain hover:text-midnight transition-colors duration-300 whitespace-nowrap"
+              className="text-xs font-semibold tracking-wider text-mountain hover:text-midnight transition-colors duration-300 whitespace-nowrap truncate max-w-[90vw]"
+              style={{ minWidth: 0 }}
+            >
+              (407) 270-0379
+            </a>
+          </div>
+          <div className="hidden sm:flex items-center">
+            <Image src="/Logo.png" alt="Curated Cleanings Logo" width={160} height={64} className="h-16 w-auto sm:h-32 sm:w-auto max-w-[60vw]" priority />
+          </div>
+          <div className="flex-1 flex justify-center sm:hidden">
+            <Image src="/Logo.png" alt="Curated Cleanings Logo" width={240} height={96} className="h-24 w-auto max-w-[80vw]" priority />
+          </div>
+          <div className="flex flex-1 justify-end items-center sm:hidden">
+            <a 
+              href="tel:4072700379" 
+              className="bg-midnight text-snow px-4 py-2 rounded-full font-semibold hover:bg-mountain hover:text-snow transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 text-xs"
+            >
+              CALL NOW
+            </a>
+          </div>
+          <div className="hidden sm:flex items-center gap-6">
+            <a 
+              href="tel:4072700379" 
+              className="text-xl font-semibold tracking-wider text-mountain hover:text-midnight transition-colors duration-300 whitespace-nowrap"
             >
               (407) 270-0379
             </a>
@@ -290,7 +360,7 @@ export default function Home() {
         <div className="flex-1 flex flex-col justify-center px-8 max-w-7xl mx-auto w-full">
           {/* Hero Text */}
           <motion.div
-            className="text-center mb-12"
+            className="text-center mb-4 sm:mb-12"
             initial="initial"
             animate="animate"
             variants={fadeInUp}
@@ -303,72 +373,74 @@ export default function Home() {
           {/* Main Sections */}
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
             {/* Left Section - 3D GUI */}
-            <motion.div 
-              className="group relative"
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-            >
-              <div className="bg-arctic/40 backdrop-blur-sm border border-slopes/30 rounded-2xl flex flex-col justify-center items-center p-6 shadow-xl hover:shadow-2xl transition-all duration-500 group-hover:scale-[1.01]">
-                <div className="text-center w-full">
-                  <div className="relative bg-gradient-to-br from-snow to-arctic/80 rounded-xl p-4 border border-slopes/20 shadow-inner">
-                    <div className="absolute top-3 left-3 flex gap-1">
-                      <div className="w-2 h-2 bg-red-400 rounded-full"></div>
-                      <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                      <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+            {!isMobile && (
+              <motion.div 
+                className="group relative"
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+              >
+                <div className="bg-arctic/40 backdrop-blur-sm border border-slopes/30 rounded-2xl flex flex-col justify-center items-center p-6 shadow-xl hover:shadow-2xl transition-all duration-500 group-hover:scale-[1.01]">
+                  <div className="text-center w-full">
+                    <div className="relative bg-gradient-to-br from-snow to-arctic/80 rounded-xl p-4 border border-slopes/20 shadow-inner">
+                      <div className="absolute top-3 left-3 flex gap-1">
+                        <div className="w-2 h-2 bg-red-400 rounded-full"></div>
+                        <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                        <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                      </div>
+                      <div className="mt-6">
+                        <HouseVisualization quoteInput={quoteInput} />
+                      </div>
                     </div>
-                    <div className="mt-6 aspect-video">
-                      <HouseVisualization quoteInput={quoteInput} />
-                    </div>
-                  </div>
-                  
-                  {/* Assurance Circles */}
-                  <div className="mt-4 p-4 bg-gradient-to-br from-arctic/60 to-slopes/30 rounded-xl border border-slopes/20">
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4">
-                      <div className="text-center group">
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-arctic to-slopes border-2 border-apres-ski/30 mx-auto mb-2 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
-                          <span className="text-lg">🛡️</span>
+                    
+                    {/* Assurance Circles */}
+                    <div className="mt-4 p-2 sm:p-4 bg-gradient-to-br from-arctic/60 to-slopes/30 rounded-xl border border-slopes/20">
+                      <div className="flex flex-row flex-wrap sm:grid sm:grid-cols-5 gap-2 sm:gap-4 justify-center items-center">
+                        <div className="text-center group">
+                          <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-arctic to-slopes border-2 border-apres-ski/30 mx-auto mb-1 sm:mb-2 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
+                            <span className="text-lg">🛡️</span>
+                          </div>
+                          <div className="text-[10px] sm:text-xs font-semibold text-midnight">1M$ Insured</div>
+                          <div className="text-[10px] sm:text-xs text-apres-ski">Bonded Pros</div>
                         </div>
-                        <div className="text-xs font-semibold text-midnight">1M$ Insured</div>
-                        <div className="text-xs text-apres-ski">Bonded Pros</div>
-                      </div>
-                      
-                      <div className="text-center group">
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-arctic to-slopes border-2 border-apres-ski/30 mx-auto mb-2 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
-                          <span className="text-lg">✓</span>
+                        
+                        <div className="text-center group">
+                          <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-arctic to-slopes border-2 border-apres-ski/30 mx-auto mb-1 sm:mb-2 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
+                            <span className="text-lg">✓</span>
+                          </div>
+                          <div className="text-[10px] sm:text-xs font-semibold text-midnight">Background</div>
+                          <div className="text-[10px] sm:text-xs text-apres-ski">Verified</div>
                         </div>
-                        <div className="text-xs font-semibold text-midnight">Background</div>
-                        <div className="text-xs text-apres-ski">Verified</div>
-                      </div>
-                      
-                      <div className="text-center group">
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-arctic to-slopes border-2 border-apres-ski/30 mx-auto mb-2 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
-                          <span className="text-lg">💯</span>
+                        
+                        <div className="text-center group">
+                          <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-arctic to-slopes border-2 border-apres-ski/30 mx-auto mb-1 sm:mb-2 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
+                            <span className="text-lg">💯</span>
+                          </div>
+                          <div className="text-[10px] sm:text-xs font-semibold text-midnight">Satisfaction</div>
+                          <div className="text-[10px] sm:text-xs text-apres-ski">Guaranteed</div>
                         </div>
-                        <div className="text-xs font-semibold text-midnight">Satisfaction</div>
-                        <div className="text-xs text-apres-ski">Guaranteed</div>
-                      </div>
-                      
-                      <div className="text-center group">
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-arctic to-slopes border-2 border-apres-ski/30 mx-auto mb-2 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
-                          <span className="text-lg">💰</span>
+                        
+                        <div className="text-center group">
+                          <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-arctic to-slopes border-2 border-apres-ski/30 mx-auto mb-1 sm:mb-2 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
+                            <span className="text-lg">💰</span>
+                          </div>
+                          <div className="text-[10px] sm:text-xs font-semibold text-midnight">No Hidden</div>
+                          <div className="text-[10px] sm:text-xs text-apres-ski">Fees</div>
                         </div>
-                        <div className="text-xs font-semibold text-midnight">No Hidden</div>
-                        <div className="text-xs text-apres-ski">Fees</div>
-                      </div>
-                      
-                      <div className="text-center group col-span-2 md:col-span-1">
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-arctic to-slopes border-2 border-apres-ski/30 mx-auto mb-2 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
-                          <span className="text-lg">⭐</span>
+                        
+                        <div className="text-center group col-span-2 md:col-span-1">
+                          <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-arctic to-slopes border-2 border-apres-ski/30 mx-auto mb-1 sm:mb-2 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
+                            <span className="text-lg">⭐</span>
+                          </div>
+                          <div className="text-[10px] sm:text-xs font-semibold text-midnight">5 Star</div>
+                          <div className="text-[10px] sm:text-xs text-apres-ski">Google Reviews</div>
                         </div>
-                        <div className="text-xs font-semibold text-midnight">5 Star</div>
-                        <div className="text-xs text-apres-ski">Google Reviews</div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            )}
 
             {/* Right Section - Calculator */}
             <motion.div 
@@ -379,9 +451,9 @@ export default function Home() {
             >
               <div className="bg-arctic/40 backdrop-blur-sm border border-slopes/30 rounded-2xl flex flex-col p-6 shadow-xl hover:shadow-2xl transition-all duration-500 group-hover:scale-[1.01]">
                 <div className="text-center mb-4">
-                  <div className="inline-flex items-center gap-2 mb-4 px-4 py-2 bg-gradient-to-r from-mountain/10 to-apres-ski/10 rounded-full border border-mountain/20">
+                  <div className="inline-flex items-center gap-2 mb-2 sm:mb-4 px-2 sm:px-4 py-1 sm:py-2 bg-gradient-to-r from-mountain/10 to-apres-ski/10 rounded-full border border-mountain/20">
                     <div className="w-2 h-2 bg-gradient-to-r from-mountain to-midnight rounded-full animate-pulse"></div>
-                    <h2 className="text-lg font-semibold text-midnight tracking-wider">INSTANT CALCULATOR</h2>
+                    <h2 className="text-base sm:text-lg font-semibold text-midnight tracking-wider">INSTANT CALCULATOR</h2>
                   </div>
                 </div>
                 
@@ -470,7 +542,41 @@ export default function Home() {
                 )}
               </div>
             </motion.div>
+            {isMobile && (
+              <div className="w-full">
+                <HouseVisualization quoteInput={quoteInput} />
+              </div>
+            )}
           </div>
+
+          {/* Photo Gallery Section */}
+          <section className="py-2 flex flex-col items-center bg-transparent">
+            <div className="relative w-full max-w-5xl h-96 overflow-hidden">
+              <div
+                ref={galleryRef}
+                className="flex h-full items-center gap-8 overflow-x-auto scrollbar-hide no-scrollbar"
+                style={{
+                  width: "100%",
+                  scrollBehavior: "smooth",
+                  msOverflowStyle: "none",
+                  scrollbarWidth: "none"
+                }}
+              >
+                {galleryImages.map((src, i) => (
+                  <div key={i} className="relative min-w-[350px] max-w-xs rounded-3xl overflow-hidden shadow-lg h-80 flex items-center justify-center border border-slopes/20 bg-snow" style={{ width: 350, height: 320 }}>
+                    <Image 
+                      src={src} 
+                      alt={`Gallery photo ${i+1}`} 
+                      width={700}
+                      height={640}
+                      style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                      priority={i < 2}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
 
           {/* Customer Reviews Section - moved here */}
           <section id="testimonials" className="py-12 flex flex-col items-center bg-transparent">
