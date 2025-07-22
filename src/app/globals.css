@@ -115,3 +115,10 @@ a {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+@media (max-width: 640px) {
+  .mobile-carousel-scale {
+    transform: scale(0.5);
+    transform-origin: top left;
+  }
+}

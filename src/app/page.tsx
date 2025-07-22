@@ -542,19 +542,14 @@ export default function Home() {
                 )}
               </div>
             </motion.div>
-            {isMobile && (
-              <div className="w-full">
-                <HouseVisualization quoteInput={quoteInput} />
-              </div>
-            )}
           </div>
 
           {/* Photo Gallery Section */}
           <section className="py-2 flex flex-col items-center bg-transparent">
-            <div className="relative w-full max-w-5xl h-96 overflow-hidden">
+            <div className="relative w-full max-w-5xl h-40 sm:h-80 overflow-hidden">
               <div
                 ref={galleryRef}
-                className="flex h-full items-center gap-8 overflow-x-auto scrollbar-hide no-scrollbar"
+                className="flex h-full items-center gap-4 sm:gap-8 overflow-x-auto scrollbar-hide no-scrollbar"
                 style={{
                   width: "100%",
                   scrollBehavior: "smooth",
@@ -563,12 +558,12 @@ export default function Home() {
                 }}
               >
                 {galleryImages.map((src, i) => (
-                  <div key={i} className="relative min-w-[350px] max-w-xs rounded-3xl overflow-hidden shadow-lg h-80 flex items-center justify-center border border-slopes/20 bg-snow" style={{ width: 350, height: 320 }}>
+                  <div key={i} className="relative min-w-[175px] sm:min-w-[350px] max-w-xs rounded-3xl overflow-hidden shadow-lg h-40 sm:h-80 flex items-center justify-center border border-slopes/20 bg-snow">
                     <Image 
                       src={src} 
                       alt={`Gallery photo ${i+1}`} 
-                      width={700}
-                      height={640}
+                      width={350}
+                      height={320}
                       style={{ objectFit: 'cover', width: '100%', height: '100%' }}
                       priority={i < 2}
                     />
@@ -579,10 +574,10 @@ export default function Home() {
           </section>
 
           {/* Customer Reviews Section - moved here */}
-          <section id="testimonials" className="py-12 flex flex-col items-center bg-transparent">
-            <div className="relative w-full max-w-5xl h-96 overflow-hidden">
+          <section id="testimonials" className="py-6 sm:py-12 flex flex-col items-center bg-transparent">
+            <div className="relative w-full max-w-5xl h-40 sm:h-80 overflow-hidden">
               <div
-                className="flex h-full items-center gap-8"
+                className="flex h-full items-center gap-4 sm:gap-8"
                 style={{
                   width: `${cardWidth * totalCards}px`,
                   transform: `translateX(${carouselX}px)`,
@@ -590,12 +585,13 @@ export default function Home() {
                 }}
               >
                 {testimonials.concat(testimonials).map((t, i) => (
-                  <div key={i} className="relative min-w-[350px] max-w-xs rounded-3xl overflow-hidden shadow-lg h-80 flex flex-col items-center justify-center border border-slopes/20 bg-snow">
+                  <div key={i} className="relative min-w-[175px] sm:min-w-[350px] max-w-xs rounded-3xl overflow-hidden shadow-lg h-40 sm:h-80 flex flex-col items-center justify-center border border-slopes/20 bg-snow">
                     <div className="absolute inset-0">
                       <Image 
                         src={t.img} 
                         alt={t.name} 
-                        fill
+                        width={350}
+                        height={320}
                         className="object-cover w-full h-full"
                         priority={i < 2}
                       />
@@ -612,11 +608,11 @@ export default function Home() {
           {/* PACKAGES SECTION */}
           <section id="packages" className="py-12 flex flex-col items-center bg-gradient-to-b from-snow to-arctic/30">
             {/* Standard Cleaning Card */}
-            <div className="mb-12 w-full max-w-2xl bg-white/90 rounded-2xl shadow-xl border border-slopes/30 p-10 transition-transform duration-300 hover:scale-[1.02] hover:shadow-2xl">
-              <h2 className="text-3xl tracking-[0.2em] text-center mb-2 font-light text-midnight">STANDARD HOUSE CLEANING</h2>
-              <div className="text-center text-base text-mountain mb-2 font-light">A light clean, thorough clean</div>
-              <div className="text-center text-base text-mountain mb-6 font-light">estimate starting at $125</div>
-              <ul className="text-lg text-midnight flex flex-col gap-4 mb-10 font-light leading-relaxed">
+            <div className="mb-12 w-full max-w-2xl bg-white/90 rounded-2xl shadow-xl border border-slopes/30 p-4 sm:p-10 transition-transform duration-300 hover:scale-[1.02] hover:shadow-2xl">
+              <h2 className="text-2xl sm:text-3xl tracking-[0.2em] text-center mb-2 font-light text-midnight">STANDARD HOUSE CLEANING</h2>
+              <div className="text-center text-sm sm:text-base text-mountain mb-2 font-light">A light clean, thorough clean</div>
+              <div className="text-center text-sm sm:text-base text-mountain mb-4 sm:mb-6 font-light">estimate starting at $125</div>
+              <ul className="text-base sm:text-lg text-midnight flex flex-col gap-2 sm:gap-4 mb-6 sm:mb-10 font-light leading-snug sm:leading-relaxed">
                 <li>Dusting all surfaces (furniture, shelves, baseboards)</li>
                 <li>Vacuuming carpets and rugs</li>
                 <li>Sweeping and mopping floors</li>
@@ -625,21 +621,21 @@ export default function Home() {
                 <li>Emptying trash bins and replacing liners</li>
                 <li>Making beds (not changing linens)</li>
               </ul>
-              <div className="flex justify-center gap-4 mt-12">
-                <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="rounded-full border border-mountain py-4 px-10 text-base tracking-[0.3em] font-medium bg-mountain text-snow hover:bg-midnight transition-colors">GET ESTIMATE</button>
-                <a href="tel:4072700379" className="flex items-center justify-center w-14 h-14 rounded-full bg-midnight text-snow hover:bg-mountain transition-colors text-2xl shadow-lg" aria-label="Call Curated Cleanings">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-7 h-7">
+              <div className="flex flex-wrap justify-center gap-2 sm:gap-4 mt-6 sm:mt-12">
+                <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="rounded-full border border-mountain py-2 px-6 sm:py-4 sm:px-10 text-sm sm:text-base tracking-[0.2em] sm:tracking-[0.3em] font-medium bg-mountain text-snow hover:bg-midnight transition-colors">GET ESTIMATE</button>
+                <a href="tel:4072700379" className="flex items-center justify-center w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-midnight text-snow hover:bg-mountain transition-colors text-xl sm:text-2xl shadow-lg" aria-label="Call Curated Cleanings">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-6 h-6 sm:w-7 sm:h-7">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h2.28a2 2 0 011.94 1.515l.3 1.2a2 2 0 01-.45 1.95l-.96.96a16.001 16.001 0 006.586 6.586l.96-.96a2 2 0 011.95-.45l1.2.3A2 2 0 0121 16.72V19a2 2 0 01-2 2h-1C9.163 21 3 14.837 3 7V5z" />
                   </svg>
                 </a>
               </div>
             </div>
             {/* Deep Clean Card */}
-            <div className="mb-12 w-full max-w-2xl bg-white/90 rounded-2xl shadow-xl border border-slopes/30 p-10 transition-transform duration-300 hover:scale-[1.02] hover:shadow-2xl">
-              <h2 className="text-3xl tracking-[0.2em] text-center mb-2 font-light text-midnight">DEEP CLEANING SERVICES</h2>
-              <div className="text-center text-base text-mountain mb-2 font-light">Here comes that deep scrubbing</div>
-              <div className="text-center text-base text-mountain mb-6 font-light">estimate starting at $150</div>
-              <ul className="text-lg text-midnight flex flex-col gap-4 mb-10 font-light leading-relaxed">
+            <div className="mb-12 w-full max-w-2xl bg-white/90 rounded-2xl shadow-xl border border-slopes/30 p-4 sm:p-10 transition-transform duration-300 hover:scale-[1.02] hover:shadow-2xl">
+              <h2 className="text-2xl sm:text-3xl tracking-[0.2em] text-center mb-2 font-light text-midnight">DEEP CLEANING SERVICES</h2>
+              <div className="text-center text-sm sm:text-base text-mountain mb-2 font-light">Here comes that deep scrubbing</div>
+              <div className="text-center text-sm sm:text-base text-mountain mb-4 sm:mb-6 font-light">estimate starting at $150</div>
+              <ul className="text-base sm:text-lg text-midnight flex flex-col gap-2 sm:gap-4 mb-6 sm:mb-10 font-light leading-snug sm:leading-relaxed">
                 <li>Everything the Standard Clean provides, plus</li>
                 <li>Dusting of baseboards</li>
                 <li>Back of the toilet</li>
@@ -647,10 +643,10 @@ export default function Home() {
                 <li>Exterior of Kitchen Cabinets</li>
                 <li>Change Bed Linens</li>
               </ul>
-              <div className="flex justify-center gap-4 mt-12">
-                <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="rounded-full border border-mountain py-4 px-10 text-base tracking-[0.3em] font-medium bg-mountain text-snow hover:bg-midnight transition-colors">GET ESTIMATE</button>
-                <a href="tel:4072700379" className="flex items-center justify-center w-14 h-14 rounded-full bg-midnight text-snow hover:bg-mountain transition-colors text-2xl shadow-lg" aria-label="Call Curated Cleanings">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-7 h-7">
+              <div className="flex flex-wrap justify-center gap-2 sm:gap-4 mt-6 sm:mt-12">
+                <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="rounded-full border border-mountain py-2 px-6 sm:py-4 sm:px-10 text-sm sm:text-base tracking-[0.2em] sm:tracking-[0.3em] font-medium bg-mountain text-snow hover:bg-midnight transition-colors">GET ESTIMATE</button>
+                <a href="tel:4072700379" className="flex items-center justify-center w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-midnight text-snow hover:bg-mountain transition-colors text-xl sm:text-2xl shadow-lg" aria-label="Call Curated Cleanings">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-6 h-6 sm:w-7 sm:h-7">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h2.28a2 2 0 011.94 1.515l.3 1.2a2 2 0 01-.45 1.95l-.96.96a16.001 16.001 0 006.586 6.586l.96-.96a2 2 0 011.95-.45l1.2.3A2 2 0 0121 16.72V19a2 2 0 01-2 2h-1C9.163 21 3 14.837 3 7V5z" />
                   </svg>
                 </a>
