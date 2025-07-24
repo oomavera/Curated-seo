@@ -3,11 +3,11 @@ import Image from "next/image";
 import { FaEnvelope, FaPhone } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { useState, useMemo, useEffect, useRef } from "react";
-import { supabase } from "../lib/supabase";
+// import { supabase } from "../lib/supabase";
 // import { Lead } from "../types/leads";
 
 // Import calculator components
-import { QuoteInput, LeadForm as LeadFormType, LeadPayload } from "../types/quote";
+import { QuoteInput } from "../types/quote";
 import { computeQuote, validateQuoteInput } from "../lib/quote";
 import { CONFIG } from "../lib/config";
 import FrequencyField from "../components/QuoteForm/FrequencyField";
@@ -150,82 +150,7 @@ export default function Home() {
     }
   };
 
-  const handleLeadSubmit = async (leadData: LeadFormType) => {
-    setIsCalculatorSubmitting(true);
-    setSubmitError(null);
-
-    try {
-      const leadPayload: LeadPayload = {
-        ...leadData,
-        quote
-      };
-
-      // Format address as string for current database structure
-      const addressString = `${leadPayload.address.street}, ${leadPayload.address.city}${leadPayload.address.state ? `, ${leadPayload.address.state}` : ''}${leadPayload.address.zip ? ` ${leadPayload.address.zip}` : ''}`;
-
-      // Create a name with quote info until migration is run
-      const nameWithQuote = `${leadPayload.name} [EST: $${quote.subtotal} - ${quoteInput.bedrooms}bed/${quoteInput.bathrooms}bath - ${quoteInput.frequency}]`;
-
-      // Insert lead into Supabase (using current database structure)
-      const { data, error } = await supabase
-        .from('leads')
-        .insert([{
-          name: nameWithQuote,
-          phone: leadPayload.phone,
-          email: leadPayload.email,
-          address: addressString,
-          service: 'standard' // Use existing service type for now
-        }])
-        .select();
-
-      if (error) {
-        throw error;
-      }
-
-      // Success - close modal and show success message
-      setShowLeadModal(false);
-      setIsCalculatorSubmitting(false);
-      setSubmitError(null);
-      setSubmitSuccess('✅ Lead saved! Opening calendar to schedule your first clean...');
-      
-      // Clear success message after 5 seconds
-      setTimeout(() => setSubmitSuccess(null), 5000);
-      
-      // Open Cal.com calendar popup
-      setTimeout(() => {
-        // Add metadata to the booking
-        const bookingData = {
-          lead_id: data[0].id,
-          price: quote.subtotal,
-          bedrooms: quoteInput.bedrooms,
-          bathrooms: quoteInput.bathrooms,
-          frequency: quoteInput.frequency,
-          addons: quoteInput.addons.join(', ')
-        };
-        
-        // Store booking data for pre-filling
-        localStorage.setItem('estimate_booking_data', JSON.stringify(bookingData));
-        
-        // Look for the hidden Cal.com trigger button and click it
-        const calTrigger = document.getElementById('cal-trigger-button');
-        if (calTrigger) {
-          calTrigger.click();
-        } else {
-          // Fallback to external calendar if embed fails
-          const calendarUrl = `https://curatedcleanings.cal.com/walkthrough?lead_id=${data[0].id}&price=${quote.subtotal}&beds=${quoteInput.bedrooms}&baths=${quoteInput.bathrooms}`;
-          window.open(calendarUrl, '_blank');
-        }
-      }, 500);
-
-      return; // Don't set isSubmitting to false again below
-
-    } catch (error) {
-      console.error('Error submitting lead:', error);
-      setSubmitError('Failed to submit your request. Please try again or call us directly.');
-      setSubmitSuccess(null);
-      setIsCalculatorSubmitting(false);
-    }
-  };
+  // Remove handleLeadSubmit function
 
   const handleLeadCancel = () => {
     setShowLeadModal(false);
@@ -752,7 +677,6 @@ export default function Home() {
         {showLeadModal && (
           <LeadForm
             quote={quote}
-            onSubmit={handleLeadSubmit}
             onCancel={handleLeadCancel}
             isSubmitting={isCalculatorSubmitting}
           />
