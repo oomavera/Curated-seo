@@ -304,7 +304,6 @@ export default function EstimatePage() {
       {showLeadModal && (
         <LeadForm
           quote={quote}
-          onSubmit={handleLeadSubmit}
           onCancel={handleLeadCancel}
           isSubmitting={isSubmitting}
         />
