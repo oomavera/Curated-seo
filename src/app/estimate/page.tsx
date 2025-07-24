@@ -89,6 +89,99 @@ export default function EstimatePage() {
     }
   };
 
+  const handleLeadSubmit = async (leadData: LeadFormType) => {
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const leadPayload: LeadPayload = {
+        ...leadData,
+        quote
+      };
+
+      // Format address as string for current database structure
+      const addressString = `${leadPayload.address.street}, ${leadPayload.address.city}${leadPayload.address.state ? `, ${leadPayload.address.state}` : ''}${leadPayload.address.zip ? ` ${leadPayload.address.zip}` : ''}`;
+
+      // Create a name with quote info until migration is run
+      const nameWithQuote = `${leadPayload.name} [EST: $${quote.subtotal} - ${quoteInput.bedrooms}bed/${quoteInput.bathrooms}bath - ${quoteInput.frequency}]`;
+
+      // Insert lead into Supabase (using current database structure)
+      const { data, error } = await supabase
+        .from('leads')
+        .insert([{
+          name: nameWithQuote,
+          phone: leadPayload.phone,
+          email: leadPayload.email,
+          address: addressString,
+          service: 'standard' // Use existing service type for now
+        }])
+        .select();
+
+      // Log full response for debugging
+      console.log('Supabase insert response:', { data, error });
+
+      if (error) {
+        // Throw a detailed error object
+        throw { supabaseError: error, supabaseData: data };
+      }
+
+      // Success - close modal and show success message
+      setShowLeadModal(false);
+      setIsSubmitting(false);
+      setSubmitError(null);
+      
+      // Clear success message after 5 seconds
+      // setTimeout(() => setSubmitSuccess(null), 5000);
+      
+      // Open Cal.com calendar popup
+      setTimeout(() => {
+        // Add metadata to the booking
+        const bookingData = {
+          lead_id: data[0].id,
+          price: quote.subtotal,
+          bedrooms: quoteInput.bedrooms,
+          bathrooms: quoteInput.bathrooms,
+          frequency: quoteInput.frequency,
+          addons: quoteInput.addons.join(', ')
+        };
+        
+        // Store booking data for pre-filling
+        localStorage.setItem('estimate_booking_data', JSON.stringify(bookingData));
+        
+        // Look for the hidden Cal.com trigger button and click it
+        const calTrigger = document.getElementById('cal-trigger-button');
+        if (calTrigger) {
+          calTrigger.click();
+        } else {
+          // Fallback to external calendar if embed fails
+          const calendarUrl = `https://curatedcleanings.cal.com/walkthrough?lead_id=${data[0].id}&price=${quote.subtotal}&beds=${quoteInput.bedrooms}&baths=${quoteInput.bathrooms}`;
+          window.open(calendarUrl, '_blank');
+        }
+      }, 500);
+
+      return; // Don't set isSubmitting to false again below
+
+    } catch (error) {
+      // Log the full error object for debugging
+      console.error('Error submitting lead:', error, JSON.stringify(error));
+      // Show the error message to the user if available
+      let errorMsg = '';
+      if (error && typeof error === 'object') {
+        if ('supabaseError' in error) {
+          errorMsg += `\nSupabase error: ${JSON.stringify(error.supabaseError)}`;
+        }
+        if ('supabaseData' in error) {
+          errorMsg += `\nSupabase data: ${JSON.stringify(error.supabaseData)}`;
+        }
+      } else {
+        errorMsg = JSON.stringify(error);
+      }
+      setSubmitError('Failed to submit your request.' + errorMsg);
+      setSubmitSuccess(null);
+      setIsSubmitting(false);
+    }
+  };
+
   const handleLeadCancel = () => {
     setShowLeadModal(false);
     setIsSubmitting(false);
@@ -211,6 +304,7 @@ export default function EstimatePage() {
       {showLeadModal && (
         <LeadForm
           quote={quote}
+          onSubmit={handleLeadSubmit}
           onCancel={handleLeadCancel}
           isSubmitting={isSubmitting}
         />

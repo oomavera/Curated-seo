@@ -6,6 +6,7 @@ import { supabase } from "../../lib/supabase";
 
 interface LeadFormProps {
   quote: Quote;
+  onSubmit: (leadData: LeadFormType) => void;
   onCancel: () => void;
   isSubmitting: boolean;
 }
@@ -22,7 +23,7 @@ const STANDARD_SERVICES = [
   "Sanitize frequently touched surfaces"
 ];
 
-export default function LeadForm({ quote, onCancel, isSubmitting }: LeadFormProps) {
+export default function LeadForm({ quote, onSubmit, onCancel, isSubmitting }: LeadFormProps) {
   const [step, setStep] = useState<'contact' | 'estimate'>(  'contact');
   const [formData, setFormData] = useState<Partial<LeadFormType>>({
     name: '',
