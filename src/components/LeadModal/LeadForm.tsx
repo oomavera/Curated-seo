@@ -108,21 +108,20 @@ export default function LeadForm({ quote, onSubmit, onCancel, isSubmitting }: Le
     setErrors({});
   };
 
+  // Remove database logic from handleBookNow
   const handleBookNow = () => {
-    // Submit with minimal address info
-    const leadData: LeadFormType = {
-      name: formData.name!,
-      phone: formData.phone!,
-      email: formData.email!,
-      address: {
-        street: '',
-        city: 'Oviedo',
-        state: 'FL',
-        zip: ''
+    // Only redirect to calendar, do not submit to Supabase again
+    if (typeof window !== 'undefined') {
+      // Look for the hidden Cal.com trigger button and click it
+      const calTrigger = document.getElementById('cal-trigger-button');
+      if (calTrigger) {
+        calTrigger.click();
+      } else {
+        // Fallback to external calendar if embed fails
+        const calendarUrl = `https://curatedcleanings.cal.com/walkthrough`;
+        window.open(calendarUrl, '_blank');
       }
-    };
-    
-    onSubmit(leadData);
+    }
   };
 
   return (
@@ -215,16 +214,40 @@ export default function LeadForm({ quote, onSubmit, onCancel, isSubmitting }: Le
               </div>
 
               {/* Price Display */}
-              <div className="mb-6 p-4 bg-gradient-to-r from-arctic/60 to-slopes/30 rounded-lg border border-slopes/20">
-                <div className="text-center">
-                  <div className="text-sm text-mountain font-light">Price</div>
-                  <div className="text-3xl font-light text-midnight mb-1">
-                    ${quote.subtotal.toFixed(0)}
-                  </div>
-                  <div className="text-sm text-mountain font-light">
-                    {quote.input.bedrooms} bed, {quote.input.bathrooms} bath • {quote.input.frequency} cleaning
-                    {quote.input.addons.length > 0 && ` • ${quote.input.addons.length} add-ons`}
-                  </div>
+              <div className="mb-6 p-6 bg-gradient-to-br from-green-50 to-snow border border-green-100 rounded-2xl shadow-lg">
+                <div className="flex flex-col items-center">
+                  <div className="text-sm text-mountain font-light mb-3">Price</div>
+                  {(['monthly', 'weekly', 'biWeekly'].includes(quote.input.frequency)) ? (
+                    <>
+                      <div className="flex flex-col items-center gap-2 w-full">
+                        <span className="text-lg text-midnight font-light line-through opacity-60">${quote.subtotal.toFixed(0)}</span>
+                        <span className="flex items-center gap-1 text-base font-semibold text-green-600">
+                          <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                          - $100
+                        </span>
+                        <span className="block w-10 border-t border-dashed border-green-200 my-1"></span>
+                        <span className="text-5xl font-extrabold text-green-700 drop-shadow">${(quote.subtotal - 100).toFixed(0)}</span>
+                      </div>
+                      <div className="mt-3 mb-1">
+                        <span className="inline-block bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-medium shadow-sm">
+                          You are receiving $100 off your first recurring clean.
+                        </span>
+                      </div>
+                      <div className="w-full border-t border-snow/60 my-3"></div>
+                      <div className="text-xs text-mountain font-light">
+                        {quote.input.bedrooms} bed, {quote.input.bathrooms} bath • {quote.input.frequency} cleaning
+                        {quote.input.addons.length > 0 && ` • ${quote.input.addons.length} add-ons`}
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="text-4xl font-extrabold text-midnight mb-1">${quote.subtotal.toFixed(0)}</div>
+                      <div className="text-xs text-mountain font-light mt-2">
+                        {quote.input.bedrooms} bed, {quote.input.bathrooms} bath • {quote.input.frequency} cleaning
+                        {quote.input.addons.length > 0 && ` • ${quote.input.addons.length} add-ons`}
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
 

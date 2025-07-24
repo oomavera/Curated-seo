@@ -23,37 +23,37 @@ const testimonials = [
     name: "Deja J.",
     text: "Absolutely amazing service! My first cleaning was completely free and my bathroom looks spectacular! Will definitely be booking more cleanings with Curated Cleanings!",
     stars: 5,
-    img: "/1.jpg",
+    img: "/1.webp",
   },
   {
     name: "Hani S.",
     text: "Angelica's service is 10/10. After her service my place smelled so good and everything was cleaned to perfection. Will definitely reach out again for services.",
     stars: 5,
-    img: "/2.jpg",
+    img: "/2.webp",
   },
   {
     name: "Madeline R.",
     text: "Attention to detail, Trustworthy, Friendly!",
     stars: 5,
-    img: "/3.jpg",
+    img: "/3.webp",
   },
   {
     name: "Teri L.",
     text: "Angelica was right on time, willing to listen to and address my cleaning needs and was very helpful! Extremely considerate of us and our property! Will definitely be using her regularly.",
     stars: 5,
-    img: "/4.jpg",
+    img: "/4.webp",
   },
   {
     name: "Lauren H.",
     text: "Angelica was extremely hard working, thorough, and professional. She arrived on time, asked what was important to me about the cleaning, and then delivered even more than I expected with cleaning every nook and cranny... undoubtedly will use her again and will be recommending her to others.",
     stars: 5,
-    img: "/5.jpg",
+    img: "/5.webp",
   },
   {
     name: "N'kila G.",
     text: "ABSOLUTELY OPTIMAL SERVICES! Angel was very respectful of my space, very THOROUGH! It was sooo dusty in here and I'm no longer sneezing! Angel was also quick! I appreciate her time management and thorough cleaning of my space! I would 100% recommend her services!",
     stars: 5,
-    img: "/6.jpg",
+    img: "/6.webp",
   },
 ];
 
@@ -77,8 +77,8 @@ export default function Home() {
   // Calculator state
   const [quoteInput, setQuoteInput] = useState<QuoteInput>({
     frequency: "monthly",
-    bedrooms: 2,
-    bathrooms: 1,
+    bedrooms: 3, // min 3
+    bathrooms: 2, // min 2
     addons: [],
   });
 
@@ -272,24 +272,24 @@ export default function Home() {
 
   // 1. Place team photos first in the array
   const galleryImages = [
-    "/Gallery/cleans/IMG_2538.jpg",
-    "/Gallery/cleans/IMG_2603.jpg",
-    "/Gallery/team/IMG_5963.jpg",
-    "/Gallery/team/IMG_5984.jpg",
-    "/Gallery/cleans/IMG_2587.jpg",
-    "/Gallery/cleans/IMG_0952.jpg",
-    "/Gallery/cleans/IMG_1910.jpg",
-    "/Gallery/cleans/IMG_2422.jpg",
-    "/Gallery/cleans/IMG_1973.jpg",
-    "/Gallery/cleans/IMG_0935.jpg",
-    "/Gallery/cleans/IMG_0959.jpg",
-    "/Gallery/cleans/IMG_1378.jpg",
-    "/Gallery/cleans/IMG_2537.jpg",
-    "/Gallery/cleans/IMG_2529.jpg",
-    "/Gallery/cleans/IMG_2479.jpg",
-    "/Gallery/cleans/IMG_2420.jpg",
-    "/Gallery/cleans/IMG_2361.jpg",
-    "/Gallery/cleans/IMG_2360.jpg"
+    "/Gallery/cleans/IMG_2538.webp",
+    "/Gallery/cleans/IMG_2603.webp",
+    "/Gallery/team/IMG_5963.webp",
+    "/Gallery/team/IMG_5984.webp",
+    "/Gallery/cleans/IMG_2587.webp",
+    "/Gallery/cleans/IMG_0952.webp",
+    "/Gallery/cleans/IMG_1910.webp",
+    "/Gallery/cleans/IMG_2422.webp",
+    "/Gallery/cleans/IMG_1973.webp",
+    "/Gallery/cleans/IMG_0935.webp",
+    "/Gallery/cleans/IMG_0959.webp",
+    "/Gallery/cleans/IMG_1378.webp",
+    "/Gallery/cleans/IMG_2537.webp",
+    "/Gallery/cleans/IMG_2529.webp",
+    "/Gallery/cleans/IMG_2479.webp",
+    "/Gallery/cleans/IMG_2420.webp",
+    "/Gallery/cleans/IMG_2361.webp",
+    "/Gallery/cleans/IMG_2360.webp"
   ];
   // 2. Add state and effect for auto-scrolling
   const [galleryScroll, setGalleryScroll] = useState(0);
@@ -366,12 +366,12 @@ export default function Home() {
             variants={fadeInUp}
           >
             <h1 className="text-2xl xs:text-3xl md:text-4xl xl:text-5xl font-extralight mb-4 leading-tight text-midnight">
-              Trusted House Cleaning in <span className="text-mountain font-normal">Orlando, Lake Mary, Winter Park, Oviedo & Nearby Cities</span>
+              <span className="text-mountain font-bold bg-yellow-100 px-2 py-1 rounded">$100 Off</span> first recurring house cleaning in <span className="text-mountain font-normal">Orlando, Lake Mary, Winter Park, Oviedo & Nearby Cities</span>
             </h1>
           </motion.div>
 
           {/* Main Sections */}
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
+          <div className="flex flex-row gap-6 mb-8 max-xl:flex-col-reverse">
             {/* Left Section - 3D GUI */}
             {!isMobile && (
               <motion.div 
@@ -453,7 +453,7 @@ export default function Home() {
                 <div className="text-center mb-4">
                   <div className="inline-flex items-center gap-2 mb-2 sm:mb-4 px-2 sm:px-4 py-1 sm:py-2 bg-gradient-to-r from-mountain/10 to-apres-ski/10 rounded-full border border-mountain/20">
                     <div className="w-2 h-2 bg-gradient-to-r from-mountain to-midnight rounded-full animate-pulse"></div>
-                    <h2 className="text-base sm:text-lg font-semibold text-midnight tracking-wider">INSTANT CALCULATOR</h2>
+                    <h2 className="text-base sm:text-lg font-semibold text-midnight tracking-wider">Get Estimate Now</h2>
                   </div>
                 </div>
                 
@@ -473,8 +473,8 @@ export default function Home() {
                         label={CONFIG.COPY.bedroomsLabel}
                         value={quoteInput.bedrooms}
                         onChange={(bedrooms) => handleQuoteInputChange('bedrooms', bedrooms)}
-                        min={2}
-                        max={CONFIG.QUOTE_MAX_BEDROOMS}
+                        min={3}
+                        max={8}
                         error={validation.errors.bedrooms}
                       />
                     </div>
@@ -484,8 +484,8 @@ export default function Home() {
                         label={CONFIG.COPY.bathroomsLabel}
                         value={quoteInput.bathrooms}
                         onChange={(bathrooms) => handleQuoteInputChange('bathrooms', bathrooms)}
-                        min={1}
-                        max={CONFIG.QUOTE_MAX_BATHROOMS}
+                        min={2}
+                        max={8}
                         error={validation.errors.bathrooms}
                       />
                     </div>

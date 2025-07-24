@@ -16,8 +16,8 @@ import HouseVisualization from "../../components/HouseVisualization";
 export default function EstimatePage() {
   const [quoteInput, setQuoteInput] = useState<QuoteInput>({
     frequency: "monthly",
-    bedrooms: 2,
-    bathrooms: 1,
+    bedrooms: 3, // min 3
+    bathrooms: 2, // min 2
     addons: [],
   });
 
@@ -117,8 +117,12 @@ export default function EstimatePage() {
         }])
         .select();
 
+      // Log full response for debugging
+      console.log('Supabase insert response:', { data, error });
+
       if (error) {
-        throw error;
+        // Throw a detailed error object
+        throw { supabaseError: error, supabaseData: data };
       }
 
       // Success - close modal and show success message
@@ -158,8 +162,21 @@ export default function EstimatePage() {
       return; // Don't set isSubmitting to false again below
 
     } catch (error) {
-      console.error('Error submitting lead:', error);
-      setSubmitError('Failed to submit your request. Please try again or call us directly.');
+      // Log the full error object for debugging
+      console.error('Error submitting lead:', error, JSON.stringify(error));
+      // Show the error message to the user if available
+      let errorMsg = '';
+      if (error && typeof error === 'object') {
+        if ('supabaseError' in error) {
+          errorMsg += `\nSupabase error: ${JSON.stringify(error.supabaseError)}`;
+        }
+        if ('supabaseData' in error) {
+          errorMsg += `\nSupabase data: ${JSON.stringify(error.supabaseData)}`;
+        }
+      } else {
+        errorMsg = JSON.stringify(error);
+      }
+      setSubmitError('Failed to submit your request.' + errorMsg);
       setSubmitSuccess(null);
       setIsSubmitting(false);
     }
@@ -216,7 +233,7 @@ export default function EstimatePage() {
                   label={CONFIG.COPY.bedroomsLabel}
                   value={quoteInput.bedrooms}
                   onChange={(bedrooms) => handleQuoteInputChange('bedrooms', bedrooms)}
-                  min={2}
+                  min={3}
                   max={CONFIG.QUOTE_MAX_BEDROOMS}
                   error={validation.errors.bedrooms}
                 />
@@ -225,7 +242,7 @@ export default function EstimatePage() {
                   label={CONFIG.COPY.bathroomsLabel}
                   value={quoteInput.bathrooms}
                   onChange={(bathrooms) => handleQuoteInputChange('bathrooms', bathrooms)}
-                  min={1}
+                  min={2}
                   max={CONFIG.QUOTE_MAX_BATHROOMS}
                   error={validation.errors.bathrooms}
                 />
@@ -242,6 +259,7 @@ export default function EstimatePage() {
                 isValid={validation.isValid}
                 onBookNow={handleBookNow}
                 isSubmitting={isSubmitting}
+                frequency={quoteInput.frequency}
               />
 
               {submitError && (

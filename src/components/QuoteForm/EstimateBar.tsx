@@ -7,14 +7,17 @@ interface EstimateBarProps {
   isValid: boolean;
   onBookNow: () => void;
   isSubmitting?: boolean;
+  frequency?: string;
 }
 
 export default function EstimateBar({ 
   subtotal, 
   isValid, 
   onBookNow, 
-  isSubmitting = false 
+  isSubmitting = false,
+  frequency
 }: EstimateBarProps) {
+  const isRecurring = frequency === 'monthly' || frequency === 'weekly' || frequency === 'every2weeks';
   return (
     <div className="sticky bottom-0 left-0 right-0 z-10 border-t border-slopes/30 bg-snow p-3 shadow-lg md:relative md:border-0 md:shadow-none">
       <div className="flex items-center justify-between">
@@ -25,6 +28,11 @@ export default function EstimateBar({
               ${subtotal.toFixed(2)}
             </span>
           </div>
+          {isRecurring && (
+            <div className="mt-1 text-green-700 bg-green-50 border border-green-200 rounded px-2 py-1 text-xs font-semibold inline-block">
+              -$100! You are receiving $100 off your first recurring clean.
+            </div>
+          )}
         </div>
         
         <button

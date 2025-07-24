@@ -43,7 +43,7 @@ export default function HouseVisualization({ quoteInput }: HouseVisualizationPro
   // Camera position: zoomed out on mobile (always a 3-element tuple)
   const cameraPosition: [number, number, number] = isMobile ? [-6, 4, -3] : [-4, 3, -2];
 
-  return (
+    return (
     <div className={"relative w-full rounded-lg border border-gray-200 overflow-hidden " + (isMobile ? "aspect-[16/9] min-h-0" : "min-h-[350px]")} style={isMobile ? {height: 'auto'} : {}}>
       {/* Three.js Canvas */}
       <Canvas
@@ -82,30 +82,30 @@ export default function HouseVisualization({ quoteInput }: HouseVisualizationPro
           <HouseModel modelPath={getModelPath()} />
         </Suspense>
 
-        {/* Controls */}
-        <OrbitControls 
-          enablePan={false}
-          enableZoom={true}
-          enableRotate={true}
-          minDistance={2}
-          maxDistance={8}
-          minPolarAngle={Math.PI / 6}
-          maxPolarAngle={Math.PI / 2}
-          autoRotate
-          autoRotateSpeed={1}
-        />
-      </Canvas>
+                 {/* Controls */}
+         <OrbitControls 
+           enablePan={false}
+           enableZoom={true}
+           enableRotate={true}
+           minDistance={2}
+           maxDistance={8}
+           minPolarAngle={Math.PI / 6}
+           maxPolarAngle={Math.PI / 2}
+           autoRotate
+           autoRotateSpeed={1}
+         />
+             </Canvas>
 
-      {/* Info display */}
-      <div className="absolute bottom-4 left-4 bg-white bg-opacity-95 rounded-lg p-3 shadow-lg border backdrop-blur-sm">
-        <div className="text-sm font-semibold text-gray-800 flex items-center gap-2">
-          <span className="text-blue-600">🛏️ {quoteInput.bedrooms}</span>
-          <span className="text-green-600">🚿 {quoteInput.bathrooms}</span>
-        </div>
-        <div className="text-xs text-gray-600 mt-1">
-          {quoteInput.frequency} cleaning
-        </div>
-      </div>
+       {/* Info display */}
+       <div className="absolute bottom-4 left-4 bg-white bg-opacity-95 rounded-lg p-3 shadow-lg border backdrop-blur-sm">
+         <div className="text-sm font-semibold text-gray-800 flex items-center gap-2">
+           <span className="text-blue-600">🛏️ {quoteInput.bedrooms}</span>
+           <span className="text-green-600">🚿 {quoteInput.bathrooms}</span>
+         </div>
+         <div className="text-xs text-gray-600 mt-1">
+           {quoteInput.frequency} cleaning
+         </div>
+       </div>
     </div>
   );
 }

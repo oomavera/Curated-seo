@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Sora } from "next/font/google";
 import "./globals.css";
 import LocalSchema from "../components/LocalSchema";
+import Head from "next/head";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -68,6 +69,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <Head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      </Head>
       <body className={`${inter.variable} ${sora.variable} font-sans bg-snow min-h-screen`}>
         <LocalSchema />
         {children}
