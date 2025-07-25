@@ -10,11 +10,43 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 1,
     },
+    // New city pages
+    {
+      url: `${baseUrl}/house-cleaning-oviedo-fl`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/house-cleaning-winter-park-fl`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/house-cleaning-lake-mary-fl`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/house-cleaning-orlando-fl`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/house-cleaning-longwood-fl`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    },
+    // Existing pages
     {
       url: `${baseUrl}/oviedo-house-cleaning`,
       lastModified: new Date(),
       changeFrequency: 'weekly',
-      priority: 0.9,
+      priority: 0.8,
     },
     {
       url: `${baseUrl}/winter-park-cleaning-services`,
@@ -46,7 +78,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly',
       priority: 0.7,
     },
-
     {
       url: `${baseUrl}/#packages`,
       lastModified: new Date(),

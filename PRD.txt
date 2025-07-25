@@ -1,0 +1,229 @@
+Product Requirements Document (PRD)
+Project: Scalable City-Specific Service Pages (Oviedo, Winter Park, Lake Mary, Orlando, Longwood)
+Version: 1.0 (Draft)
+Owner: Elias (Marketing/Ops)
+Date: July 25, 2025
+
+1. Background / Problem Statement
+Curated Cleanings needs five unique, SEO/AI‑optimized city pages to:
+
+Increase qualified organic traffic and leads for “house cleaning {City, FL}” queries.
+
+Feed Google’s local ranking signals (relevance, prominence) and AI Overviews (AIO).
+
+Convert visitors with clear CTAs while staying within severe cash and labor constraints.
+
+Problem: Existing content is generic; no unique city pages; limited internal process to reliably produce high-quality, non-duplicative, locally relevant content. Manual drafting is time-consuming.
+
+2. Goals & Success Metrics
+Goal	KPI / Target	Deadline	Priority
+Publish 5 city pages adhering to this spec	5 live URLs	30 days from kick-off	P0
+Rank each page top 3 organic for “house cleaning {city} fl” & “maid service {city}”	≥3/5 pages top 3 within 90 days	Sept 30, 2025	P1
+Increase organic leads from target cities	+15 qualified leads/month from organic	60 days post-publish	P1
+Eligibility for AI Overviews (detected via query tests)	≥3/5 pages surfaced in AIO snippets	90 days	P2
+
+3. Scope
+In-Scope
+Requirements, prompts, data templates, QA checks for AI-generated content.
+
+JSON-LD schema generation (LocalBusiness, Service, FAQPage).
+
+Internal linking plan, basic publishing SOP.
+
+Minimal design guidance (images/alt text list).
+
+Measurement framework (GSC, GBP, CWV checks).
+
+Out-of-Scope
+Full backlink/citation campaign execution.
+
+GBP optimization tasks (covered in separate project).
+
+Complex CRO testing beyond title/meta iteration.
+
+Multilingual content.
+
+4. Users / Personas
+Content Operator (You/VA): Feeds data, runs prompts, reviews output.
+
+AI Agent (LLM): Generates drafts, schema, QA checklist results.
+
+Technical Publisher (Developer/You): Implements pages, schema, internal links.
+
+End User (Homeowner in each city): Needs trust, clarity, and easy booking.
+
+5. Key Assumptions
+An LLM (e.g., GPT-4.x or Claude) can follow structured prompts reliably.
+
+You can supply accurate local data (ZIPs, testimonials, pricing).
+
+Pages will be hosted on curatedcleanings.com with control over HTML/JSON-LD.
+
+Limited budget means we must minimize paid tooling.
+
+6. Functional Requirements
+Notation: FR# = Functional Requirement, P# = Priority (P0 critical → P2 nice-to-have)
+
+ID	Requirement	Description	Priority	Acceptance Criteria
+FR1	Input Data Collector	System to capture per-city variables (keyword, ZIPs, landmarks, offer, testimonial) in structured YAML/JSON.	P0	Completed YAML for all 5 cities; no blank mandatory fields.
+FR2	SERP Recon Module	Agent must analyze top 5 organic + 3 local competitors to note H1s, FAQs, gaps.	P1	Recon summary per city included in prompt or separate note.
+FR3	Prompt Sandwich Generator	Automated construction of Instruction/Data/Output blocks to feed LLM.	P0	Prompt includes: constraints, data block, output spec, QA checklist.
+FR4	Draft Content Generator	LLM returns full page with Title, Meta, URL slug, H1, body (900–1,200 words), FAQs, CTA, schema, image list.	P0	Output sections present & ordered; word count within range.
+FR5	Keyword & Entity Check	Agent validates primary keyword placement, secondary terms use, uniqueness vs. other pages.	P0	Checklist indicates Y/N for: Title/H1 match, occurrences 5–12, duplicate detection.
+FR6	Schema Builder	LLM outputs valid JSON-LD blocks for LocalBusiness, Service, FAQPage.	P0	JSON-LD parses without errors in validator; includes city-specific data.
+FR7	Internal Link Suggestion	List of at least 2 contextual internal links (anchor → URL) per page.	P1	Present with descriptive anchors, not generic “click here”.
+FR8	Quick Answer Box	50–80 word summary answering “best house cleaning in {City}?” immediately after intro.	P1	Box is present, concise, includes primary keyword once.
+FR9	QA & Self-Verification	Agent must output a self-check section (Y/N confirmations).	P0	All required checks are answered; failures flagged.
+FR10	Human Review Workflow	Operator reviews facts, testimonials, CTAs, fixes hallucinations.	P0	Checklist signed off before publish.
+FR11	Publishing SOP	Steps to upload HTML, inject schema, add internal links, submit to GSC.	P1	SOP doc completed; pages live & indexed.
+FR12	Tracking & Iteration	Post-publish: monitor GSC impressions/CTR, adjust titles/meta after 28 days.	P2	Schedule set, baseline recorded, adjustments logged.
+
+7. Non-Functional Requirements (NFR)
+ID	Requirement	Metric / Threshold
+NFR1	Uniqueness	<30% sentence overlap across city pages (measured via similarity tool).
+NFR2	Accuracy	Zero fabricated data points (prices, ZIPs, landmarks) without source approval.
+NFR3	Performance	LCP <2.5s, INP <200ms, CLS <0.1 on mobile (CWV).
+NFR4	Maintainability	New city page can be produced end-to-end in ≤3 hours by VA after process lock-in.
+NFR5	Cost	No additional monthly tools >$50 unless approved.
+
+8. Detailed Workflow
+Prep (Day 0–2):
+
+Fill DATA_BLOCK YAML per city.
+
+Gather testimonials and offers.
+
+SERP Recon (Automated or Manual):
+
+Record competitors, headings, word counts, FAQs.
+
+Prompt Assembly:
+
+Insert YAML into Prompt Sandwich template.
+
+Add recon insights.
+
+LLM Draft Generation:
+
+Run once, get full page.
+
+If structure missing, re-prompt with failures.
+
+QA Pass (Agent Self-Check):
+
+Verify keyword counts, length, schema presence.
+
+Human Review:
+
+Fact-check, polish CTAs, add internal link anchor texts.
+
+Publish:
+
+Push HTML/Markdown.
+
+Implement JSON-LD.
+
+Add internal links from nav, homepage, related posts.
+
+Submit URL to GSC.
+
+Measure & Iterate (28 days):
+
+Pull GSC data, adjust titles/meta for low CTR.
+
+Add/modify FAQs if missing intents emerge.
+
+9. Deliverables / Artifacts
+Templates:
+
+DATA_BLOCK YAML template (one per city).
+
+Prompt Sandwich template.
+
+QA checklist.
+
+Schema blueprint JSON samples.
+
+Outputs:
+
+5 finalized HTML/Markdown pages.
+
+5 JSON-LD blocks.
+
+Internal link map.
+
+Docs:
+
+Publishing SOP.
+
+Iteration schedule (calendar reminders).
+
+PRIMARY_KEYWORD: "house cleaning {City} FL"
+SECONDARY_KEYWORDS:
+  - "maid service {City}"
+  - "deep cleaning {City} FL"
+  - "recurring cleaning services {City}"
+CITY: "{City}"
+COUNTY: "{County}"
+ZIP_CODES: ["", ""]
+NEIGHBORHOODS: []
+LANDMARKS: []
+UNIQUE_VALUE_PROPS:
+  - ""
+PRICING:
+  MODEL: "custom | range | flat"
+  AVG_VISIT: 0
+  HOURLY_EQUIV: 0
+REVIEWS:
+  - quote: ""
+    name: ""
+OFFER: ""
+INTERNAL_LINKS:
+  - anchor: ""
+    url: ""
+IMAGES_TO_CREATE:
+  - filename: ""
+    alt: ""
+
+SYSTEM / ROLE:
+[...as provided in earlier SOP...]
+
+CONSTRAINTS:
+- 900–1,200 words
+- ...
+
+INPUT DATA:
+{{YAML_BLOCK}}
+
+OUTPUT FORMAT (exact order):
+1. <title>...
+...
+11. Word count
+
+QUALITY CHECKS:
+- Title/H1/URL alignment? Y/N
+- Primary keyword occurrences 5–12? Y/N
+- ...
+Structure present (Title, Meta, URL, H1, body sections, FAQs, schema).
+
+Word count 900–1,200.
+
+PRIMARY_KEYWORD frequency 5–12; appears in Title, H1, first 100 words, one H2, CTA.
+
+Secondary terms used naturally (≥5 distinct).
+
+Quick Answer box present (≤80 words).
+
+JSON-LD validates (use validator).
+
+Internal link list included, with descriptive anchors.
+
+City-specific elements (ZIPs, landmarks, testimonial) present.
+
+No >30% sentence overlap with other city pages.
+
+CTA at top and bottom.
+
+Spelling/grammar pass.
+
+Human sign-off. 
