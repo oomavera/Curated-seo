@@ -60,6 +60,9 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "https://curatedcleanings.com"
+  },
+  icons: {
+    icon: "/favicon.png"
   }
 };
 
