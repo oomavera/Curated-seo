@@ -7,12 +7,14 @@ const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
   display: "swap",
+  weight: ["300", "400", "600"], // Only include used weights
 });
 
 const sora = Sora({
   subsets: ["latin"],
   variable: "--font-sora",
   display: "swap",
+  weight: ["300", "400", "600"], // Only include used weights
 });
 
 export const metadata: Metadata = {
@@ -69,6 +71,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${sora.variable} font-sans bg-snow min-h-screen`}>
+        <a href="#main-content" className="skip-link">Skip to main content</a>
         <LocalSchema />
         {children}
       </body>

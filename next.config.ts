@@ -1,11 +1,15 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+});
+
+const nextConfig: NextConfig = withBundleAnalyzer({
   output: 'standalone',
   trailingSlash: false,
   images: {
-    unoptimized: true,
+    // Next.js will now optimize images and serve AVIF/WebP automatically
   }
-};
+});
 
 export default nextConfig;

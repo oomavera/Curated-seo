@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import Image from "next/image";
+import { usePrefersReducedMotion } from "../utils/usePrefersReducedMotion";
 
 interface PhotoCarouselProps {
   images: string[];
@@ -10,9 +11,11 @@ const AUTO_SCROLL_INTERVAL = 4000;
 export default function PhotoCarousel({ images }: PhotoCarouselProps) {
   const [current, setCurrent] = useState(0);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   // Auto-scroll on mobile
   useEffect(() => {
+    if (prefersReducedMotion) return;
     const isMobile = window.innerWidth < 640;
     if (isMobile) {
       timeoutRef.current = setTimeout(() => {
@@ -24,7 +27,7 @@ export default function PhotoCarousel({ images }: PhotoCarouselProps) {
     } else {
       return () => {};
     }
-  }, [current, images.length]);
+  }, [current, images.length, prefersReducedMotion]);
 
   const goTo = (idx: number) => {
     setCurrent((idx + images.length) % images.length);
@@ -56,7 +59,6 @@ export default function PhotoCarousel({ images }: PhotoCarouselProps) {
           alt={`Photo ${current + 1}`}
           fill
           className="object-cover"
-          priority={current === 0}
           sizes="(max-width: 640px) 100vw, 800px"
         />
       </div>

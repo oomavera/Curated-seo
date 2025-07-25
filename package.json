@@ -15,8 +15,18 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "lhci:collect": "lhci collect --config=.lighthouserc.js",
+    "lhci:assert": "lhci assert --config=.lighthouserc.js",
+    "lhci": "lhci autorun --config=.lighthouserc.js"
   },
+  "sideEffects": false,
+  "browserslist": [
+    "last 2 Chrome versions",
+    "last 2 Firefox versions",
+    "last 2 Edge versions",
+    "last 2 Safari versions"
+  ],
   "dependencies": {
     "@react-three/drei": "^10.5.1",
     "@react-three/fiber": "^9.2.0",
@@ -31,6 +41,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@next/bundle-analyzer": "^15.4.4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -39,6 +50,8 @@
     "eslint-config-next": "15.3.5",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.17",
-    "typescript": "^5"
+    "typescript": "^5",
+    "lighthouse": "^11.0.0",
+    "@lhci/cli": "^0.13.0"
   }
 }

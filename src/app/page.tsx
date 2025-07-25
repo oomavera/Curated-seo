@@ -13,10 +13,11 @@ import { CONFIG } from "../lib/config";
 import FrequencyField from "../components/QuoteForm/FrequencyField";
 import NumberField from "../components/QuoteForm/NumberField";
 import AddonsField from "../components/QuoteForm/AddonsField";
-import LeadForm from "../components/LeadModal/LeadForm";
 import dynamic from "next/dynamic";
+import { usePrefersReducedMotion } from "../utils/usePrefersReducedMotion";
 
 const HouseVisualization = dynamic(() => import("../components/HouseVisualization"), { ssr: false });
+const DynamicLeadForm = dynamic(() => import("../components/LeadModal/LeadForm"), { ssr: false });
 
 const testimonials = [
   {
@@ -159,13 +160,16 @@ export default function Home() {
     setSubmitSuccess(null);
   };
 
+  const prefersReducedMotion = usePrefersReducedMotion();
+
   // TESTIMONIALS SECTION
   const [carouselX, setCarouselX] = useState(0);
   const carouselAnimRef = useRef<number | null>(null);
-  const speed = 0.02; // px per ms, ultra slow
+  const speed = prefersReducedMotion ? 0 : 0.02; // px per ms, ultra slow
   const totalCards = testimonials.length * 2;
   const cardWidth = 370; // px, min-w-[350px] + gap
   useEffect(() => {
+    if (prefersReducedMotion) return; // Disable animation if reduced motion
     let lastTimestamp: number | null = null;
     function animate(ts: number) {
       if (lastTimestamp === null) lastTimestamp = ts;
@@ -184,7 +188,7 @@ export default function Home() {
     return () => {
       if (carouselAnimRef.current) cancelAnimationFrame(carouselAnimRef.current);
     };
-  }, []);
+  }, [prefersReducedMotion]);
 
   // Add mobile detection at the top of the Home component
   const [isMobile, setIsMobile] = useState(false);
@@ -236,7 +240,7 @@ export default function Home() {
   }, [galleryScroll]);
 
   return (
-    <div className="textured-background min-h-screen w-full font-sans text-midnight">
+    <div id="main-content" className="textured-background min-h-screen w-full font-sans text-midnight">
       {/* HERO SECTION - ABOVE THE FOLD */}
       <section className="bg-gradient-to-br from-snow via-arctic/50 to-slopes/20 min-h-screen flex flex-col">
         {/* Header */}
@@ -252,10 +256,10 @@ export default function Home() {
             </a>
           </div>
           <div className="hidden sm:flex items-center">
-            <Image src="/Logo.png" alt="Curated Cleanings Logo" width={160} height={64} className="h-16 w-auto sm:h-32 sm:w-auto max-w-[60vw]" priority />
+            <Image src="/Logo.png" alt="Curated Cleanings Logo" width={160} height={64} priority placeholder="blur" />
           </div>
           <div className="flex-1 flex justify-center sm:hidden">
-            <Image src="/Logo.png" alt="Curated Cleanings Logo" width={240} height={96} className="h-24 w-auto max-w-[80vw]" priority />
+            <Image src="/Logo.png" alt="Curated Cleanings Logo" width={240} height={96} className="h-24 w-auto max-w-[80vw]" />
           </div>
           <div className="flex flex-1 justify-end items-center sm:hidden">
             <a 
@@ -286,9 +290,10 @@ export default function Home() {
           {/* Hero Text */}
           <motion.div
             className="text-center mb-4 sm:mb-12"
-            initial="initial"
-            animate="animate"
+            initial={prefersReducedMotion ? false : "initial"}
+            animate={prefersReducedMotion ? false : "animate"}
             variants={fadeInUp}
+            transition={{ duration: prefersReducedMotion ? 0 : 0.4, ease: "easeOut" }}
           >
             <h1 className="text-2xl xs:text-3xl md:text-4xl xl:text-5xl font-extralight mb-4 leading-tight text-midnight">
               <span className="text-mountain font-bold bg-yellow-100 px-2 py-1 rounded">$100 Off</span> first recurring house cleaning in <span className="text-mountain font-normal">Orlando, Lake Mary, Winter Park, Oviedo & Nearby Cities</span>
@@ -301,9 +306,9 @@ export default function Home() {
             {!isMobile && (
               <motion.div 
                 className="group relative"
-                initial={{ opacity: 0, x: -50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.3 }}
+                initial={prefersReducedMotion ? false : { opacity: 0, x: -50 }}
+                animate={prefersReducedMotion ? false : { opacity: 1, x: 0 }}
+                transition={{ duration: prefersReducedMotion ? 0 : 0.6, delay: prefersReducedMotion ? 0 : 0.3 }}
               >
                 <div className="bg-arctic/40 backdrop-blur-sm border border-slopes/30 rounded-2xl flex flex-col justify-center items-center p-6 shadow-xl hover:shadow-2xl transition-all duration-500 group-hover:scale-[1.01]">
                   <div className="text-center w-full">
@@ -370,9 +375,9 @@ export default function Home() {
             {/* Right Section - Calculator */}
             <motion.div 
               className="group relative"
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.5 }}
+              initial={prefersReducedMotion ? false : { opacity: 0, x: 50 }}
+              animate={prefersReducedMotion ? false : { opacity: 1, x: 0 }}
+              transition={{ duration: prefersReducedMotion ? 0 : 0.6, delay: prefersReducedMotion ? 0 : 0.5 }}
             >
               <div className="bg-arctic/40 backdrop-blur-sm border border-slopes/30 rounded-2xl flex flex-col p-6 shadow-xl hover:shadow-2xl transition-all duration-500 group-hover:scale-[1.01]">
                 <div className="text-center mb-4">
@@ -490,7 +495,6 @@ export default function Home() {
                       width={350}
                       height={320}
                       style={{ objectFit: 'cover', width: '100%', height: '100%' }}
-                      priority={i < 2}
                     />
                   </div>
                 ))}
@@ -518,7 +522,6 @@ export default function Home() {
                         width={350}
                         height={320}
                         className="object-cover w-full h-full"
-                        priority={i < 2}
                       />
                     </div>
                   </div>
@@ -675,7 +678,7 @@ export default function Home() {
 
         {/* Lead Capture Modal */}
         {showLeadModal && (
-          <LeadForm
+          <DynamicLeadForm
             quote={quote}
             onCancel={handleLeadCancel}
             isSubmitting={isCalculatorSubmitting}
