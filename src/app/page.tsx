@@ -15,6 +15,7 @@ import NumberField from "../components/QuoteForm/NumberField";
 import AddonsField from "../components/QuoteForm/AddonsField";
 import dynamic from "next/dynamic";
 import { usePrefersReducedMotion } from "../utils/usePrefersReducedMotion";
+import logo from "../../public/Logo.png";
 
 const HouseVisualization = dynamic(() => import("../components/HouseVisualization"), { ssr: false });
 const DynamicLeadForm = dynamic(() => import("../components/LeadModal/LeadForm"), { ssr: false });
@@ -256,10 +257,10 @@ export default function Home() {
             </a>
           </div>
           <div className="hidden sm:flex items-center">
-            <Image src="/Logo.png" alt="Curated Cleanings Logo" width={160} height={64} priority placeholder="blur" />
+            <Image src={logo} alt="Curated Cleanings Logo" width={160} height={64} priority placeholder="blur" />
           </div>
           <div className="flex-1 flex justify-center sm:hidden">
-            <Image src="/Logo.png" alt="Curated Cleanings Logo" width={240} height={96} className="h-24 w-auto max-w-[80vw]" />
+            <Image src={logo} alt="Curated Cleanings Logo" width={240} height={96} className="h-24 w-auto max-w-[80vw]" />
           </div>
           <div className="flex flex-1 justify-end items-center sm:hidden">
             <a 
@@ -295,9 +296,12 @@ export default function Home() {
             variants={fadeInUp}
             transition={{ duration: prefersReducedMotion ? 0 : 0.4, ease: "easeOut" }}
           >
-            <h1 className="text-2xl xs:text-3xl md:text-4xl xl:text-5xl font-extralight mb-4 leading-tight text-midnight">
-              <span className="text-mountain font-bold bg-yellow-100 px-2 py-1 rounded">$100 Off</span> first recurring house cleaning in <span className="text-mountain font-normal">Orlando, Lake Mary, Winter Park, Oviedo & Nearby Cities</span>
+            <h1 className="text-2xl xs:text-3xl md:text-4xl xl:text-5xl font-extralight mb-2 leading-tight text-midnight">
+              Trusted House Cleaning for Greater Orlando
             </h1>
+            <div className="text-base xs:text-lg md:text-xl font-light text-mountain mb-4">
+              Licensed, insured cleaners serving Lake Mary, Winter Park, Oviedo & more - book in 60 seconds
+            </div>
           </motion.div>
 
           {/* Main Sections */}

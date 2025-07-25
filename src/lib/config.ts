@@ -9,7 +9,7 @@ export const CONFIG = {
     bathroomsLabel: "Bathrooms", 
     addonsLabel: "Add-ons (optional)",
     estLabel: "Price",
-    bookLabel: "SEE ESTIMATE",
+    bookLabel: "Get Instant Quote",
     leadHeader: "Book Your First Clean",
     leadPrivacy: "By submitting, you agree to be contacted by Curated Cleanings.",
     errBedsMin: "Select at least 2 bedrooms.",
