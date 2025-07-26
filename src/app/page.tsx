@@ -130,8 +130,8 @@ export default function Home() {
           }; 
         })(window, "https://app.cal.com/embed/embed.js", "init");
         
-        Cal("init", "walkthrough", {origin:"https://app.cal.com"});
-        Cal.ns.walkthrough("ui", {"theme":"dark","hideEventTypeDetails":false,"layout":"month_view"});
+        Cal("init", "firstclean", {origin:"https://app.cal.com"});
+        Cal.ns.firstclean("ui", {"theme":"light","hideEventTypeDetails":false,"layout":"month_view"});
       `;
       document.head.appendChild(script);
     }
@@ -189,7 +189,7 @@ export default function Home() {
     return () => {
       if (carouselAnimRef.current) cancelAnimationFrame(carouselAnimRef.current);
     };
-  }, [prefersReducedMotion]);
+  }, [prefersReducedMotion, speed, cardWidth]);
 
   // Add mobile detection at the top of the Home component
   const [isMobile, setIsMobile] = useState(false);
@@ -671,9 +671,9 @@ export default function Home() {
         {/* Hidden Cal.com trigger button */}
         <button
           id="cal-trigger-button"
-          data-cal-link="curatedcleanings/walkthrough"
-          data-cal-namespace="walkthrough"
-          data-cal-config='{"layout":"month_view","theme":"dark"}'
+          data-cal-link="curatedcleanings/firstclean"
+          data-cal-namespace="firstclean"
+          data-cal-config='{"layout":"month_view","theme":"light"}'
           style={{ display: 'none' }}
           aria-hidden="true"
         >

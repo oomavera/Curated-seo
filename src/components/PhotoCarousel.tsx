@@ -3,7 +3,7 @@ import Image from "next/image";
 import { usePrefersReducedMotion } from "../utils/usePrefersReducedMotion";
 
 interface PhotoCarouselProps {
-  images: string[];
+  images: Array<{ src: string; alt: string }>;
 }
 
 const AUTO_SCROLL_INTERVAL = 4000;
@@ -55,8 +55,8 @@ export default function PhotoCarousel({ images }: PhotoCarouselProps) {
         onTouchEnd={handleTouchEnd}
       >
         <Image
-          src={images[current]}
-          alt={`Photo ${current + 1}`}
+          src={images[current].src}
+          alt={images[current].alt}
           fill
           className="object-cover"
           sizes="(max-width: 640px) 100vw, 800px"

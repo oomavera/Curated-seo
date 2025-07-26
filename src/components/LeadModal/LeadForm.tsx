@@ -117,7 +117,7 @@ export default function LeadForm({ quote, onCancel, isSubmitting }: LeadFormProp
         calTrigger.click();
       } else {
         // Fallback to external calendar if embed fails
-        const calendarUrl = `https://curatedcleanings.cal.com/walkthrough`;
+        const calendarUrl = `https://curatedcleanings.cal.com/firstclean`;
         window.open(calendarUrl, '_blank');
       }
     }
@@ -267,6 +267,9 @@ export default function LeadForm({ quote, onCancel, isSubmitting }: LeadFormProp
               <button
                 onClick={handleBookNow}
                 disabled={isSubmitting}
+                data-cal-link="curatedcleanings/firstclean"
+                data-cal-namespace="firstclean"
+                data-cal-config='{"layout":"month_view","theme":"light"}'
                 className="w-full bg-black text-white py-3 px-4 rounded-lg font-semibold hover:bg-mountain transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? (
