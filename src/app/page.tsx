@@ -305,7 +305,7 @@ export default function Home() {
           </motion.div>
 
           {/* Main Sections */}
-          <div className="flex flex-row gap-6 mb-8 max-xl:flex-col-reverse">
+          <div className="flex flex-row gap-6 mb-8 max-xl:flex-col-reverse justify-center items-center">
             {/* Left Section - 3D GUI */}
             {!isMobile && (
               <motion.div 
