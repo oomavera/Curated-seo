@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { useState, useMemo, useEffect } from "react";
 import dynamic from "next/dynamic";
@@ -134,12 +135,12 @@ export default function BookOnline() {
             >
               (407) 270-0379
             </a>
-            <a 
+            <Link 
               href="/" 
               className="bg-mountain text-snow px-4 py-2 rounded-full font-semibold hover:bg-midnight transition-all duration-300"
             >
               Back to Home
-            </a>
+            </Link>
           </div>
         </div>
       </header>

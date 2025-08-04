@@ -48,9 +48,13 @@ export default function QuickEstimateForm({ onSubmitSuccess }: QuickEstimateForm
       setSuccess(true);
       
       // Trigger Cal.com popup
-      if (typeof window !== 'undefined' && (window as any).Cal) {
-        (window as any).Cal("init", "firstclean", {origin:"https://app.cal.com"});
-        (window as any).Cal.ns.firstclean("ui", {"theme":"light","hideEventTypeDetails":false,"layout":"month_view"});
+      if (typeof window !== 'undefined' && (window as typeof window & { Cal?: unknown }).Cal) {
+        const Cal = (window as typeof window & { Cal: unknown }).Cal as {
+          (action: string, namespace: string, config: Record<string, unknown>): void;
+          ns: { [key: string]: (action: string, config: Record<string, unknown>) => void };
+        };
+        Cal("init", "firstclean", {origin:"https://app.cal.com"});
+        Cal.ns.firstclean("ui", {"theme":"light","hideEventTypeDetails":false,"layout":"month_view"});
         
         // Trigger the calendar popup
         const calButton = document.getElementById('cal-trigger-button');
@@ -60,7 +64,7 @@ export default function QuickEstimateForm({ onSubmitSuccess }: QuickEstimateForm
       }
 
       onSubmitSuccess?.();
-    } catch (err) {
+    } catch {
       setError('Something went wrong. Please try again or call us directly.');
     } finally {
       setIsSubmitting(false);
@@ -82,7 +86,7 @@ export default function QuickEstimateForm({ onSubmitSuccess }: QuickEstimateForm
         </div>
         <h3 className="text-xl font-semibold text-midnight mb-2">Thank You!</h3>
         <p className="text-mountain mb-4">
-          We've received your request. Our calendar should have opened - please select a time that works for you.
+          We&apos;ve received your request. Our calendar should have opened - please select a time that works for you.
         </p>
         <button
           onClick={() => {
@@ -190,7 +194,7 @@ export default function QuickEstimateForm({ onSubmitSuccess }: QuickEstimateForm
       <div className="mt-4 text-center text-xs text-mountain">
         By submitting, you agree to receive calls and texts about our services. 
         <br />
-        We respect your privacy and won't spam you.
+        We respect your privacy and won&apos;t spam you.
       </div>
     </motion.div>
   );
