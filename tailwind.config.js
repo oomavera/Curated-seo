@@ -7,7 +7,16 @@ module.exports = {
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        midnight: '#090F15',
+        mountain: '#262F36',
+        'apres-ski': '#6C6D74',
+        slopes: '#B3B7BA',
+        arctic: '#D3D1CE',
+        snow: '#F8F7F4',
+      },
+    },
   },
   plugins: [],
 }; 

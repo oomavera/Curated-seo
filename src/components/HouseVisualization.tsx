@@ -1,3 +1,4 @@
+/* Deactivated: August 1, 2025 — may reinstate in future */
 "use client";
 
 import React, { Suspense, useEffect, useState } from "react";

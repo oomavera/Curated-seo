@@ -23,6 +23,10 @@
   }
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 html,
 body {
   max-width: 100vw;
@@ -47,6 +51,27 @@ h1, h2, h3, h4, h5, h6 {
 h1 {
   font-weight: 200;
   letter-spacing: -0.04em;
+}
+
+/* Glow animation for CTA button */
+@keyframes glow {
+  0% {
+    box-shadow: 0 0 20px rgba(249, 115, 22, 0.4), 0 0 40px rgba(249, 115, 22, 0.2), 0 0 60px rgba(249, 115, 22, 0.1);
+    transform: scale(1);
+  }
+  100% {
+    box-shadow: 0 0 25px rgba(249, 115, 22, 0.6), 0 0 50px rgba(249, 115, 22, 0.4), 0 0 75px rgba(249, 115, 22, 0.2);
+    transform: scale(1.02);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(249, 115, 22, 0.3), 0 0 30px rgba(249, 115, 22, 0.2), 0 0 45px rgba(249, 115, 22, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(249, 115, 22, 0.5), 0 0 50px rgba(249, 115, 22, 0.3), 0 0 75px rgba(249, 115, 22, 0.2);
+  }
 }
 
 * {
@@ -139,5 +164,87 @@ a {
   .mobile-carousel-scale {
     transform: scale(0.5);
     transform-origin: top left;
+  }
+}
+
+/* Blog Typography System */
+.font-inter {
+  font-family: var(--font-inter), system-ui, sans-serif;
+}
+
+/* Line clamping utilities */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Typography Hierarchy */
+.blog-title {
+  @apply text-2xl font-bold leading-tight;
+  color: #000000;
+}
+
+.blog-category {
+  @apply text-xs uppercase tracking-wide font-medium;
+  color: #666666;
+}
+
+.blog-body {
+  @apply text-base leading-relaxed;
+  color: #000000;
+}
+
+.blog-excerpt {
+  @apply text-sm leading-relaxed;
+  color: #000000;
+}
+
+.blog-meta {
+  @apply text-xs;
+  color: #666666;
+}
+
+/* Editorial Grid Auto Flow */
+.grid-auto-flow-dense {
+  grid-auto-flow: dense;
+}
+
+/* Smooth Gallery Animations - Hardware Accelerated */
+@keyframes slideGallery {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes slideGalleryMobile {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+/* Pause animations on hover for better UX */
+.gallery-container:hover .gallery-slider {
+  animation-play-state: paused;
+}
+
+/* Reduce motion support */
+@media (prefers-reduced-motion: reduce) {
+  .gallery-slider {
+    animation: none !important;
   }
 }

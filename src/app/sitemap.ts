@@ -1,9 +1,14 @@
 import { MetadataRoute } from 'next'
+import { getAllPostSlugs } from '@/lib/blog'
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://curatedcleanings.com'
   
-  return [
+  // Get blog post slugs
+  const blogSlugs = await getAllPostSlugs()
+  
+  // Static pages
+  const staticPages = [
     {
       url: baseUrl,
       lastModified: new Date(),
@@ -96,5 +101,22 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 0.9,
     },
+    // Blog listing page
+    {
+      url: `${baseUrl}/blog`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
   ]
+  
+  // Blog post pages
+  const blogPages = blogSlugs.map((slug) => ({
+    url: `${baseUrl}/blog/${slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly' as const,
+    priority: 0.7,
+  }))
+  
+  return [...staticPages, ...blogPages]
 } 
