@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { FaEnvelope, FaPhone } from "react-icons/fa";
 import { motion } from "framer-motion";
-import { useState, useEffect, useRef } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { usePrefersReducedMotion } from "../utils/usePrefersReducedMotion";
