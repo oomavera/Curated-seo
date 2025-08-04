@@ -237,8 +237,30 @@ a {
   }
 }
 
+@keyframes slideTestimonials {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes slideTestimonialsMobile {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
 /* Pause animations on hover for better UX */
 .gallery-container:hover .gallery-slider {
+  animation-play-state: paused;
+}
+
+.testimonials-container:hover .testimonials-slider {
   animation-play-state: paused;
 }
 

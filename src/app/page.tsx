@@ -103,41 +103,22 @@ export default function Home() {
 
   const prefersReducedMotion = usePrefersReducedMotion();
 
-  // TESTIMONIALS SECTION
-  const [carouselX, setCarouselX] = useState(0);
-  const carouselAnimRef = useRef<number | null>(null);
-  const speed = prefersReducedMotion ? 0 : 0.02; // px per ms, ultra slow
-  const totalCards = testimonials.length * 2;
-  const cardWidth = 370; // px, min-w-[350px] + gap
-  useEffect(() => {
-    if (prefersReducedMotion) return; // Disable animation if reduced motion
-    let lastTimestamp: number | null = null;
-    function animate(ts: number) {
-      if (lastTimestamp === null) lastTimestamp = ts;
-      const delta = ts - lastTimestamp;
-      lastTimestamp = ts;
-      setCarouselX((prev) => {
-        const next = prev - speed * delta;
-        if (Math.abs(next) >= cardWidth * testimonials.length) {
-          return 0;
-        }
-        return next;
-      });
-      carouselAnimRef.current = requestAnimationFrame(animate);
-    }
-    carouselAnimRef.current = requestAnimationFrame(animate);
-    return () => {
-      if (carouselAnimRef.current) cancelAnimationFrame(carouselAnimRef.current);
-    };
-  }, [prefersReducedMotion, speed, cardWidth]);
+  // TESTIMONIALS SECTION - Using CSS animations for better performance
 
   // Removed unused mobile detection code
 
   // 1. Place team photos first in the array
   const galleryImages = [
+    "/Gallery/team/IMG_5963.webp",
+    "/Gallery/cleans/IMG_1378.webp",
+    "/Gallery/cleans/IMG_2647.webp",
+    "/Gallery/cleans/IMG_2655.webp",
+    "/Gallery/cleans/IMG_2727.webp",
+    "/Gallery/cleans/IMG_2731.webp",
+    "/Gallery/cleans/IMG_2780.webp",
+    "/Gallery/cleans/IMG_2845.webp",
     "/Gallery/cleans/IMG_2538.webp",
     "/Gallery/cleans/IMG_2603.webp",
-    "/Gallery/team/IMG_5963.webp",
     "/Gallery/team/IMG_5984.webp",
     "/Gallery/cleans/IMG_2587.webp",
     "/Gallery/cleans/IMG_0952.webp",
@@ -146,7 +127,6 @@ export default function Home() {
     "/Gallery/cleans/IMG_1973.webp",
     "/Gallery/cleans/IMG_0935.webp",
     "/Gallery/cleans/IMG_0959.webp",
-    "/Gallery/cleans/IMG_1378.webp",
     "/Gallery/cleans/IMG_2537.webp",
     "/Gallery/cleans/IMG_2529.webp",
     "/Gallery/cleans/IMG_2479.webp",
@@ -161,25 +141,55 @@ export default function Home() {
       {/* HERO SECTION - ABOVE THE FOLD */}
       <section className="bg-gradient-to-br from-snow via-arctic/50 to-slopes/20 min-h-screen flex flex-col">
         {/* Header */}
-        <header className="flex flex-row justify-between items-center py-4 sm:py-6 px-4 sm:px-8 max-w-7xl mx-auto w-full backdrop-blur-sm gap-2 sm:gap-4">
-          {/* Phone Number - Left */}
-          <div className="flex items-center flex-1 -mt-3 sm:-mt-4">
+        <header className="flex flex-col sm:flex-row justify-center sm:justify-between items-center py-4 sm:py-6 px-4 sm:px-8 max-w-7xl mx-auto w-full backdrop-blur-sm gap-2 sm:gap-4">
+          {/* Mobile: Centered Logo First */}
+          <div className="flex justify-center items-center sm:hidden order-1">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.5, y: -20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+              className="relative"
+            >
+              <Image 
+                src={logo} 
+                alt="Curated Cleanings Logo" 
+                width={360} 
+                height={72} 
+                className="object-cover max-w-[70vw]" 
+                style={{ height: '36px', width: 'auto', objectFit: 'cover', objectPosition: 'center', opacity: 0.8 }}
+              />
+            </motion.div>
+          </div>
+
+          {/* Mobile: Phone and Call Now Button Row */}
+          <div className="flex justify-between items-center w-full sm:hidden order-2 mt-2">
             <a 
               href="tel:4072700379" 
-              className="text-xl font-semibold tracking-wider text-mountain hover:text-midnight transition-colors duration-300 whitespace-nowrap hidden sm:block"
+              className="text-xs font-semibold tracking-wider text-mountain hover:text-midnight transition-colors duration-300 whitespace-nowrap"
             >
               (407) 270-0379
             </a>
             <a 
               href="tel:4072700379" 
-              className="text-xs font-semibold tracking-wider text-mountain hover:text-midnight transition-colors duration-300 whitespace-nowrap sm:hidden"
+              className="bg-midnight text-snow px-4 py-2 rounded-full font-semibold hover:bg-mountain hover:text-snow transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 text-xs"
+            >
+              CALL NOW
+            </a>
+          </div>
+
+          {/* Desktop Layout */}
+          {/* Phone Number - Left */}
+          <div className="hidden sm:flex items-center flex-1 -mt-3 sm:-mt-4">
+            <a 
+              href="tel:4072700379" 
+              className="text-xl font-semibold tracking-wider text-mountain hover:text-midnight transition-colors duration-300 whitespace-nowrap"
             >
               (407) 270-0379
             </a>
           </div>
           
           {/* Logo - Center */}
-          <div className="flex justify-center items-center">
+          <div className="hidden sm:flex justify-center items-center">
             <motion.div
               initial={{ opacity: 0, scale: 0.5, y: -20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -193,22 +203,14 @@ export default function Home() {
                 height={120} 
                 priority 
                 placeholder="blur" 
-                className="hidden sm:block object-cover max-w-[60vw]" 
+                className="object-cover max-w-[60vw]" 
                 style={{ height: '60px', width: 'auto', objectFit: 'cover', objectPosition: 'center', opacity: 0.8 }}
-              />
-              <Image 
-                src={logo} 
-                alt="Curated Cleanings Logo" 
-                width={480} 
-                height={96} 
-                className="sm:hidden object-cover max-w-[50vw]" 
-                style={{ height: '48px', width: 'auto', objectFit: 'cover', objectPosition: 'center', opacity: 0.8 }}
               />
             </motion.div>
           </div>
           
           {/* Navigation & Call Now Button - Right */}
-          <div className="flex items-center justify-end flex-1 -mt-3 sm:-mt-4 gap-4">
+          <div className="hidden sm:flex items-center justify-end flex-1 -mt-3 sm:-mt-4 gap-4">
             <Link 
               href="/blog" 
               className="text-mountain hover:text-midnight transition-colors duration-300 font-medium text-sm sm:text-base hidden sm:block"
@@ -246,13 +248,13 @@ export default function Home() {
           <div className="flex flex-row gap-8 mb-8 max-md:flex-col justify-center items-start">
             {/* Left Section - Photo Gallery (Desktop only) */}
             <div className="hidden md:flex flex-1 max-w-lg">
-              <div className="gallery-container relative w-full h-80 overflow-hidden rounded-2xl shadow-xl border border-slopes/20 bg-snow">
+              <div className="gallery-container relative w-full h-96 overflow-hidden rounded-2xl shadow-xl border border-slopes/20 bg-snow">
                 <div className="relative w-full h-full">
                   <div 
                     className="gallery-slider flex h-full items-center gap-4 absolute"
                     style={{
                       width: `${galleryImages.length * 370}px`,
-                      animation: prefersReducedMotion ? 'none' : `slideGallery ${galleryImages.length * 8}s linear infinite`,
+                      animation: prefersReducedMotion ? 'none' : `slideGallery ${galleryImages.length * 5}s linear infinite`,
                       transform: 'translate3d(0, 0, 0)',
                       willChange: 'transform'
                     }}
@@ -287,7 +289,7 @@ export default function Home() {
                   className="gallery-slider flex h-full items-center gap-4 absolute"
                   style={{
                     width: `${galleryImages.length * 195}px`,
-                    animation: prefersReducedMotion ? 'none' : `slideGalleryMobile ${galleryImages.length * 6}s linear infinite`,
+                    animation: prefersReducedMotion ? 'none' : `slideGalleryMobile ${galleryImages.length * 3.5}s linear infinite`,
                     transform: 'translate3d(0, 0, 0)',
                     willChange: 'transform'
                   }}
@@ -312,28 +314,31 @@ export default function Home() {
 
           {/* Customer Reviews Section - moved here */}
           <section id="testimonials" className="py-6 sm:py-12 flex flex-col items-center bg-transparent">
-            <div className="relative w-full max-w-5xl h-40 sm:h-80 overflow-hidden">
-              <div
-                className="flex h-full items-center gap-4 sm:gap-8"
-                style={{
-                  width: `${cardWidth * totalCards}px`,
-                  transform: `translateX(${carouselX}px)`,
-                  transition: 'none',
-                }}
-              >
-                {testimonials.concat(testimonials).map((t, i) => (
-                  <div key={i} className="relative min-w-[175px] sm:min-w-[350px] max-w-xs rounded-3xl overflow-hidden shadow-lg h-40 sm:h-80 flex flex-col items-center justify-center border border-slopes/20 bg-snow">
-                    <div className="absolute inset-0">
-                      <Image 
-                        src={t.img} 
-                        alt={t.name} 
-                        width={350}
-                        height={320}
-                        className="object-cover w-full h-full"
-                      />
+            <div className="testimonials-container relative w-full max-w-5xl h-40 sm:h-80 overflow-hidden rounded-2xl">
+              <div className="relative w-full h-full">
+                <div 
+                  className="testimonials-slider flex h-full items-center gap-4 sm:gap-8 absolute"
+                  style={{
+                    width: `${testimonials.length * 380}px`,
+                    animation: prefersReducedMotion ? 'none' : `slideTestimonials ${testimonials.length * 6}s linear infinite`,
+                    transform: 'translate3d(0, 0, 0)',
+                    willChange: 'transform'
+                  }}
+                >
+                  {[...testimonials, ...testimonials].map((t, i) => (
+                    <div key={i} className="relative min-w-[175px] sm:min-w-[350px] max-w-xs rounded-3xl overflow-hidden shadow-lg h-40 sm:h-80 flex flex-col items-center justify-center border border-slopes/20 bg-snow">
+                      <div className="absolute inset-0">
+                        <Image 
+                          src={t.img} 
+                          alt={t.name} 
+                          width={350}
+                          height={320}
+                          className="object-cover w-full h-full"
+                        />
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
             <div className="mt-8 max-w-4xl text-center text-xl text-midnight font-light leading-relaxed">
