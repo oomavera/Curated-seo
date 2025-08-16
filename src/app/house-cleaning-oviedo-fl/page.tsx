@@ -104,7 +104,7 @@ export default function OviedoHouseCleaningPage() {
 						<div className="bg-white p-6 rounded-lg shadow">
 							<h3 className="text-2xl font-semibold text-gray-800 mb-2">Deep & First-Time Cleans</h3>
 							<p className="text-gray-700">
-								If it&apos;s been a while since a thorough scrub—or you&apos;re onboarding with us—our deep clean hits baseboards, vents, blinds, and grime magnets most "standard cleans" ignore. Ideal before holidays, parties, or seasonal resets.
+								If it&apos;s been a while since a thorough scrub—or you&apos;re onboarding with us—our deep clean hits baseboards, vents, blinds, and grime magnets most &quot;standard cleans&quot; ignore. Ideal before holidays, parties, or seasonal resets.
 							</p>
 						</div>
 						<div className="bg-white p-6 rounded-lg shadow md:col-span-2">

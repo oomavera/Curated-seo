@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, phone, email, source } = body;
+    const { name, phone, email } = body;
 
     // Validate required fields
     if (!name || !phone || !email) {
@@ -33,7 +33,6 @@ export async function POST(request: NextRequest) {
     }
 
     // Normalize optional fields
-    const address = (body.address && typeof body.address === 'string') ? body.address : '';
     const service: string = body.service && typeof body.service === 'string'
       ? body.service
       : (body.quote ? 'estimate_request' : 'contact_form');
@@ -52,8 +51,9 @@ export async function POST(request: NextRequest) {
       .single();
 
     // If minimal fails due to NOT NULL on address, retry with empty address
-    if (error && (error as any)?.code === '23502') {
-      const message = (error as any)?.message || '';
+    type DbError = { code?: string; message?: string };
+    if (error && (error as DbError)?.code === '23502') {
+      const message = (error as DbError)?.message || '';
       if (message.includes('address') || message.toLowerCase().includes('not-null')) {
         const retryPayload = {
           ...minimalPayload,
