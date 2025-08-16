@@ -1,6 +1,8 @@
 "use client";
 
 import CityPageLayout from '../../components/CityPageLayout';
+import GlassCard from '../../components/ui/GlassCard';
+import PillButton from '../../components/ui/PillButton';
 
 export default function WinterParkHouseCleaningPage() {
   return (
@@ -15,39 +17,7 @@ export default function WinterParkHouseCleaningPage() {
             "url": "https://curatedcleanings.com/house-cleaning-winter-park-fl",
             "image": "https://curatedcleanings.com/Gallery/cleans/IMG_0935.webp",
             "telephone": "+1-XXX-XXX-XXXX",
-            "priceRange": "$$",
-            "address": {
-              "@type": "PostalAddress",
-              "addressLocality": "Winter Park",
-              "addressRegion": "FL",
-              "postalCode": "32789",
-              "addressCountry": "US"
-            },
-            "areaServed": [
-              { "@type": "City", "name": "Winter Park" },
-              { "@type": "City", "name": "Oviedo" },
-              { "@type": "City", "name": "Lake Mary" }
-            ],
-            "serviceType": "House cleaning",
-            "makesOffer": {
-              "@type": "Offer",
-              "name": "Winter Park First-Clean Discount",
-              "price": "218",
-              "priceCurrency": "USD",
-              "description": "$25 off your first Winter Park cleaning",
-              "eligibleRegion": { "@type": "City", "name": "Winter Park" }
-            },
-            "hasFAQPage": {
-              "@type": "FAQPage",
-              "mainEntity": [
-                { "@type": "Question", "name": "Do you bring supplies and equipment?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. We supply professional-grade products and can switch to eco-friendly or fragrance-free options on request." } },
-                { "@type": "Question", "name": "Can you handle delicate or historic surfaces?", "acceptedAnswer": { "@type": "Answer", "text": "We document surface sensitivities and train cleaners to use non-abrasive, surface-safe methods." } },
-                { "@type": "Question", "name": "Will I get the same cleaners each visit?", "acceptedAnswer": { "@type": "Answer", "text": "We prioritize assigning the same team; preferences are stored to maintain consistency when substitutions occur." } },
-                { "@type": "Question", "name": "What if I’m not satisfied with a clean?", "acceptedAnswer": { "@type": "Answer", "text": "Notify us within one business day; we'll re-clean the area or credit your account." } },
-                { "@type": "Question", "name": "How far in advance should I book?", "acceptedAnswer": { "@type": "Answer", "text": "1–2 weeks is ideal for recurring slots. For rush deep cleans, contact us; cancellations open last-minute windows." } },
-                { "@type": "Question", "name": "Do you handle post-renovation or heavy-duty construction dust?", "acceptedAnswer": { "@type": "Answer", "text": "We quote on a case-by-case basis; share your scope and we'll advise or refer specialists if needed." } }
-              ]
-            }
+            "priceRange": "$$"
           })
         }}
       />
@@ -65,13 +35,14 @@ export default function WinterParkHouseCleaningPage() {
         </section>
 
         {/* Quick Answer Box */}
-        <section className="mb-12 bg-blue-50 p-6 rounded-lg max-w-4xl mx-auto">
-          <h2 className="text-2xl font-semibold mb-4">Quick Answer: Who’s the best choice for house cleaning Winter Park FL?</h2>
-          <p className="text-lg text-gray-700">
-            Curated Cleanings specializes in luxury and historic homes, uses eco-friendly products on request, and backs every visit with photo-verified QA. Flat-rate pricing averages $218, and new Winter Park clients get $25 off the first clean. Book online in minutes for a guaranteed, detail-obsessed service.
-          </p>
+        <section className="mb-12 max-w-4xl mx-auto">
+          <GlassCard className="p-6">
+            <h2 className="text-2xl font-semibold mb-4">Quick Answer: Who’s the best choice for house cleaning Winter Park FL?</h2>
+            <p className="text-lg text-gray-700">
+              Curated Cleanings specializes in luxury and historic homes, uses eco-friendly products on request, and backs every visit with photo-verified QA. Flat-rate pricing averages $218, and new Winter Park clients get $25 off the first clean. Book online in minutes for a guaranteed, detail-obsessed service.
+            </p>
+          </GlassCard>
         </section>
-
 
         {/* Why Choose Us */}
         <section className="mb-12 max-w-4xl mx-auto">
@@ -122,48 +93,30 @@ export default function WinterParkHouseCleaningPage() {
         </section>
 
         {/* FAQ Section */}
-        <section className="mb-12 max-w-4xl mx-auto">
+        <section className="mb-12 max-w-4xl mx.auto">
           <h2 className="text-3xl font-bold text-gray-900 mb-6">Frequently Asked Questions</h2>
           <div className="space-y-6">
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h3 className="text-xl font-semibold mb-2">Do you bring supplies and equipment?</h3>
-              <p>Yes. We provide professional-grade supplies and can switch to eco-friendly or fragrance-free products—just let us know in advance.</p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h3 className="text-xl font-semibold mb-2">Can you handle delicate or historic surfaces?</h3>
-              <p>Absolutely. We note surface sensitivities (original wood floors, marble, antique fixtures) in your profile and train cleaners accordingly.</p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h3 className="text-xl font-semibold mb-2">Will I get the same cleaners each visit?</h3>
-              <p>We prioritize consistency. When schedules shift, we share your preference notes internally so any team maintains your standards.</p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h3 className="text-xl font-semibold mb-2">What if you’re not satisfied with a clean?</h3>
-              <p>Report any issue within one business day. We’ll re-clean the missed area or credit your account.</p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h3 className="text-xl font-semibold mb-2">How far in advance should I book?</h3>
-              <p>Recurring clients usually book 1–2 weeks out for prime slots. Need a last-minute deep clean before guests? Message us—cancellations happen and we can often fit you in.</p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h3 className="text-xl font-semibold mb-2">Do you handle post-renovation or heavy construction dust?</h3>
-              <p>Case-by-case. Share details (drywall dust, paint overspray) and we’ll quote accordingly or refer a specialist if needed.</p>
-            </div>
+            <div className="bg-white p-6 rounded-lg shadow"><h3 className="text-xl font-semibold mb-2">Do you bring supplies and equipment?</h3><p>Yes. We provide professional-grade supplies and can switch to eco-friendly or fragrance-free products—just let us know in advance.</p></div>
+            <div className="bg-white p-6 rounded-lg shadow"><h3 className="text-xl font-semibold mb-2">Can you handle delicate or historic surfaces?</h3><p>Absolutely. We note surface sensitivities (original wood floors, marble, antique fixtures) in your profile and train cleaners accordingly.</p></div>
+            <div className="bg-white p-6 rounded-lg shadow"><h3 className="text-xl font-semibold mb-2">Will I get the same cleaners each visit?</h3><p>We prioritize consistency. When schedules shift, we share your preference notes internally so any team maintains your standards.</p></div>
+            <div className="bg-white p-6 rounded-lg shadow"><h3 className="text-xl font-semibold mb-2">What if you’re not satisfied with a clean?</h3><p>Report any issue within one business day. We’ll re-clean the missed area or credit your account.</p></div>
+            <div className="bg-white p-6 rounded-lg shadow"><h3 className="text-xl font-semibold mb-2">How far in advance should I book?</h3><p>Recurring clients usually book 1–2 weeks out for prime slots. Need a last-minute deep clean before guests? Message us—cancellations happen and we can often fit you in.</p></div>
+            <div className="bg-white p-6 rounded-lg shadow"><h3 className="text-xl font-semibold mb-2">Do you handle post-renovation or heavy construction dust?</h3><p>Case-by-case. Share details (drywall dust, paint overspray) and we’ll quote accordingly or refer a specialist if needed.</p></div>
           </div>
         </section>
 
         {/* CTAs */}
         <section className="mb-12 max-w-4xl mx-auto">
-          <div className="bg-blue-100 p-6 rounded-lg mb-4">
+          <GlassCard className="p-6 mb-4">
             <h3 className="text-xl font-semibold text-blue-900 mb-2">Get $25 Off Your First Winter Park Clean</h3>
             <p className="text-blue-800 mb-4">Flat-rate pricing, eco-friendly options, photo-verified quality.</p>
-            <a href="#" className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">Start Your Free Estimate</a>
-          </div>
-          <div className="bg-green-100 p-6 rounded-lg">
+            <PillButton>Start Your Free Estimate</PillButton>
+          </GlassCard>
+          <GlassCard className="p-6">
             <h3 className="text-xl font-semibold text-green-900 mb-2">Spend Sundays in Central Park—not cleaning.</h3>
             <p className="text-green-800 mb-4">Reserve your recurring slot today and save $25.</p>
-            <a href="#" className="inline-block bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors">Claim your discount →</a>
-          </div>
+            <PillButton>Claim your discount →</PillButton>
+          </GlassCard>
         </section>
       </CityPageLayout>
     </>

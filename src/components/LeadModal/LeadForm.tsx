@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { LeadForm as LeadFormType, Quote } from "../../types/quote";
-import { supabase } from "../../lib/supabase";
+// Using API route for database writes to centralize validation and schema handling
 
 interface LeadFormProps {
   quote: Quote;
@@ -85,22 +85,28 @@ export default function LeadForm({ quote, onCancel, isSubmitting }: LeadFormProp
       return;
     }
     
-    // Store lead in Supabase (contact info + estimated price only)
+    // Send to API which handles Supabase insert and schema compatibility
     try {
-      const { error } = await supabase.from('leads').insert([
-        {
+      const response = await fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           name: formData.name,
           phone: formData.phone,
           email: formData.email,
-          estimated_price: quote.subtotal,
-        }
-      ]);
-      if (error) {
-        // Optionally handle/log error
-        console.error('Error saving lead on Show Estimate:', error);
+          service: 'estimate_request',
+          quote: {
+            input: quote.input,
+            subtotal: quote.subtotal,
+          }
+        })
+      });
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({ error: 'Unknown error' }));
+        console.error('Error saving lead on Show Estimate (API):', err);
       }
     } catch (err) {
-      console.error('Unexpected error saving lead on Show Estimate:', err);
+      console.error('Unexpected error saving lead on Show Estimate (API):', err);
     }
     // Move to estimate step
     setStep('estimate');

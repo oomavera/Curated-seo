@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { supabase } from '@/lib/supabase';
 
 export async function POST(request: NextRequest) {
   try {
@@ -31,39 +32,76 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create lead object
-    const lead = {
+    // Normalize optional fields
+    const address = (body.address && typeof body.address === 'string') ? body.address : '';
+    const service: string = body.service && typeof body.service === 'string'
+      ? body.service
+      : (body.quote ? 'estimate_request' : 'contact_form');
+
+    // First attempt: insert minimal fields to be compatible with any schema
+    const minimalPayload = {
       name: name.trim(),
       phone: phone.trim(),
       email: email.toLowerCase().trim(),
-      source: source || 'Unknown',
-      timestamp: new Date().toISOString(),
-      id: `lead_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     };
 
-    // TODO: Save to database
-    // For now, we'll just log it and return success
-    console.log('New lead received:', lead);
+    let { data, error } = await supabase
+      .from('leads')
+      .insert([minimalPayload])
+      .select('id')
+      .single();
 
-    // In production, you would save to your database here
-    // Example with Supabase:
-    // const { data, error } = await supabase
-    //   .from('leads')
-    //   .insert([lead]);
-    
-    // if (error) {
-    //   console.error('Database error:', error);
-    //   return NextResponse.json(
-    //     { error: 'Failed to save lead' },
-    //     { status: 500 }
-    //   );
-    // }
+    // If minimal fails due to NOT NULL on address, retry with empty address
+    if (error && (error as any)?.code === '23502') {
+      const message = (error as any)?.message || '';
+      if (message.includes('address') || message.toLowerCase().includes('not-null')) {
+        const retryPayload = {
+          ...minimalPayload,
+          address: '',
+        };
+        const retry = await supabase
+          .from('leads')
+          .insert([retryPayload])
+          .select('id')
+          .single();
+        data = retry.data as typeof data;
+        error = retry.error;
+      }
+    }
+
+    if (!error) {
+      // Best-effort: attach optional fields if extended schema exists; ignore failures
+      const extendedPayload: Record<string, unknown> = {};
+      const hasService = typeof body.service === 'string' || body.quote;
+      if (hasService) extendedPayload.service = service;
+      if (body.quote && typeof body.quote === 'object') {
+        extendedPayload.quote_payload = body.quote;
+      }
+
+      if (Object.keys(extendedPayload).length > 0) {
+        // Try to update with extended fields; swallow errors to not block success path
+        await supabase
+          .from('leads')
+          .update(extendedPayload)
+          .eq('id', data?.id as string)
+          .then(() => undefined)
+          .catch(() => undefined);
+      }
+    }
+
+    if (error) {
+      console.error('Database error (insert lead):', error);
+      return NextResponse.json(
+        { error: 'Failed to save lead' },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json(
       { 
         success: true, 
         message: 'Lead submitted successfully',
-        leadId: lead.id
+        leadId: data?.id
       },
       { status: 200 }
     );

@@ -2,6 +2,8 @@
 /* eslint-disable react/no-unescaped-entities */
 
 import CityPageLayout from '../../components/CityPageLayout';
+import GlassCard from '../../components/ui/GlassCard';
+import PillButton from '../../components/ui/PillButton';
 
 export default function OrlandoHouseCleaningPage() {
   return (
@@ -41,54 +43,12 @@ export default function OrlandoHouseCleaningPage() {
             "hasFAQPage": {
               "@type": "FAQPage",
               "mainEntity": [
-                {
-                  "@type": "Question",
-                  "name": "Do you bring supplies and equipment?",
-                  "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "Yes. Our team provides everything, including eco-friendly alternatives upon request."
-                  }
-                },
-                {
-                  "@type": "Question",
-                  "name": "How do you ensure quality every visit?",
-                  "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "Cleaners upload room-by-room photos; a manager reviews them within hours to ensure consistency."
-                  }
-                },
-                {
-                  "@type": "Question",
-                  "name": "Can I request the same cleaners each time?",
-                  "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "We strive for team consistency and store your preferences to keep results uniform."
-                  }
-                },
-                {
-                  "@type": "Question",
-                  "name": "What if I need to reschedule or cancel?",
-                  "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "Provide 48 hours' notice to avoid fees; we're flexible when life happens."
-                  }
-                },
-                {
-                  "@type": "Question",
-                  "name": "Do you handle post-construction or heavy restoration cleans?",
-                  "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "We assess on a case-by-case basis. Share your scope and we'll quote or refer as needed."
-                  }
-                },
-                {
-                  "@type": "Question",
-                  "name": "Are your products safe for pets and kids?",
-                  "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "Yes—our default products are safe, and we can go fragrance-free or eco-only on request."
-                  }
-                }
+                {"@type":"Question","name":"Do you bring supplies and equipment?","acceptedAnswer":{"@type":"Answer","text":"Yes. Our team provides everything, including eco-friendly alternatives upon request."}},
+                {"@type":"Question","name":"How do you ensure quality every visit?","acceptedAnswer":{"@type":"Answer","text":"Cleaners upload room-by-room photos; a manager reviews them within hours to ensure consistency."}},
+                {"@type":"Question","name":"Can I request the same cleaners each time?","acceptedAnswer":{"@type":"Answer","text":"We strive for team consistency and store your preferences to keep results uniform."}},
+                {"@type":"Question","name":"What if I need to reschedule or cancel?","acceptedAnswer":{"@type":"Answer","text":"Provide 48 hours' notice to avoid fees; we're flexible when life happens."}},
+                {"@type":"Question","name":"Do you handle post-construction or heavy restoration cleans?","acceptedAnswer":{"@type":"Answer","text":"We assess on a case-by-case basis. Share your scope and we'll quote or refer as needed."}},
+                {"@type":"Question","name":"Are your products safe for pets and kids?","acceptedAnswer":{"@type":"Answer","text":"Yes—our default products are safe, and we can go fragrance-free or eco-only on request."}}
               ]
             }
           })
@@ -107,11 +67,13 @@ export default function OrlandoHouseCleaningPage() {
         </section>
 
         {/* Quick Answer Box */}
-        <section className="mb-12 bg-blue-50 p-6 rounded-lg max-w-4xl mx-auto">
-          <h2 className="text-2xl font-semibold mb-4">Quick Answer: Who's the best choice for house cleaning Orlando FL?</h2>
-          <p className="text-lg text-gray-700">
-            Curated Cleanings offers flat-rate pricing (avg $188), eco-friendly options, and photo-verified quality checks—perfect for Orlando's busy urban lifestyle. New clients save $25 on their first clean. Book online in minutes for a guaranteed, locally trusted service.
-          </p>
+        <section className="mb-12 max-w-4xl mx-auto">
+          <GlassCard className="p-6">
+            <h2 className="text-2xl font-semibold mb-4">Quick Answer: Who's the best choice for house cleaning Orlando FL?</h2>
+            <p className="text-lg text-gray-700">
+              Curated Cleanings offers flat-rate pricing (avg $188), eco-friendly options, and photo-verified quality checks—perfect for Orlando's busy urban lifestyle. New clients save $25 on their first clean. Book online in minutes for a guaranteed, locally trusted service.
+            </p>
+          </GlassCard>
         </section>
 
         {/* Why Choose Us */}
@@ -133,7 +95,6 @@ export default function OrlandoHouseCleaningPage() {
         {/* Services */}
         <section className="mb-12 max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">Our House Cleaning Services in Orlando</h2>
-          
           <div className="grid gap-6 md:grid-cols-2">
             <div className="bg-white p-6 rounded-lg shadow">
               <h3 className="text-2xl font-semibold text-gray-800 mb-2">Recurring (Weekly/Bi-Weekly/Monthly)</h3>
@@ -141,14 +102,12 @@ export default function OrlandoHouseCleaningPage() {
                 Stop spending weekends cleaning when you could be exploring the city. Lock in a cadence that fits your lifestyle. We strive to send the same team so they learn your preferences—from condo-specific needs to pet-friendly products.
               </p>
             </div>
-            
             <div className="bg-white p-6 rounded-lg shadow">
               <h3 className="text-2xl font-semibold text-gray-800 mb-2">Deep & First-Time Cleans</h3>
               <p className="text-gray-700">
                 If it's been a while since a thorough scrub—or you're onboarding with us—our deep clean hits baseboards, vents, blinds, and grime magnets most "standard cleans" ignore. Ideal before hosting events or seasonal refreshes.
               </p>
             </div>
-            
             <div className="bg-white p-6 rounded-lg shadow md:col-span-2">
               <h3 className="text-2xl font-semibold text-gray-800 mb-2">Move-In/Move-Out Cleaning</h3>
               <p className="text-gray-700">
@@ -212,16 +171,16 @@ export default function OrlandoHouseCleaningPage() {
 
         {/* CTAs */}
         <section className="mb-12 max-w-4xl mx-auto">
-          <div className="bg-blue-100 p-6 rounded-lg mb-4">
+          <GlassCard className="p-6 mb-4">
             <h3 className="text-xl font-semibold text-blue-900 mb-2">Get $25 Off Your First Orlando Clean</h3>
             <p className="text-blue-800 mb-4">Flat-rate pricing, eco-friendly options, photo-verified quality.</p>
-            <a href="#" className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">Start Your Free Estimate</a>
-          </div>
-          <div className="bg-green-100 p-6 rounded-lg">
+            <PillButton>Start Your Free Estimate</PillButton>
+          </GlassCard>
+          <GlassCard className="p-6">
             <h3 className="text-xl font-semibold text-green-900 mb-2">Spend evenings at Lake Eola—not cleaning.</h3>
             <p className="text-green-800 mb-4">Lock in your recurring slot today and save $25.</p>
-            <a href="#" className="inline-block bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors">Claim your discount →</a>
-          </div>
+            <PillButton>Claim your discount →</PillButton>
+          </GlassCard>
         </section>
       </CityPageLayout>
     </>
