@@ -80,12 +80,14 @@ export async function POST(request: NextRequest) {
 
       if (Object.keys(extendedPayload).length > 0) {
         // Try to update with extended fields; swallow errors to not block success path
-        await supabase
-          .from('leads')
-          .update(extendedPayload)
-          .eq('id', data?.id as string)
-          .then(() => undefined)
-          .catch(() => undefined);
+        try {
+          await supabase
+            .from('leads')
+            .update(extendedPayload)
+            .eq('id', data?.id as string);
+        } catch {
+          // ignore
+        }
       }
     }
 
