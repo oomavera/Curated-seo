@@ -2,7 +2,7 @@
 import React from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 
-export default function ParallaxAurora(): JSX.Element {
+export default function ParallaxAurora() {
 	const { scrollY } = useScroll();
 	const ySlow = useTransform(scrollY, (v) => v * -0.05);
 	const yMed = useTransform(scrollY, (v) => v * -0.1);
