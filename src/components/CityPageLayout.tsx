@@ -448,11 +448,11 @@ export default function CityPageLayout({
                       height={500}
                       className="w-full h-auto scale-125"
                       style={{ 
-                        filter: 'none !important',
-                        mixBlendMode: 'normal !important',
-                        opacity: '1 !important',
-                        backdropFilter: 'none !important'
-                      }}
+                        filter: 'none',
+                        mixBlendMode: 'normal',
+                        opacity: 1,
+                        backdropFilter: 'none'
+                      } as React.CSSProperties}
                     />
                   </div>
                 ))}
@@ -462,7 +462,7 @@ export default function CityPageLayout({
               <div className="mt-16 max-w-4xl mx-auto text-left text-lg text-black font-light leading-relaxed">
                 <div className="mb-6 text-center">
                   <h2 className="text-6xl font-black mb-6 text-black font-sans tracking-tight">Without Us</h2>
-                  <p className="text-black">After a 10-hour shift, you're still brushing, scrubbing, and mopping. On your knees cleaning toilets, wiping mirrors that never come streak-free, sneezing from dust, sick from fumes. Hours gone—time stolen from family, rest, or building your future. Or worse: you hire a cleaner who shows up late, rushes, leaves the job half-done, and never comes back. Guests notice. Family judges. And you're stuck in the same cycle: tired, behind, frustrated.</p>
+                  <p className="text-black">After a 10-hour shift, you&apos;re still brushing, scrubbing, and mopping. On your knees cleaning toilets, wiping mirrors that never come streak-free, sneezing from dust, sick from fumes. Hours gone—time stolen from family, rest, or building your future. Or worse: you hire a cleaner who shows up late, rushes, leaves the job half-done, and never comes back. Guests notice. Family judges. And you&apos;re stuck in the same cycle: tired, behind, frustrated.</p>
                 </div>
                 
                 <div className="mb-6 text-center">
