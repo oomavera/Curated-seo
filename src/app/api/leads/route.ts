@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
 
     console.log('Attempting database insert with:', minimalPayload);
     
-    let { data, error } = await supabase
+    const { data, error } = await supabase
       .from('leads')
       .insert([minimalPayload])
       .select('id')
