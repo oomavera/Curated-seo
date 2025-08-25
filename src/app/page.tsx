@@ -16,7 +16,8 @@ import ParallaxAurora from "../components/ui/ParallaxAurora";
 const QuickEstimateForm = dynamic(() => import("../components/QuickEstimateForm"), { ssr: false });
 
 // Generate array of review image paths in a stable order to prevent hydration mismatch
-const reviewImages = Array.from({ length: 22 }, (_, i) => `/Gallery/reviews/${i + 1}.png`);
+// Use .webp extension to match files in public/Gallery/reviews
+const reviewImages = Array.from({ length: 22 }, (_, i) => `/Gallery/reviews/${i + 1}.webp`);
 
 // Optimized animation variants
 const fadeInUp = {
@@ -83,7 +84,8 @@ export default function Home() {
 		// Mix in clean photos immediately
 		"/Gallery/cleans/IMG_1378.webp",
 		"/Gallery/cleans/IMG_2647.webp",
-		"/Gallery/team/IMG_5984.webp",
+		// Replaced missing team image with an existing asset
+		"/Gallery/team/ChatGPT Image Aug 23, 2025, 11_33_53 AM.webp",
 		"/Gallery/cleans/IMG_2655.webp",
 		"/Gallery/cleans/IMG_2727.webp",
 		"/Gallery/cleans/IMG_2731.webp",
