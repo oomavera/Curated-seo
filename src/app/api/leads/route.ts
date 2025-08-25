@@ -4,23 +4,26 @@ import { supabase } from '@/lib/supabase';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    console.log('API received payload:', body);
     const { name, phone, email } = body;
 
     // Validate required fields
-    if (!name || !phone || !email) {
+    if (!name || !phone) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: 'Missing required fields: name and phone' },
         { status: 400 }
       );
     }
 
-    // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: 'Invalid email format' },
-        { status: 400 }
-      );
+    // Optional email validation - only validate if email is provided
+    if (email && email.trim()) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return NextResponse.json(
+          { error: 'Invalid email format' },
+          { status: 400 }
+        );
+      }
     }
 
     // Basic phone validation (US format)
@@ -38,36 +41,27 @@ export async function POST(request: NextRequest) {
       : (body.quote ? 'estimate_request' : 'contact_form');
 
     // First attempt: insert minimal fields to be compatible with any schema
-    const minimalPayload = {
+    const minimalPayload: { name: string; phone: string; email?: string } = {
       name: name.trim(),
       phone: phone.trim(),
-      email: email.toLowerCase().trim(),
     };
+    
+    // Only include email if it's provided
+    if (email && email.trim()) {
+      minimalPayload.email = email.toLowerCase().trim();
+    }
 
+    console.log('Attempting database insert with:', minimalPayload);
+    
     let { data, error } = await supabase
       .from('leads')
       .insert([minimalPayload])
       .select('id')
       .single();
+      
+    console.log('Database response:', { data, error });
 
-    // If minimal fails due to NOT NULL on address, retry with empty address
-    type DbError = { code?: string; message?: string };
-    if (error && (error as DbError)?.code === '23502') {
-      const message = (error as DbError)?.message || '';
-      if (message.includes('address') || message.toLowerCase().includes('not-null')) {
-        const retryPayload = {
-          ...minimalPayload,
-          address: '',
-        };
-        const retry = await supabase
-          .from('leads')
-          .insert([retryPayload])
-          .select('id')
-          .single();
-        data = retry.data as typeof data;
-        error = retry.error;
-      }
-    }
+    // Remove the address retry logic since the column doesn't exist
 
     if (!error) {
       // Best-effort: attach optional fields if extended schema exists; ignore failures

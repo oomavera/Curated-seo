@@ -22,8 +22,8 @@ interface CityPageLayoutProps {
   children: React.ReactNode;
 }
 
-// Generate array of review image paths and randomize order
-const reviewImages = Array.from({ length: 22 }, (_, i) => `/Gallery/reviews/${i + 1}.png`)
+// Generate array of review image paths and randomize order - WebP optimized
+const reviewImages = Array.from({ length: 22 }, (_, i) => `/Gallery/reviews/${i + 1}.webp`)
   .sort(() => Math.random() - 0.5);
 
 const fadeInUp = {
@@ -446,7 +446,7 @@ export default function CityPageLayout({
                       alt={`Customer review ${i + 1}`} 
                       width={400}
                       height={400}
-                      className="w-full h-auto scale-125"
+                      className="w-full h-auto scale-200"
                       style={{ 
                         filter: 'none',
                         mixBlendMode: 'normal',

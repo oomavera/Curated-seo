@@ -346,10 +346,10 @@ export default function Home() {
 											height={500}
 											className="w-full h-auto scale-125"
 											style={{ 
-												filter: 'none !important',
-												mixBlendMode: 'normal !important',
-												opacity: '1 !important',
-												backdropFilter: 'none !important'
+												filter: 'none',
+												mixBlendMode: 'normal',
+												opacity: 1,
+												backdropFilter: 'none'
 											}}
 										/>
 									</div>
