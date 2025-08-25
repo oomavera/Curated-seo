@@ -14,6 +14,7 @@ import CircleIconButton from "../components/ui/CircleIconButton";
 import ParallaxAurora from "../components/ui/ParallaxAurora";
 
 const QuickEstimateForm = dynamic(() => import("../components/QuickEstimateForm"), { ssr: false });
+const ScrollPopupForm = dynamic(() => import("../components/ScrollPopupForm"), { ssr: false });
 
 // Generate array of review image paths in a stable order to prevent hydration mismatch
 // Use .webp extension to match files in public/Gallery/reviews
@@ -331,6 +332,9 @@ export default function Home() {
 							</div>
 						</GlassCard>
 					</section>
+
+					{/* Scroll-triggered Lead Form Popup */}
+					<ScrollPopupForm triggerElement="#reviews" />
 
 					{/* Customer Reviews Grid Section */}
 					<section id="reviews" className="py-6 sm:py-12 relative z-10">
