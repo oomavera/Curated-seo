@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { FaEnvelope, FaPhone } from "react-icons/fa";
 import { motion } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { usePrefersReducedMotion } from "../utils/usePrefersReducedMotion";
@@ -15,9 +15,8 @@ import ParallaxAurora from "../components/ui/ParallaxAurora";
 
 const QuickEstimateForm = dynamic(() => import("../components/QuickEstimateForm"), { ssr: false });
 
-// Generate array of review image paths and randomize order
-const reviewImages = Array.from({ length: 22 }, (_, i) => `/Gallery/reviews/${i + 1}.png`)
-  .sort(() => Math.random() - 0.5);
+// Generate array of review image paths (order will be randomized on client side)
+const reviewImages = Array.from({ length: 22 }, (_, i) => `/Gallery/reviews/${i + 1}.png`);
 
 // Optimized animation variants
 const fadeInUp = {
@@ -27,6 +26,13 @@ const fadeInUp = {
 };
 
 export default function Home() {
+	const [shuffledReviewImages, setShuffledReviewImages] = useState(reviewImages);
+
+	// Randomize review images on client side to avoid hydration mismatch
+	useEffect(() => {
+		const shuffled = [...reviewImages].sort(() => Math.random() - 0.5);
+		setShuffledReviewImages(shuffled);
+	}, []);
 
 	// Initialize Cal.com calendar widget
 	useEffect(() => {
@@ -209,7 +215,7 @@ export default function Home() {
 						transition={{ duration: prefersReducedMotion ? 0 : 0.4, ease: "easeOut" }}
 					>
 						<h1 className="text-2xl xs:text-3xl md:text-4xl xl:text-5xl font-extralight mb-2 leading-tight text-solid-black">
-							Trusted House Cleaning for Greater Orlando
+							Seminole County Residents...We have a gift for you 🎁
 						</h1>
 						<div className="text-base xs:text-lg md:text-xl font-light text-solid-black">
 							Licensed, insured cleaners serving Lake Mary, Winter Park, Oviedo & more - book in 60 seconds
@@ -336,7 +342,7 @@ export default function Home() {
 						<div className="max-w-7xl mx-auto px-4">
 							{/* Reviews Image Grid - 2x2 on mobile, 4x4 on desktop */}
 							<div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-								{reviewImages.map((imageSrc, i) => (
+								{shuffledReviewImages.map((imageSrc, i) => (
 									<div key={i} className="relative py-2">
 										<Image 
 											src={imageSrc} 
