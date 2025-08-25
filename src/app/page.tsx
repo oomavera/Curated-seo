@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { FaEnvelope, FaPhone } from "react-icons/fa";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { usePrefersReducedMotion } from "../utils/usePrefersReducedMotion";
@@ -15,7 +15,7 @@ import ParallaxAurora from "../components/ui/ParallaxAurora";
 
 const QuickEstimateForm = dynamic(() => import("../components/QuickEstimateForm"), { ssr: false });
 
-// Generate array of review image paths (order will be randomized on client side)
+// Generate array of review image paths in a stable order to prevent hydration mismatch
 const reviewImages = Array.from({ length: 22 }, (_, i) => `/Gallery/reviews/${i + 1}.png`);
 
 // Optimized animation variants
@@ -26,13 +26,6 @@ const fadeInUp = {
 };
 
 export default function Home() {
-	const [shuffledReviewImages, setShuffledReviewImages] = useState(reviewImages);
-
-	// Randomize review images on client side to avoid hydration mismatch
-	useEffect(() => {
-		const shuffled = [...reviewImages].sort(() => Math.random() - 0.5);
-		setShuffledReviewImages(shuffled);
-	}, []);
 
 	// Initialize Cal.com calendar widget
 	useEffect(() => {
@@ -83,13 +76,14 @@ export default function Home() {
 
 	// Removed unused mobile detection code
 
-	// Mix team and clean photos from the start - only using available images
+	// Mix team and clean photos from the start
 	const galleryImages = [
 		// Start with a team photo
 		"/Gallery/team/IMG_5963.webp",
 		// Mix in clean photos immediately
 		"/Gallery/cleans/IMG_1378.webp",
 		"/Gallery/cleans/IMG_2647.webp",
+		"/Gallery/team/IMG_5984.webp",
 		"/Gallery/cleans/IMG_2655.webp",
 		"/Gallery/cleans/IMG_2727.webp",
 		"/Gallery/cleans/IMG_2731.webp",
@@ -99,6 +93,7 @@ export default function Home() {
 		"/Gallery/cleans/IMG_2538.webp",
 		"/Gallery/team/ChatGPT Image Aug 24, 2025, 09_12_39 AM.webp",
 		"/Gallery/cleans/IMG_2603.webp",
+		"/Gallery/cleans/IMG_2587.webp",
 		"/Gallery/cleans/IMG_0952.webp",
 		"/Gallery/team/IMG_6841(1).webp",
 		"/Gallery/cleans/IMG_2537.webp",
@@ -206,14 +201,14 @@ export default function Home() {
 				<div className="flex-1 flex flex-col justify-center px-8 max-w-7xl mx-auto w-full mt-4 sm:mt-12">
 					{/* Hero Text */}
 					<motion.div
-						className="relative z-20 text-center mb-4 sm:mb-6 no-blend"
+						className="relative z-20 text-center mb-4 sm:mb-12 no-blend"
 						initial={prefersReducedMotion ? false : "initial"}
 						animate={prefersReducedMotion ? false : "animate"}
 						variants={fadeInUp}
 						transition={{ duration: prefersReducedMotion ? 0 : 0.4, ease: "easeOut" }}
 					>
-						<h1 className="text-2xl xs:text-3xl md:text-4xl xl:text-5xl font-bold mb-2 leading-tight text-solid-black">
-							Seminole County Residents...We have a gift for you&nbsp;🎁
+						<h1 className="text-2xl xs:text-3xl md:text-4xl xl:text-5xl font-extralight mb-2 leading-tight text-solid-black">
+							Trusted House Cleaning in Seminole County
 						</h1>
 						<div className="text-base xs:text-lg md:text-xl font-light text-solid-black">
 							Licensed, insured cleaners serving Lake Mary, Winter Park, Oviedo & more - book in 60 seconds
@@ -222,7 +217,7 @@ export default function Home() {
 
 					{/* Logos Section */}
 					<motion.div 
-						className="flex flex-col justify-center items-center gap-3 mb-6 sm:mb-8"
+						className="flex flex-col justify-center items-center gap-3 mb-6 sm:mb-12"
 						initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
 						animate={prefersReducedMotion ? false : { opacity: 1, y: 0 }}
 						transition={{ duration: prefersReducedMotion ? 0 : 0.6, delay: 0.2 }}
@@ -268,7 +263,7 @@ export default function Home() {
 										className="gallery-slider flex h-full items-center gap-4 absolute"
 										style={{
 											width: `${galleryImages.length * 370}px`,
-											animation: prefersReducedMotion ? 'none' : `slideGallery ${galleryImages.length * 1.6}s linear infinite`,
+											animation: prefersReducedMotion ? 'none' : `slideGallery ${galleryImages.length * 5}s linear infinite`,
 											transform: 'translate3d(0, 0, 0)',
 											willChange: 'transform'
 										}}
@@ -310,7 +305,7 @@ export default function Home() {
 									className="gallery-slider flex h-full items-center gap-4 absolute"
 									style={{
 										width: `${galleryImages.length * 195}px`,
-										animation: prefersReducedMotion ? 'none' : `slideGalleryMobile ${galleryImages.length * 1.12}s linear infinite`,
+										animation: prefersReducedMotion ? 'none' : `slideGalleryMobile ${galleryImages.length * 3.5}s linear infinite`,
 										transform: 'translate3d(0, 0, 0)',
 										willChange: 'transform'
 									}}
@@ -340,29 +335,25 @@ export default function Home() {
 						<div className="max-w-7xl mx-auto px-4">
 							{/* Reviews Image Grid - 2x2 on mobile, 4x4 on desktop */}
 							<div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-								{shuffledReviewImages.map((imageSrc, i) => (
+								{reviewImages.map((imageSrc, i) => (
 									<div key={i} className="relative py-2">
 										<Image 
 											src={imageSrc} 
 											alt={`Customer review ${i + 1}`} 
-											width={400}
-											height={400}
+											width={500}
+											height={500}
 											className="w-full h-auto scale-125"
 											style={{ 
-												filter: 'none',
-												mixBlendMode: 'normal',
-												opacity: 1,
-												backdropFilter: 'none'
-											} as React.CSSProperties}
-											loading={i < 4 ? "eager" : "lazy"}
-											priority={i < 4}
-											sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 300px"
-											placeholder="blur"
-											blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+Cp5O6U8obLo5hfTy+0CxiZZ8pC/4pBTi7/KM2c1J0YXHdFlOlkqGLqG5p9FcnHWWO2s/rKMxLmTlxpNt1JfqCBPpzHpgOPoPJmQfGDu1D8M6p5NwRjSz4Gl/9k="
+												filter: 'none !important',
+												mixBlendMode: 'normal !important',
+												opacity: '1 !important',
+												backdropFilter: 'none !important'
+											}}
 										/>
 									</div>
 								))}
 							</div>
+							
 						</div>
 					</section>
 
@@ -386,7 +377,7 @@ export default function Home() {
 								<div className="relative z-10 text-left text-lg sm:text-xl text-black font-light leading-relaxed max-w-5xl mx-auto">
 									<div className="mb-12 sm:mb-16 text-center">
 										<h2 className="text-5xl sm:text-6xl lg:text-7xl font-black mb-8 sm:mb-10 text-black font-sans tracking-tight">Without Us</h2>
-										<p className="text-black text-lg sm:text-xl leading-relaxed">After a 10-hour shift, you&apos;re still brushing, scrubbing, and mopping. On your knees cleaning toilets, wiping mirrors that never come streak-free, sneezing from dust, sick from fumes. Hours gone—time stolen from family, rest, or building your future. Or worse: you hire a cleaner who shows up late, rushes, leaves the job half-done, and never comes back. Guests notice. Family judges. And you&apos;re stuck in the same cycle: tired, behind, frustrated.</p>
+										<p className="text-black text-lg sm:text-xl leading-relaxed">After a 10-hour shift, you're still brushing, scrubbing, and mopping. On your knees cleaning toilets, wiping mirrors that never come streak-free, sneezing from dust, sick from fumes. Hours gone—time stolen from family, rest, or building your future. Or worse: you hire a cleaner who shows up late, rushes, leaves the job half-done, and never comes back. Guests notice. Family judges. And you're stuck in the same cycle: tired, behind, frustrated.</p>
 									</div>
 									
 									<div className="mb-8 text-center">
