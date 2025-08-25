@@ -1,0 +1,160 @@
+// Lead notification function for Telegram alerts
+// Triggered by Supabase DB webhook on public.leads INSERT
+
+// Setup type definitions for built-in Supabase Runtime APIs
+import "jsr:@supabase/functions-js/edge-runtime.d.ts"
+
+interface TelegramPayload {
+  chat_id: string;
+  text: string;
+  parse_mode?: string;
+}
+
+interface SupabaseWebhookPayload {
+  type: 'INSERT' | 'UPDATE' | 'DELETE';
+  table: string;
+  schema: string;
+  record?: LeadRecord;
+  old_record?: LeadRecord;
+}
+
+interface LeadRecord {
+  id?: string;
+  full_name?: string;
+  name?: string;
+  phone_number?: string;
+  phone?: string;
+  email?: string;
+  email_address?: string;
+  created_at?: string;
+}
+
+// Redact PII for logging (mask phone and email)
+function redactPII(text: string): string {
+  return text
+    .replace(/\+?1?[\d\s\-\(\)]{10,}/g, '+1***-***-****') // Phone numbers
+    .replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, '***@***.com'); // Email
+}
+
+// Format lead data for Telegram message
+function formatLeadMessage(record: LeadRecord): string {
+  // Extract fields with fallbacks
+  const name = record.full_name || record.name || 'Unknown';
+  const phone = record.phone_number || record.phone || 'Unknown';
+  const email = record.email || record.email_address || 'Unknown';
+  const timestamp = record.created_at || new Date().toISOString();
+  
+  // Create tap-to-dial link if phone is available
+  const phoneDisplay = phone !== 'Unknown' ? phone : 'Unknown';
+  const dialLink = phone !== 'Unknown' ? `tel:${phone.replace(/\D/g, '')}` : '#';
+  
+  return `📣 *New Estimate Lead*
+
+👤 *Name:* ${name}
+📞 *Phone:* ${phoneDisplay}
+📧 *Email:* ${email}
+🗂 *Table:* public.leads
+📅 *Time:* ${new Date(timestamp).toLocaleString('en-US', { timeZone: 'America/New_York' })}
+
+⏱ *Call in <60s* → ${dialLink}`;
+}
+
+// Send message to Telegram
+async function sendTelegramMessage(botToken: string, chatId: string, message: string): Promise<Response> {
+  const payload: TelegramPayload = {
+    chat_id: chatId,
+    text: message,
+    parse_mode: 'Markdown'
+  };
+
+  const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  return response;
+}
+
+// Main handler
+Deno.serve(async (req: Request) => {
+  const startTime = Date.now();
+  
+  try {
+    // Only accept POST requests
+    if (req.method !== 'POST') {
+      return new Response('Method not allowed', { status: 405 });
+    }
+
+    // Get secrets from Supabase environment
+    const botToken = Deno.env.get('TG_BOT_TOKEN');
+    const chatId = Deno.env.get('TG_CHAT_ID');
+
+    if (!botToken || !chatId) {
+      console.error('Missing required environment variables: TG_BOT_TOKEN or TG_CHAT_ID');
+      return new Response('Configuration error', { status: 500 });
+    }
+
+    // Parse webhook payload
+    const payload: SupabaseWebhookPayload = await req.json();
+    
+    // Validate payload structure
+    if (!payload.type || !payload.table || !payload.schema) {
+      console.error('Invalid webhook payload structure');
+      return new Response('Invalid payload', { status: 400 });
+    }
+
+    // Only handle INSERT events on public.leads
+    if (payload.type !== 'INSERT' || payload.table !== 'leads' || payload.schema !== 'public') {
+      console.log(`Ignoring event: ${payload.type} on ${payload.schema}.${payload.table}`);
+      return new Response('Event ignored', { status: 200 });
+    }
+
+    // Extract record (handle both 'record' and 'new' field names)
+    const record = payload.record || (payload as any).new;
+    
+    if (!record) {
+      console.error('No record found in payload');
+      return new Response('No record in payload', { status: 400 });
+    }
+
+    // Log event (with PII redaction)
+    const eventId = record.id || 'unknown';
+    const createdAt = record.created_at || new Date().toISOString();
+    console.log(`Processing lead event: id=${eventId}, created_at=${createdAt}`);
+
+    // Format message for Telegram
+    const message = formatLeadMessage(record);
+    
+    // Log the message being sent (redacted)
+    console.log(`Sending Telegram message: ${redactPII(message)}`);
+
+    // Send to Telegram
+    const telegramResponse = await sendTelegramMessage(botToken, chatId, message);
+    
+    // Check response
+    if (!telegramResponse.ok) {
+      const errorBody = await telegramResponse.text();
+      console.error(`Telegram API error: ${telegramResponse.status} - ${errorBody}`);
+      return new Response('Telegram delivery failed', { status: 500 });
+    }
+
+    // Success - calculate and log latency
+    const latency = Date.now() - startTime;
+    console.log(`Lead notification sent successfully: id=${eventId}, latency=${latency}ms`);
+    
+    return new Response('ok', { 
+      status: 200,
+      headers: { 'Content-Type': 'text/plain' }
+    });
+
+  } catch (error) {
+    const latency = Date.now() - startTime;
+    console.error(`Lead notification error (${latency}ms):`, error);
+    
+    // Return generic error (no PII in response)
+    return new Response('Internal server error', { status: 500 });
+  }
+});

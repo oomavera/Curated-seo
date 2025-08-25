@@ -165,7 +165,7 @@ export default function QuickEstimateForm({ onSubmitSuccess }: QuickEstimateForm
 					</div>
 				)}
 
-				<PillButton type="submit" disabled={isSubmitting} className="w-full">
+				<PillButton type="submit" disabled={isSubmitting} className="w-full" animated={!isSubmitting}>
 					{isSubmitting ? (
 						<span className="flex items-center justify-center gap-2">
 							<div className="w-4 h-4 border-2 border-arctic border-t-transparent rounded-full animate-spin"></div>

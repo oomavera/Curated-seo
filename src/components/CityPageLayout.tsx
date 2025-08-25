@@ -22,44 +22,9 @@ interface CityPageLayoutProps {
   children: React.ReactNode;
 }
 
-const testimonials = [
-  {
-    name: "Deja J.",
-    text: "Absolutely amazing service! My first cleaning was completely free and my bathroom looks spectacular! Will definitely be booking more cleanings with Curated Cleanings!",
-    stars: 5,
-    img: "/1.webp",
-  },
-  {
-    name: "Hani S.",
-    text: "Angelica's service is 10/10. After her service my place smelled so good and everything was cleaned to perfection. Will definitely reach out again for services.",
-    stars: 5,
-    img: "/2.webp",
-  },
-  {
-    name: "Madeline R.",
-    text: "Attention to detail, Trustworthy, Friendly!",
-    stars: 5,
-    img: "/3.webp",
-  },
-  {
-    name: "Teri L.",
-    text: "Angelica was right on time, willing to listen to and address my cleaning needs and was very helpful! Extremely considerate of us and our property! Will definitely be using her regularly.",
-    stars: 5,
-    img: "/4.webp",
-  },
-  {
-    name: "Lauren H.",
-    text: "Angelica was extremely hard working, thorough, and professional. She arrived on time, asked what was important to me about the cleaning, and then delivered even more than I expected with cleaning every nook and cranny... undoubtedly will use her again and will be recommending her to others.",
-    stars: 5,
-    img: "/5.webp",
-  },
-  {
-    name: "N'kila G.",
-    text: "ABSOLUTELY OPTIMAL SERVICES! Angel was very respectful of my space, very THOROUGH! It was sooo dusty in here and I'm no longer sneezing! Angel was also quick! I appreciate her time management and thorough cleaning of my space! I would 100% recommend her services!",
-    stars: 5,
-    img: "/6.webp",
-  },
-];
+// Generate array of review image paths and randomize order
+const reviewImages = Array.from({ length: 22 }, (_, i) => `/Gallery/reviews/${i + 1}.png`)
+  .sort(() => Math.random() - 0.5);
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -152,34 +117,6 @@ export default function CityPageLayout({
     setSubmitSuccess(null);
   };
 
-  // Testimonials carousel
-  const [carouselX, setCarouselX] = useState(0);
-  const carouselAnimRef = useRef<number | null>(null);
-  const speed = prefersReducedMotion ? 0 : 0.02;
-  const totalCards = testimonials.length * 2;
-  const cardWidth = 370;
-
-  useEffect(() => {
-    if (prefersReducedMotion) return;
-    let lastTimestamp: number | null = null;
-    function animate(ts: number) {
-      if (lastTimestamp === null) lastTimestamp = ts;
-      const delta = ts - lastTimestamp;
-      lastTimestamp = ts;
-      setCarouselX((prev) => {
-        const next = prev - speed * delta;
-        if (Math.abs(next) >= cardWidth * testimonials.length) {
-          return 0;
-        }
-        return next;
-      });
-      carouselAnimRef.current = requestAnimationFrame(animate);
-    }
-    carouselAnimRef.current = requestAnimationFrame(animate);
-    return () => {
-      if (carouselAnimRef.current) cancelAnimationFrame(carouselAnimRef.current);
-    };
-  }, [prefersReducedMotion, speed, cardWidth]);
 
   // Photo gallery
   const [isMobile, setIsMobile] = useState(false);
@@ -191,20 +128,23 @@ export default function CityPageLayout({
   }, []);
 
   const galleryImages = [
+    "/Gallery/team/IMG_5963.webp",
     "/Gallery/cleans/IMG_2538.webp",
     "/Gallery/cleans/IMG_2603.webp",
-    "/Gallery/team/IMG_5963.webp",
-    "/Gallery/team/IMG_5984.webp",
     "/Gallery/cleans/IMG_2587.webp",
+    "/Gallery/team/IMG_5984.webp",
     "/Gallery/cleans/IMG_0952.webp",
     "/Gallery/cleans/IMG_1910.webp",
     "/Gallery/cleans/IMG_2422.webp",
+    "/Gallery/team/ChatGPT Image Aug 23, 2025, 11_33_53 AM.webp",
     "/Gallery/cleans/IMG_1973.webp",
     "/Gallery/cleans/IMG_0935.webp",
     "/Gallery/cleans/IMG_0959.webp",
+    "/Gallery/team/ChatGPT Image Aug 24, 2025, 09_12_39 AM.webp",
     "/Gallery/cleans/IMG_1378.webp",
     "/Gallery/cleans/IMG_2537.webp",
     "/Gallery/cleans/IMG_2529.webp",
+    "/Gallery/team/IMG_6841(1).webp",
     "/Gallery/cleans/IMG_2479.webp",
     "/Gallery/cleans/IMG_2420.webp",
     "/Gallery/cleans/IMG_2361.webp",
@@ -468,7 +408,7 @@ export default function CityPageLayout({
 
           {/* Photo Gallery Section */}
           <section className="py-2 flex flex-col items-center bg-transparent">
-            <div className="relative w-full max-w-5xl h-40 sm:h-80 overflow-hidden">
+            <div className="relative w-full max-w-6xl h-60 sm:h-96 overflow-hidden">
               <div
                 ref={galleryRef}
                 className="flex h-full items-center gap-4 sm:gap-8 overflow-x-auto scrollbar-hide no-scrollbar"
@@ -480,12 +420,12 @@ export default function CityPageLayout({
                 }}
               >
                 {galleryImages.map((src, i) => (
-                  <div key={i} className="relative min-w-[175px] sm:min-w-[350px] max-w-xs rounded-3xl overflow-hidden shadow-lg h-40 sm:h-80 flex items-center justify-center border border-slopes/20 bg-snow">
+                  <div key={i} className="relative min-w-[220px] sm:min-w-[400px] max-w-sm sm:max-w-lg rounded-3xl overflow-hidden shadow-lg h-60 sm:h-96 flex items-center justify-center border border-slopes/20 bg-snow">
                     <Image 
                       src={src} 
                       alt={`Gallery photo ${i+1}`} 
-                      width={350}
-                      height={320}
+                      width={400}
+                      height={380}
                       style={{ objectFit: 'cover', width: '100%', height: '100%' }}
                     />
                   </div>
@@ -494,34 +434,43 @@ export default function CityPageLayout({
             </div>
           </section>
 
-          {/* Customer Reviews Section */}
-          <section id="testimonials" className="py-6 sm:py-12 flex flex-col items-center bg-transparent">
-            <div className="relative w-full max-w-5xl h-40 sm:h-80 overflow-hidden">
-              <div
-                className="flex h-full items-center gap-4 sm:gap-8"
-                style={{
-                  width: `${cardWidth * totalCards}px`,
-                  transform: `translateX(${carouselX}px)`,
-                  transition: 'none',
-                }}
-              >
-                {testimonials.concat(testimonials).map((t, i) => (
-                  <div key={i} className="relative min-w-[175px] sm:min-w-[350px] max-w-xs rounded-3xl overflow-hidden shadow-lg h-40 sm:h-80 flex flex-col items-center justify-center border border-slopes/20 bg-snow">
-                    <div className="absolute inset-0">
-                      <Image 
-                        src={t.img} 
-                        alt={t.name} 
-                        width={350}
-                        height={320}
-                        className="object-cover w-full h-full"
-                      />
-                    </div>
+          {/* Customer Reviews Grid Section */}
+          <section id="reviews" className="py-6 sm:py-12 relative z-10">
+            <div className="max-w-7xl mx-auto px-4">
+              {/* Reviews Image Grid - 2x2 on mobile, 4x4 on desktop */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                {reviewImages.map((imageSrc, i) => (
+                  <div key={i} className="relative py-2">
+                    <Image 
+                      src={imageSrc} 
+                      alt={`Customer review ${i + 1}`} 
+                      width={500}
+                      height={500}
+                      className="w-full h-auto scale-125"
+                      style={{ 
+                        filter: 'none !important',
+                        mixBlendMode: 'normal !important',
+                        opacity: '1 !important',
+                        backdropFilter: 'none !important'
+                      }}
+                    />
                   </div>
                 ))}
               </div>
-            </div>
-            <div className="mt-8 max-w-4xl text-center text-xl text-midnight font-light leading-relaxed">
-              At CURATED CLEANINGS, our customers are at the heart of everything we do. We believe that a truly exceptional cleaning experience starts with genuine care and servant hood, because when you invite us into your home, it&apos;s not just a job; it&apos;s a relationship built on trust and respect. That&apos;s why we listen first, train for excellency, and we treat your home like our home.
+              
+              {/* Company Description */}
+              <div className="mt-16 max-w-4xl mx-auto text-left text-lg text-black font-light leading-relaxed">
+                <div className="mb-6 text-center">
+                  <h2 className="text-6xl font-black mb-6 text-black font-sans tracking-tight">Without Us</h2>
+                  <p className="text-black">After a 10-hour shift, you're still brushing, scrubbing, and mopping. On your knees cleaning toilets, wiping mirrors that never come streak-free, sneezing from dust, sick from fumes. Hours gone—time stolen from family, rest, or building your future. Or worse: you hire a cleaner who shows up late, rushes, leaves the job half-done, and never comes back. Guests notice. Family judges. And you're stuck in the same cycle: tired, behind, frustrated.</p>
+                </div>
+                
+                <div className="mb-6 text-center">
+                  <h2 className="text-6xl font-black mb-6 text-black font-sans tracking-tight">With Curated Cleanings</h2>
+                  <p className="text-black">Instead, imagine walking in the door to a spotless, fresh, perfectly organized home—without lifting a finger. One call, and your home stays effortlessly clean. You gain back hours every week. You relax with family. You focus on what matters. Guests are impressed. Your kids learn order. Your health improves in a disinfected, clutter-free space. Even your relationships thrive when the stress of cleaning is gone.</p>
+                </div>
+                
+              </div>
             </div>
           </section>
         </div>
