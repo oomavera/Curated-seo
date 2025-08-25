@@ -439,13 +439,13 @@ export default function CityPageLayout({
             <div className="max-w-7xl mx-auto px-4">
               {/* Reviews Image Grid - 2x2 on mobile, 4x4 on desktop */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                {reviewImages.map((imageSrc, i) => (
+                {reviewImages.slice(0, 8).map((imageSrc, i) => (
                   <div key={i} className="relative py-2">
                     <Image 
                       src={imageSrc} 
                       alt={`Customer review ${i + 1}`} 
-                      width={500}
-                      height={500}
+                      width={400}
+                      height={400}
                       className="w-full h-auto scale-125"
                       style={{ 
                         filter: 'none',
@@ -453,10 +453,24 @@ export default function CityPageLayout({
                         opacity: 1,
                         backdropFilter: 'none'
                       } as React.CSSProperties}
+                      loading={i < 4 ? "eager" : "lazy"}
+                      priority={i < 4}
+                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 300px"
+                      placeholder="blur"
+                      blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+Cp5O6U8obLo5hfTy+0CxiZZ8pC/4pBTi7/KM2c1J0YXHdFlOlkqGLqG5p9FcnHWWO2s/rKMxLmTlxpNt1JfqCBPpzHpgOPoPJmQfGDu1D8M6p5NwRjSz4Gl/9k="
                     />
                   </div>
                 ))}
               </div>
+              
+              {/* Show fewer reviews on city pages to keep focus on local content */}
+              {reviewImages.length > 8 && (
+                <div className="text-center mt-6">
+                  <p className="text-sm text-mountain opacity-75">
+                    Showing 8 of {reviewImages.length} customer reviews
+                  </p>
+                </div>
+              )}
               
               {/* Company Description */}
               <div className="mt-16 max-w-4xl mx-auto text-left text-lg text-black font-light leading-relaxed">
