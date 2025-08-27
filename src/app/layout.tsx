@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Sora } from "next/font/google";
 import "./globals.css";
 import LocalSchema from "../components/LocalSchema";
+import MetaPixel from "../components/MetaPixel";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -76,6 +77,7 @@ export default function RootLayout({
       <body className={`${inter.variable} ${sora.variable} font-sans bg-snow min-h-screen`}>
         <a href="#main-content" className="skip-link">Skip to main content</a>
         <LocalSchema />
+        <MetaPixel />
         {children}
       </body>
     </html>

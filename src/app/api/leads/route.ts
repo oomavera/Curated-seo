@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { sendMetaLeadEvent } from '@/lib/meta';
 
 export async function POST(request: NextRequest) {
   try {
@@ -91,6 +92,34 @@ export async function POST(request: NextRequest) {
         { error: 'Failed to save lead' },
         { status: 500 }
       );
+    }
+
+    // Fire Meta Conversions API for /offer leads (best-effort)
+    try {
+      const accessToken = process.env.META_ACCESS_TOKEN as string | undefined;
+      const pixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID as string | undefined || '1290791285375063';
+      if (accessToken && pixelId) {
+        const headers = request.headers;
+        const clientIp = headers.get('x-forwarded-for')?.split(',')[0] || headers.get('x-real-ip') || undefined;
+        const userAgent = headers.get('user-agent') || undefined;
+        const fbp = request.cookies.get('_fbp')?.value || undefined;
+        const fbc = request.cookies.get('_fbc')?.value || undefined;
+        await sendMetaLeadEvent({
+          pixelId,
+          accessToken,
+          eventName: 'Lead',
+          eventSourceUrl: headers.get('referer'),
+          email,
+          phone,
+          clientIpAddress: clientIp || null,
+          clientUserAgent: userAgent || null,
+          fbp: fbp || null,
+          fbc: fbc || null,
+          leadSource: body.source || null,
+        });
+      }
+    } catch (e) {
+      console.error('Meta CAPI dispatch error', e);
     }
 
     return NextResponse.json(

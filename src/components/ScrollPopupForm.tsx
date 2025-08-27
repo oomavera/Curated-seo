@@ -6,9 +6,12 @@ import PillButton from "./ui/PillButton";
 
 interface ScrollPopupFormProps {
   triggerElement?: string; // CSS selector for trigger element
+  callout?: string; // Custom headline text
+  trackMetaLead?: boolean;
+  metaEventName?: string;
 }
 
-export default function ScrollPopupForm({ triggerElement = "#reviews" }: ScrollPopupFormProps) {
+export default function ScrollPopupForm({ triggerElement = "#reviews", callout = "Wait! Get Your Free Quote 🎁", trackMetaLead = false, metaEventName = "Lead" }: ScrollPopupFormProps) {
   const [showPopup, setShowPopup] = useState(false);
   const [hasTriggered, setHasTriggered] = useState(false);
   const [formData, setFormData] = useState({
@@ -101,6 +104,18 @@ export default function ScrollPopupForm({ triggerElement = "#reviews" }: ScrollP
       }
 
       setSuccess(true);
+
+      // Meta Pixel conversion (only when enabled)
+      if (trackMetaLead && typeof window !== 'undefined') {
+        const fbq = (window as typeof window & { fbq?: (...args: unknown[]) => void }).fbq;
+        try {
+          fbq?.('track', metaEventName, {
+            content_name: 'Offer Lead',
+            event_source: 'offer',
+            lead_source: 'popup_form'
+          });
+        } catch {}
+      }
       setTimeout(() => {
         closePopup();
       }, 10000); // Auto-close after 10 seconds
@@ -145,7 +160,7 @@ export default function ScrollPopupForm({ triggerElement = "#reviews" }: ScrollP
             <GlassCard className="p-6 overflow-hidden">
               <div className="text-center mb-6">
                 <h3 className="text-2xl font-bold text-white">
-                  Wait! Get Your Free Quote 🎁
+                  {callout}
                 </h3>
               </div>
 

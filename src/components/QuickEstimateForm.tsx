@@ -5,9 +5,13 @@ import PillButton from "./ui/PillButton";
 
 interface QuickEstimateFormProps {
 	onSubmitSuccess?: () => void;
+	title?: string;
+	submitLabel?: string;
+	trackMetaLead?: boolean;
+	metaEventName?: string;
 }
 
-export default function QuickEstimateForm({ onSubmitSuccess }: QuickEstimateFormProps) {
+export default function QuickEstimateForm({ onSubmitSuccess, title = "Quick Free Estimate", submitLabel = "Get Quick Estimate", trackMetaLead = false, metaEventName = "Lead" }: QuickEstimateFormProps) {
 	const [formData, setFormData] = useState({
 		name: "",
 		phone: "",
@@ -47,6 +51,18 @@ export default function QuickEstimateForm({ onSubmitSuccess }: QuickEstimateForm
 			}
 
 			setSuccess(true);
+
+			// Meta Pixel conversion (only when enabled)
+			if (trackMetaLead && typeof window !== 'undefined') {
+				const fbq = (window as typeof window & { fbq?: (...args: unknown[]) => void }).fbq;
+				try {
+					fbq?.('track', metaEventName, {
+						content_name: 'Offer Lead',
+						event_source: 'offer',
+						lead_source: 'main_form'
+					});
+				} catch {}
+			}
 			if (typeof window !== 'undefined' && (window as typeof window & { Cal?: unknown }).Cal) {
 				const Cal = (window as typeof window & { Cal: unknown }).Cal as {
 					(action: string, namespace: string, config: Record<string, unknown>): void;
@@ -105,7 +121,7 @@ export default function QuickEstimateForm({ onSubmitSuccess }: QuickEstimateForm
 			<div className="text-center mb-6">
 				<div className="inline-flex items-center gap-2 mb-4 px-4 py-2 bg-gradient-to-r from-mountain/10 to-apres-ski/10 rounded-full border border-mountain/20">
 					<div className="w-2 h-2 bg-gradient-to-r from-mountain to-midnight rounded-full animate-pulse"></div>
-					<h2 className="text-lg font-semibold text-midnight tracking-wider">Quick Free Estimate</h2>
+					<h2 className="text-lg font-semibold text-midnight tracking-wider">{title}</h2>
 				</div>
 				<p className="text-sm text-mountain">Get your personalized cleaning quote in 60 seconds</p>
 			</div>
@@ -172,7 +188,7 @@ export default function QuickEstimateForm({ onSubmitSuccess }: QuickEstimateForm
 							Submitting...
 						</span>
 					) : (
-						"Get Quick Estimate"
+						submitLabel
 					)}
 				</PillButton>
 			</form>
