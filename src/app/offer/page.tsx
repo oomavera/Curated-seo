@@ -1,7 +1,6 @@
 "use client";
 import Image from "next/image";
 import { FaEnvelope, FaPhone } from "react-icons/fa";
-import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
@@ -14,19 +13,13 @@ import CircleIconButton from "../../components/ui/CircleIconButton";
 // Defer Aurora to idle
 const DynamicAurora = dynamic(() => import("../../components/ui/ParallaxAurora"), { ssr: false });
 
+// QuickEstimateForm is SSR to avoid layout shifts
 const QuickEstimateForm = dynamic(() => import("../../components/QuickEstimateForm"), { ssr: false });
 const ScrollPopupForm = dynamic(() => import("../../components/ScrollPopupForm"), { ssr: false });
 
 // Generate array of review image paths in a stable order to prevent hydration mismatch
 // Use .webp extension to match files in public/Gallery/reviews
 const reviewImages = Array.from({ length: 22 }, (_, i) => `/Gallery/reviews/${i + 1}.webp`);
-
-// Optimized animation variants
-const fadeInUp = {
-	initial: { opacity: 0, y: 20 },
-	animate: { opacity: 1, y: 0 },
-	transition: { duration: 0.4, ease: "easeOut" }
-};
 
 export default function OfferPage() {
 
@@ -94,7 +87,6 @@ export default function OfferPage() {
 
 
 	const prefersReducedMotion = usePrefersReducedMotion();
-	const isMobile = typeof window !== 'undefined' ? window.innerWidth < 640 : false;
 
 	// Countdown to offer end (September 7, 2025)
 	const [timeLeft, setTimeLeft] = useState<{ d: number; h: number; m: number; s: number }>({ d: 0, h: 0, m: 0, s: 0 });
@@ -179,12 +171,7 @@ export default function OfferPage() {
 				<header className="flex flex-col sm:flex-row justify-center sm:justify-between items-center py-4 sm:py-6 px-4 sm:px-8 max-w-7xl mx-auto w-full gap-2 sm:gap-4 rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl">
 					{/* Mobile: Centered Logo First */}
 					<div className="flex justify-center items-center sm:hidden order-1">
-						<motion.div
-							initial={prefersReducedMotion || isMobile ? false : { opacity: 0, scale: 0.5, y: -20 }}
-							animate={prefersReducedMotion || isMobile ? false : { opacity: 1, scale: 1, y: 0 }}
-							transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
-							className="relative"
-						>
+						<div className="relative">
 							<Image 
 								src={logo} 
 								alt="Curated Cleanings Logo" 
@@ -193,7 +180,7 @@ export default function OfferPage() {
 								className="object-cover max-w-[70vw]" 
 								style={{ height: '36px', width: 'auto', objectFit: 'cover', objectPosition: 'center', opacity: 0.8 }}
 							/>
-						</motion.div>
+						</div>
 					</div>
 
 					{/* Mobile: Phone and Call Now Button Row */}
@@ -222,12 +209,7 @@ export default function OfferPage() {
 					
 					{/* Logo - Center */}
 					<div className="hidden sm:flex justify-center items-center">
-						<motion.div
-							initial={{ opacity: 0, scale: 0.5, y: -20 }}
-							animate={{ opacity: 1, scale: 1, y: 0 }}
-							transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
-							className="relative mt-2 sm:mt-3"
-						>
+						<div className="relative mt-2 sm:mt-3">
 							<Image 
 								src={logo} 
 								alt="Curated Cleanings Logo" 
@@ -238,7 +220,7 @@ export default function OfferPage() {
 								className="object-cover max-w-[60vw]" 
 								style={{ height: '60px', width: 'auto', objectFit: 'cover', objectPosition: 'center', opacity: 0.8 }}
 							/>
-						</motion.div>
+						</div>
 					</div>
 					
 					{/* Navigation & Call Now Button - Right */}
@@ -258,13 +240,7 @@ export default function OfferPage() {
 				{/* Main Content */}
 				<div className="flex-1 flex flex-col justify-center px-8 max-w-7xl mx-auto w-full mt-4 sm:mt-12">
 					{/* Hero Text */}
-					<motion.div
-						className="relative z-20 text-center mb-4 sm:mb-12 no-blend"
-						initial={prefersReducedMotion || isMobile ? false : "initial"}
-						animate={prefersReducedMotion || isMobile ? false : "animate"}
-						variants={fadeInUp}
-						transition={{ duration: prefersReducedMotion ? 0 : 0.4, ease: "easeOut" }}
-					>
+					<div className="relative z-20 text-center mb-4 sm:mb-12 no-blend">
 						<h1 className="text-3xl xs:text-4xl md:text-5xl xl:text-6xl font-black mb-3 leading-tight text-solid-black tracking-tight" style={{ fontFamily: 'var(--font-sora), Sora, Inter, Arial, Helvetica, sans-serif' }}>
 							Oviedo Homeowners: Get your first clean for $44
 						</h1>
@@ -291,15 +267,10 @@ export default function OfferPage() {
 								</div>
 							</div>
 						</div>
-					</motion.div>
+					</div>
 
 					{/* Logos Section */}
-					<motion.div 
-						className="flex flex-col justify-center items-center gap-3 mb-6 sm:mb-12"
-						initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
-						animate={prefersReducedMotion ? false : { opacity: 1, y: 0 }}
-						transition={{ duration: prefersReducedMotion ? 0 : 0.6, delay: 0.2 }}
-					>
+					<div className="flex flex-col justify-center items-center gap-3 mb-6 sm:mb-12">
 						<div className="flex items-center gap-3 sm:gap-4">
 							<Image 
 								src="/Gallery/logos/Google-Logo-PNG.png" 
@@ -329,7 +300,7 @@ export default function OfferPage() {
 							</svg>
 							<span className="text-sm sm:text-base font-light text-solid-black" style={{ fontFamily: 'var(--font-sora), Sora, Inter, Arial, Helvetica, sans-serif', letterSpacing: '-0.025em' }}>Partnered & Verified</span>
 						</div>
-					</motion.div>
+					</div>
 
 					{/* Main Sections - Desktop: Left Photo Gallery, Right Form | Mobile: Form Center */}
 					<div className="flex flex-row gap-8 mb-8 max-md:flex-col justify-center items-start">
@@ -353,6 +324,10 @@ export default function OfferPage() {
 													alt={`Gallery photo ${(i % galleryImages.length) + 1}`} 
 													width={450}
 													height={420}
+													quality={60}
+													sizes="(max-width: 768px) 90vw, 450px"
+													priority={i === 0}
+													fetchPriority={i === 0 ? 'high' : 'auto'}
 													style={{ objectFit: 'cover', width: '100%', height: '100%' }}
 												/>
 											</div>
@@ -369,7 +344,7 @@ export default function OfferPage() {
 						{/* Right Section - Lead Form wrapped in glass */}
 						<div className="flex-1 max-w-lg mx-auto md:mx-0 relative">
 							<PastelBlob className="w-[520px] h-[420px]" style={{ left: "-10%", top: "-10%" }} />
-							<GlassCard className="p-6 sm:p-8">
+							<GlassCard className="p-6 sm:p-8 min-h-[420px]">
 								<QuickEstimateForm title="Book Now" submitLabel="Book Now" trackMetaLead metaEventName="Lead" />
 							</GlassCard>
 						</div>
@@ -395,6 +370,10 @@ export default function OfferPage() {
 												alt={`Gallery photo ${(i % mobileSubset.length) + 1}`} 
 												width={220}
 												height={240}
+												quality={60}
+												sizes="220px"
+												priority={i === 0}
+												fetchPriority={i === 0 ? 'high' : 'auto'}
 												style={{ objectFit: 'cover', width: '100%', height: '100%' }}
 											/>
 										</div>
@@ -421,8 +400,10 @@ export default function OfferPage() {
 										<Image 
 											src={imageSrc} 
 											alt={`Customer review ${i + 1}`} 
-											width={500}
-											height={500}
+											width={256}
+											height={256}
+											sizes="(max-width: 640px) 45vw, (max-width: 1024px) 25vw, 256px"
+											quality={50}
 											className="w-full h-auto scale-125"
 											style={{ 
 												filter: 'none',
