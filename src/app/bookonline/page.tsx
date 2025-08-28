@@ -48,10 +48,12 @@ export default function BookOnline() {
 
   const prefersReducedMotion = usePrefersReducedMotion();
 
-  // Initialize Cal.com calendar widget
+  // Initialize Cal.com calendar widget (defer to idle)
   useEffect(() => {
-    if (typeof window !== 'undefined' && !(window as Window & { Cal?: unknown }).Cal) {
-      // Create script element with Cal.com initialization
+    if (typeof window === 'undefined') return;
+    const w = window as Window & { Cal?: unknown; requestIdleCallback?: (cb: () => void) => number };
+    if (w.Cal) return;
+    const load = () => {
       const script = document.createElement('script');
       script.innerHTML = `
         (function (C, A, L) { 
@@ -87,6 +89,11 @@ export default function BookOnline() {
         Cal.ns.firstclean("ui", {"theme":"light","hideEventTypeDetails":false,"layout":"month_view"});
       `;
       document.head.appendChild(script);
+    };
+    if (w.requestIdleCallback) {
+      w.requestIdleCallback(load);
+    } else {
+      setTimeout(load, 1);
     }
   }, []);
 
@@ -126,7 +133,7 @@ export default function BookOnline() {
       <header className="bg-gradient-to-br from-snow via-arctic/50 to-slopes/20 py-4 px-4 sm:px-8">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center">
-            <Image src={logo} alt="Curated Cleanings Logo" width={120} height={48} priority placeholder="blur" />
+            <Image src={logo} alt="Curated Cleanings Logo" width={120} height={48} priority placeholder="blur" sizes="120px" />
           </div>
           <div className="flex items-center gap-4">
             <a 
@@ -197,7 +204,7 @@ export default function BookOnline() {
                         </div>
                         
                         <div className="text-center group">
-                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-arctic to-slopes border-2 border-apres-ski/30 mx-auto mb-2 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
+                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-arctic to-slopes border-2 border-apres-ski/30 mx-auto mb-2 flex items                            center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
                             <span className="text-lg">✓</span>
                           </div>
                           <div className="text-xs font-semibold text-midnight">Verified</div>

@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { FaEnvelope, FaPhone } from "react-icons/fa";
 import { motion } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { usePrefersReducedMotion } from "../utils/usePrefersReducedMotion";
@@ -11,7 +11,8 @@ import GlassCard from "../components/ui/GlassCard";
 import PastelBlob from "../components/ui/PastelBlob";
 import PillButton from "../components/ui/PillButton";
 import CircleIconButton from "../components/ui/CircleIconButton";
-import ParallaxAurora from "../components/ui/ParallaxAurora";
+// Defer Aurora to idle
+const DynamicAurora = dynamic(() => import("../components/ui/ParallaxAurora"), { ssr: false });
 
 const QuickEstimateForm = dynamic(() => import("../components/QuickEstimateForm"), { ssr: false });
 const ScrollPopupForm = dynamic(() => import("../components/ScrollPopupForm"), { ssr: false });
@@ -29,10 +30,12 @@ const fadeInUp = {
 
 export default function Home() {
 
-	// Initialize Cal.com calendar widget
+	// Initialize Cal.com calendar widget (defer to idle)
 	useEffect(() => {
-		if (typeof window !== 'undefined' && !(window as Window & { Cal?: unknown }).Cal) {
-			// Create script element with Cal.com initialization
+		if (typeof window === 'undefined') return;
+		const w = window as Window & { Cal?: unknown; requestIdleCallback?: (cb: () => void) => number };
+		if (w.Cal) return;
+		const load = () => {
 			const script = document.createElement('script');
 			script.innerHTML = `
 				(function (C, A, L) { 
@@ -68,11 +71,30 @@ export default function Home() {
 				Cal.ns.firstclean("ui", {"theme":"light","hideEventTypeDetails":false,"layout":"month_view"});
 			`;
 			document.head.appendChild(script);
+		};
+		if (w.requestIdleCallback) {
+			w.requestIdleCallback(load);
+		} else {
+			setTimeout(load, 1);
+		}
+	}, []);
+
+	// Idle-mount ParallaxAurora
+	const [showAurora, setShowAurora] = useState(false);
+	useEffect(() => {
+		if (typeof window === 'undefined') return;
+		const cb = () => setShowAurora(true);
+		const w = window as Window & { requestIdleCallback?: (cb: () => void) => number };
+		if (w.requestIdleCallback) {
+			w.requestIdleCallback(cb);
+		} else {
+			setTimeout(cb, 1);
 		}
 	}, []);
 
 
 	const prefersReducedMotion = usePrefersReducedMotion();
+	const isMobile = typeof window !== 'undefined' ? window.innerWidth < 640 : false;
 
 	// TESTIMONIALS SECTION - Using CSS animations for better performance
 
@@ -115,18 +137,28 @@ export default function Home() {
 	];
 	// Smooth CSS-based gallery animation - no JavaScript intervals or state updates needed
 
+	// Stabilize gallery track widths to prevent CLS
+	const gapPx = 16; // tailwind gap-4
+	const desktopSlideWidth = 450;
+	const mobileSlideWidth = 220;
+	const desktopSlidesCount = galleryImages.length * 2;
+	const mobileSubset = galleryImages.slice(0, Math.min(10, galleryImages.length));
+	const mobileSlidesCount = mobileSubset.length * 2;
+	const mobileTrackWidthPx = mobileSlidesCount * mobileSlideWidth + (mobileSlidesCount - 1) * gapPx;
+	const desktopTrackWidthPx = desktopSlidesCount * desktopSlideWidth + (desktopSlidesCount - 1) * gapPx;
+
 	return (
 		<div id="main-content" className="textured-background min-h-screen w-full font-sans text-midnight">
 			{/* HERO SECTION - ABOVE THE FOLD */}
 			<section className="relative bg-gradient-to-br from-snow via-arctic/50 to-slopes/20 min-h-screen flex flex-col overflow-visible">
-				<ParallaxAurora />
+				{showAurora && <DynamicAurora />}
 				{/* Header */}
 				<header className="flex flex-col sm:flex-row justify-center sm:justify-between items-center py-4 sm:py-6 px-4 sm:px-8 max-w-7xl mx-auto w-full gap-2 sm:gap-4 rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl">
 					{/* Mobile: Centered Logo First */}
 					<div className="flex justify-center items-center sm:hidden order-1">
 						<motion.div
-							initial={{ opacity: 0, scale: 0.5, y: -20 }}
-							animate={{ opacity: 1, scale: 1, y: 0 }}
+							initial={prefersReducedMotion || isMobile ? false : { opacity: 0, scale: 0.5, y: -20 }}
+							animate={prefersReducedMotion || isMobile ? false : { opacity: 1, scale: 1, y: 0 }}
 							transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
 							className="relative"
 						>
@@ -135,8 +167,10 @@ export default function Home() {
 								alt="Curated Cleanings Logo" 
 								width={360} 
 								height={72} 
+								priority
+								sizes="(max-width: 640px) 70vw, 360px"
 								className="object-cover max-w-[70vw]" 
-								style={{ height: '36px', width: 'auto', objectFit: 'cover', objectPosition: 'center', opacity: 0.8 }}
+								style={{ height: '36px', width: 'auto', objectFit: 'cover', objectPosition: 'center', opacity: 0.8 }} 
 							/>
 						</motion.div>
 					</div>
@@ -168,8 +202,8 @@ export default function Home() {
 					{/* Logo - Center */}
 					<div className="hidden sm:flex justify-center items-center">
 						<motion.div
-							initial={{ opacity: 0, scale: 0.5, y: -20 }}
-							animate={{ opacity: 1, scale: 1, y: 0 }}
+							initial={prefersReducedMotion || isMobile ? false : { opacity: 0, scale: 0.5, y: -20 }}
+							animate={prefersReducedMotion || isMobile ? false : { opacity: 1, scale: 1, y: 0 }}
 							transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
 							className="relative mt-2 sm:mt-3"
 						>
@@ -180,8 +214,9 @@ export default function Home() {
 								height={120} 
 								priority 
 								placeholder="blur" 
+								sizes="(max-width: 1024px) 60vw, 600px"
 								className="object-cover max-w-[60vw]" 
-								style={{ height: '60px', width: 'auto', objectFit: 'cover', objectPosition: 'center', opacity: 0.8 }}
+								style={{ height: '60px', width: 'auto', objectFit: 'cover', objectPosition: 'center', opacity: 0.8 }} 
 							/>
 						</motion.div>
 					</div>
@@ -205,8 +240,8 @@ export default function Home() {
 					{/* Hero Text */}
 					<motion.div
 						className="relative z-20 text-center mb-4 sm:mb-12 no-blend"
-						initial={prefersReducedMotion ? false : "initial"}
-						animate={prefersReducedMotion ? false : "animate"}
+						initial={prefersReducedMotion || isMobile ? false : "initial"}
+						animate={prefersReducedMotion || isMobile ? false : "animate"}
 						variants={fadeInUp}
 						transition={{ duration: prefersReducedMotion ? 0 : 0.4, ease: "easeOut" }}
 					>
@@ -265,7 +300,7 @@ export default function Home() {
 									<div 
 										className="gallery-slider flex h-full items-center gap-4 absolute"
 										style={{
-											width: `${galleryImages.length * 370}px`,
+											width: `${desktopTrackWidthPx}px`,
 											animation: prefersReducedMotion ? 'none' : `slideGallery ${galleryImages.length * 5}s linear infinite`,
 											transform: 'translate3d(0, 0, 0)',
 											willChange: 'transform'
@@ -307,17 +342,17 @@ export default function Home() {
 								<div 
 									className="gallery-slider flex h-full items-center gap-4 absolute"
 									style={{
-										width: `${galleryImages.length * 195}px`,
-										animation: prefersReducedMotion ? 'none' : `slideGalleryMobile ${galleryImages.length * 3.5}s linear infinite`,
+										width: `${mobileTrackWidthPx}px`,
+										animation: prefersReducedMotion ? 'none' : `slideGalleryMobile ${mobileSubset.length * 3.5}s linear infinite`,
 										transform: 'translate3d(0, 0, 0)',
 										willChange: 'transform'
 									}}
 								>
-									{[...galleryImages, ...galleryImages].map((src, i) => (
+									{[...mobileSubset, ...mobileSubset].map((src, i) => (
 										<div key={i} className="relative min-w-[220px] max-w-sm rounded-3xl overflow-hidden shadow-lg h-60 flex items-center justify-center border border-white/10 bg-white/5">
 											<Image 
 												src={src} 
-												alt={`Gallery photo ${(i % galleryImages.length) + 1}`} 
+												alt={`Gallery photo ${(i % mobileSubset.length) + 1}`} 
 												width={220}
 												height={240}
 												style={{ objectFit: 'cover', width: '100%', height: '100%' }}

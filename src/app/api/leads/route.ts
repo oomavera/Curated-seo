@@ -6,7 +6,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     console.log('API received payload:', body);
-    const { name, phone, email } = body;
+    const { name, phone, email, eventId, externalId } = body as { name?: string; phone?: string; email?: string; eventId?: string; externalId?: string };
 
     // Validate required fields
     if (!name || !phone) {
@@ -103,12 +103,26 @@ export async function POST(request: NextRequest) {
         const clientIp = headers.get('x-forwarded-for')?.split(',')[0] || headers.get('x-real-ip') || undefined;
         const userAgent = headers.get('user-agent') || undefined;
         const fbp = request.cookies.get('_fbp')?.value || undefined;
-        const fbc = request.cookies.get('_fbc')?.value || undefined;
+        // Try cookie first; if absent, derive _fbc from fbclid on the referring URL per Meta spec
+        let fbc = request.cookies.get('_fbc')?.value || undefined;
+        const referer = headers.get('referer') || undefined;
+        if (!fbc && referer) {
+          try {
+            const url = new URL(referer);
+            const fbclid = url.searchParams.get('fbclid');
+            if (fbclid) {
+              const ts = Math.floor(Date.now() / 1000);
+              fbc = `fb.1.${ts}.${fbclid}`;
+            }
+          } catch {}
+        }
         await sendMetaLeadEvent({
           pixelId,
           accessToken,
           eventName: 'Lead',
-          eventSourceUrl: headers.get('referer'),
+          eventSourceUrl: referer,
+          eventId: eventId || null,
+          externalId: externalId || null,
           email,
           phone,
           clientIpAddress: clientIp || null,

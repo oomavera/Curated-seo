@@ -5,6 +5,10 @@ type ConversionsPayload = {
   accessToken: string;
   eventName?: string;
   eventSourceUrl?: string | null;
+  // Deduplication key shared with browser pixel (fbq)
+  eventId?: string | null;
+  // Stable hashed identifier used for matching (sha256 hex). Prefer same value as on pixel.
+  externalId?: string | null;
   email?: string | null;
   phone?: string | null;
   clientIpAddress?: string | null;
@@ -32,6 +36,8 @@ export async function sendMetaLeadEvent({
   accessToken,
   eventName = "Lead",
   eventSourceUrl,
+  eventId,
+  externalId,
   email,
   phone,
   clientIpAddress,
@@ -50,11 +56,16 @@ export async function sendMetaLeadEvent({
       {
         event_name: eventName,
         event_time: Math.floor(Date.now() / 1000),
+        event_id: eventId || undefined,
         action_source: "website",
         event_source_url: eventSourceUrl || undefined,
         user_data: {
           em: emHashed ? [emHashed] : undefined,
           ph: phHashed ? [phHashed] : undefined,
+          // Use provided external_id if present; otherwise fall back to a hashed identifier we have
+          external_id: (externalId || emHashed || phHashed)
+            ? [externalId || emHashed || (phHashed as string)]
+            : undefined,
           client_ip_address: clientIpAddress || undefined,
           client_user_agent: clientUserAgent || undefined,
           fbp: fbp || undefined,

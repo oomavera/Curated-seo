@@ -79,10 +79,15 @@ export default function ScrollPopupForm({ triggerElement = "#reviews", callout =
     setIsSubmitting(true);
 
     try {
+      // Generate dedup event id
+      const eventId = `lead-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+      const externalId = formData.phone || formData.name || undefined;
       const payload = {
         ...formData,
         email: 'popup@curatedcleanings.com', // Default email since database requires it
-        source: 'Popup Lead Form'
+        source: 'Popup Lead Form',
+        eventId,
+        externalId,
       };
       
       console.log('Submitting popup form with:', payload);
@@ -110,6 +115,7 @@ export default function ScrollPopupForm({ triggerElement = "#reviews", callout =
         const fbq = (window as typeof window & { fbq?: (...args: unknown[]) => void }).fbq;
         try {
           fbq?.('track', metaEventName, {
+            event_id: eventId,
             content_name: 'Offer Lead',
             event_source: 'offer',
             lead_source: 'popup_form'

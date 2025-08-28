@@ -24,10 +24,12 @@ export default function MetaPixel({
     if (typeof window === "undefined" || typeof document === "undefined") return;
 
     const initialize = () => {
-      if (window.fbq) {
-        window.fbq("init", pixelId);
-        window.fbq("track", "PageView");
-      }
+      const fbq = window.fbq;
+      if (!fbq) return;
+      fbq("init", pixelId);
+      // Track a PageView with a generated event_id to enable server/browser dedup if desired later
+      const pageViewEventId = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+      try { fbq("track", "PageView", { event_id: pageViewEventId }); } catch {}
     };
 
     if (window.fbq) {

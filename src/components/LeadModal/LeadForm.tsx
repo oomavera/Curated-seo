@@ -87,6 +87,8 @@ export default function LeadForm({ quote, onCancel, isSubmitting }: LeadFormProp
     
     // Send to API which handles Supabase insert and schema compatibility
     try {
+      const eventId = `lead-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+      const externalId = formData.email || formData.phone || formData.name || undefined;
       const response = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -95,6 +97,8 @@ export default function LeadForm({ quote, onCancel, isSubmitting }: LeadFormProp
           phone: formData.phone,
           email: formData.email,
           service: 'estimate_request',
+          eventId,
+          externalId,
           quote: {
             input: quote.input,
             subtotal: quote.subtotal,

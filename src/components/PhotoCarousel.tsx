@@ -6,7 +6,7 @@ interface PhotoCarouselProps {
   images: Array<{ src: string; alt: string }>;
 }
 
-const AUTO_SCROLL_INTERVAL = 4000;
+const AUTO_SCROLL_INTERVAL = 2000;
 
 export default function PhotoCarousel({ images }: PhotoCarouselProps) {
   const [current, setCurrent] = useState(0);

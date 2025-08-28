@@ -91,6 +91,9 @@ a {
   }
 }
 
+/* Numeric alignment to reduce CLS in timers/counters */
+.tabular-nums { font-variant-numeric: tabular-nums; }
+
 /* Modern Textured Background */
 .textured-background { background-color: #FFFFFF; background-image: radial-gradient(1200px 800px at 10% -10%, rgba(255,182,193,0.35), rgba(255,182,193,0)), radial-gradient(1000px 700px at 110% 10%, rgba(173,216,230,0.35), rgba(173,216,230,0)), radial-gradient(900px 600px at 50% 120%, rgba(255,255,176,0.25), rgba(255,255,176,0)), radial-gradient(2000px 1200px at 50% 60%, rgba(255, 255, 255, 1.0), transparent), radial-gradient(800px 600px at 50% 50%, rgba(255, 255, 255, 0.35), transparent), radial-gradient(600px 500px at 30% 70%, rgba(255, 255, 255, 0.25), transparent), radial-gradient(700px 400px at 70% 30%, rgba(255, 255, 255, 0.20), transparent); background-repeat: no-repeat; }
 

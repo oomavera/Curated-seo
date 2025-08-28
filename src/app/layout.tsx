@@ -18,7 +18,10 @@ const sora = Sora({
   weight: ["300", "400", "600"], // Only include used weights
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://curatedcleanings.com";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: "Best House Cleaning Services Oviedo FL | Curated Cleanings | Free Estimate",
   description: "Top-rated house cleaning services in Oviedo, Florida. Professional residential cleaning starting at $125. Serving Oviedo, Winter Park, Casselberry, Winter Springs. 5-star rated. Book free estimate today!",
   keywords: "house cleaning Oviedo FL, best cleaning services Oviedo Florida, residential cleaning Oviedo, maid service Oviedo, deep cleaning Oviedo, professional cleaners Oviedo, home cleaning Winter Park, cleaning services Casselberry, move in cleaning Oviedo, move out cleaning Oviedo, weekly cleaning Oviedo, biweekly cleaning Oviedo",

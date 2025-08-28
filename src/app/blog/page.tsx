@@ -23,6 +23,7 @@ function FeaturedPostCard({ post }: { post: BlogPost }) {
             src={post.thumbnail}
             alt={post.title}
             fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 80vw, 1200px"
             className="object-cover transition-transform duration-300 group-hover:scale-105"
           />
         </div>
@@ -60,6 +61,7 @@ function PostCard({ post }: { post: BlogPost }) {
             src={post.thumbnail}
             alt={post.title}
             fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="object-cover transition-transform duration-300 group-hover:scale-105"
           />
         </div>

@@ -35,6 +35,10 @@ export default function QuickEstimateForm({ onSubmitSuccess, title = "Quick Free
 		setError(null);
 
 		try {
+			// Generate a deduplication event_id to share with server-side CAPI
+			const eventId = `lead-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+			// Build a lightweight external_id (sha256 will be applied on server if needed)
+			const externalId = formData.email || formData.phone || formData.name || undefined;
 			const response = await fetch('/api/leads', {
 				method: 'POST',
 				headers: {
@@ -42,7 +46,9 @@ export default function QuickEstimateForm({ onSubmitSuccess, title = "Quick Free
 				},
 				body: JSON.stringify({
 					...formData,
-					source: 'Landing Page'
+					source: 'Landing Page',
+					eventId,
+					externalId,
 				}),
 			});
 
@@ -57,6 +63,7 @@ export default function QuickEstimateForm({ onSubmitSuccess, title = "Quick Free
 				const fbq = (window as typeof window & { fbq?: (...args: unknown[]) => void }).fbq;
 				try {
 					fbq?.('track', metaEventName, {
+						event_id: eventId,
 						content_name: 'Offer Lead',
 						event_source: 'offer',
 						lead_source: 'main_form'
