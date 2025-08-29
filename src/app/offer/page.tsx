@@ -400,11 +400,11 @@ export default function OfferPage() {
 										<Image 
 											src={imageSrc} 
 											alt={`Customer review ${i + 1}`} 
-											width={256}
-											height={256}
-											sizes="(max-width: 640px) 45vw, (max-width: 1024px) 25vw, 256px"
-											quality={50}
-											className="w-full h-auto scale-125"
+											width={800}
+											height={800}
+											sizes="(max-width: 640px) 48vw, (max-width: 1024px) 30vw, 22vw"
+											quality={95}
+											className="w-full h-auto"
 											style={{ 
 												filter: 'none',
 												mixBlendMode: 'normal',

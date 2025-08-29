@@ -444,9 +444,9 @@ export default function CityPageLayout({
                     <Image 
                       src={imageSrc} 
                       alt={`Customer review ${i + 1}`} 
-                      width={400}
-                      height={400}
-                      className="w-full h-auto scale-200"
+                      width={800}
+                      height={800}
+                      className="w-full h-auto"
                       style={{ 
                         filter: 'none',
                         mixBlendMode: 'normal',
@@ -455,9 +455,9 @@ export default function CityPageLayout({
                       } as React.CSSProperties}
                       loading={i < 4 ? "eager" : "lazy"}
                       priority={i < 4}
-                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 300px"
-                      placeholder="blur"
-                      blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+Cp5O6U8obLo5hfTy+0CxiZZ8pC/4pBTi7/KM2c1J0YXHdFlOlkqGLqG5p9FcnHWWO2s/rKMxLmTlxpNt1JfqCBPpzHpgOPoPJmQfGDu1D8M6p5NwRjSz4Gl/9k="
+                      sizes="(max-width: 640px) 48vw, (max-width: 1024px) 30vw, 22vw"
+                      quality={95}
+                      placeholder="empty"
                     />
                   </div>
                 ))}

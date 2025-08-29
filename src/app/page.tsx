@@ -2,7 +2,6 @@
 import Image from "next/image";
 import { FaEnvelope, FaPhone } from "react-icons/fa";
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import dynamic from "next/dynamic";
 import { usePrefersReducedMotion } from "../utils/usePrefersReducedMotion";
 import logo from "../../public/Logo2.png";
@@ -205,12 +204,6 @@ export default function Home() {
 					
 					{/* Navigation & Call Now Button - Right */}
 					<div className="hidden sm:flex items-center justify-end flex-1 -mt-3 sm:-mt-4 gap-4">
-						<Link 
-							href="/blog" 
-							className="text-mountain hover:text-midnight transition-colors duration-300 font-medium text-sm sm:text-base hidden sm:block"
-						>
-							Blog
-						</Link>
 						<PillButton onClick={() => window.open('https://cal.com/curatedcleanings/firstclean', '_blank')} className="px-5 py-2 sm:px-8 sm:py-3 text-xs sm:text-base">
 							CALL NOW
 						</PillButton>
@@ -360,11 +353,11 @@ export default function Home() {
 										<Image 
 											src={imageSrc} 
 											alt={`Customer review ${i + 1}`} 
-											width={256}
-											height={256}
-											sizes="(max-width: 640px) 45vw, (max-width: 1024px) 25vw, 256px"
-											quality={50}
-											className="w-full h-auto scale-125"
+											width={800}
+											height={800}
+											sizes="(max-width: 640px) 48vw, (max-width: 1024px) 30vw, 22vw"
+											quality={95}
+											className="w-full h-auto"
 											style={{ 
 												filter: 'none',
 												mixBlendMode: 'normal',
