@@ -2,56 +2,70 @@
 import { useEffect } from "react";
 
 type MetaPixelProps = {
-  pixelId?: string;
+	pixelId?: string;
 };
 
-type FbqFunction = (
-  ...args: ["init", string] | ["track", string, Record<string, unknown>?]
-) => void;
+type FbqArgs = ["init", string] | ["track", string, Record<string, unknown>?];
+type FbqFunction = (...args: FbqArgs) => void;
+type FbqStub = FbqFunction & {
+	callMethod?: (...args: FbqArgs) => void;
+	queue: FbqArgs[];
+	loaded?: boolean;
+	version?: string;
+};
 
 declare global {
-  interface Window {
-    fbq?: FbqFunction;
-  }
+	interface Window {
+		fbq?: FbqFunction;
+		_fbq?: FbqFunction;
+	}
 }
 
-// Loads Meta Pixel once per app session
+// Loads Meta Pixel once per app session using the official fbq bootstrap stub
 export default function MetaPixel({
-  pixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID || "1290791285375063",
+	pixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID || "1290791285375063",
 }: MetaPixelProps) {
-  useEffect(() => {
-    if (!pixelId) return;
-    if (typeof window === "undefined" || typeof document === "undefined") return;
+	useEffect(() => {
+		if (!pixelId) return;
+		if (typeof window === "undefined" || typeof document === "undefined") return;
 
-    const initialize = () => {
-      const fbq = window.fbq;
-      if (!fbq) return;
-      fbq("init", pixelId);
-      // Track a PageView with a generated event_id to enable server/browser dedup if desired later
-      const pageViewEventId = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
-      try { fbq("track", "PageView", { event_id: pageViewEventId }); } catch {}
-    };
+		// Create the fbq stub and inject fbevents.js if needed
+		const ensureFbq = (): FbqFunction => {
+			const w = window as Window & { fbq?: FbqFunction | FbqStub; _fbq?: FbqFunction | FbqStub };
+			if (typeof w.fbq === "function") return w.fbq as FbqFunction;
 
-    if (window.fbq) {
-      initialize();
-      return;
-    }
+			const fbqStub: FbqStub = ((...args: FbqArgs) => {
+				if (fbqStub.callMethod) {
+					fbqStub.callMethod(...args);
+				} else {
+					fbqStub.queue.push(args);
+				}
+			}) as FbqStub;
+			fbqStub.queue = [];
+			fbqStub.loaded = true;
+			fbqStub.version = "2.0";
+			w.fbq = fbqStub;
+			w._fbq = fbqStub;
 
-    const scriptId = "facebook-pixel";
-    if (!document.getElementById(scriptId)) {
-      const script = document.createElement("script");
-      script.id = scriptId;
-      script.async = true;
-      script.src = "https://connect.facebook.net/en_US/fbevents.js";
-      script.onload = initialize;
-      document.head.appendChild(script);
-    } else {
-      initialize();
-    }
-  }, [pixelId]);
+			const scriptId = "facebook-pixel";
+			if (!document.getElementById(scriptId)) {
+				const s = document.createElement("script");
+				s.id = scriptId;
+				s.async = true;
+				s.src = "https://connect.facebook.net/en_US/fbevents.js";
+				document.head.appendChild(s);
+			}
+			return w.fbq as FbqFunction;
+		};
 
-  return null;
+		const fbq = ensureFbq();
+		// Queue init + PageView (these will flush when fbevents.js finishes loading)
+		try {
+			const pageViewEventId = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+			fbq("init", String(pixelId));
+			fbq("track", "PageView", { event_id: pageViewEventId });
+		} catch {}
+	}, [pixelId]);
+
+	return null;
 }
-
-
-
