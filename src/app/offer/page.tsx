@@ -87,10 +87,10 @@ export default function OfferPage() {
 
 	const prefersReducedMotion = usePrefersReducedMotion();
 
-	// Countdown to offer end (September 7, 2025)
+	// Countdown to offer end (October 1, 2025)
 	const [timeLeft, setTimeLeft] = useState<{ d: number; h: number; m: number; s: number }>({ d: 0, h: 0, m: 0, s: 0 });
 	useEffect(() => {
-		const target = new Date('2025-09-07T23:59:59');
+		const target = new Date('2025-10-01T00:00:00');
 		const update = () => {
 			const now = new Date();
 			const diffMs = target.getTime() - now.getTime();
@@ -132,7 +132,6 @@ export default function OfferPage() {
 		"/Gallery/cleans/IMG_2538.webp",
 		"/Gallery/team/ChatGPT Image Aug 24, 2025, 09_12_39 AM.webp",
 		"/Gallery/cleans/IMG_2603.webp",
-		"/Gallery/cleans/IMG_2587.webp",
 		"/Gallery/cleans/IMG_0952.webp",
 		"/Gallery/team/IMG_6841(1).webp",
 		"/Gallery/cleans/IMG_2537.webp",
@@ -160,6 +159,20 @@ export default function OfferPage() {
 	const mobileSlidesCount = mobileSubset.length * 2;
 	const mobileTrackWidthPx = mobileSlidesCount * mobileSlideWidth + (mobileSlidesCount - 1) * gapPx;
 	const desktopTrackWidthPx = desktopSlidesCount * desktopSlideWidth + (desktopSlidesCount - 1) * gapPx;
+
+	// Randomize reviews order client-side after mount to avoid hydration mismatch
+	const [shuffledReviewImages, setShuffledReviewImages] = useState<string[] | null>(null);
+	useEffect(() => {
+		const prioritized = [6, 19, 21, 10] // 1-based indices
+			.map(n => `/Gallery/reviews/${n}.webp`);
+		const rest = reviewImages.filter(src => !prioritized.includes(src));
+		// Shuffle the rest
+		for (let i = rest.length - 1; i > 0; i--) {
+			const j = Math.floor(Math.random() * (i + 1));
+			[rest[i], rest[j]] = [rest[j], rest[i]];
+		}
+		setShuffledReviewImages([...prioritized, ...rest]);
+	}, []);
 
 	return (
 		<div id="main-content" className="textured-background min-h-screen w-full font-sans text-midnight">
@@ -235,10 +248,10 @@ export default function OfferPage() {
 					{/* Hero Text */}
 					<div className="relative z-20 text-center mb-4 sm:mb-12 no-blend">
 						<h1 className="text-3xl xs:text-4xl md:text-5xl xl:text-6xl font-black mb-3 leading-tight text-solid-black tracking-tight" style={{ fontFamily: 'var(--font-sora), Sora, Inter, Arial, Helvetica, sans-serif' }}>
-							Oviedo Homeowners: Get your first clean for $44
+							Seminole County Homeowners! Get your first clean Free!
 						</h1>
 						<div className="text-base xs:text-lg md:text-xl font-light text-solid-black">
-							Here&apos;s a sign you need a spotless, fast, easy & stress-free house cleaning! Offer ends soon
+							Only 5 slots left, September only, quickly filling up, please don't miss out!
 							<div className="mt-1 sm:mt-2 flex items-center justify-center gap-2 sm:gap-3 tabular-nums">
 								<div className="flex items-center justify-center gap-2">
 									<div className="rounded-2xl px-3 sm:px-4 py-2 bg-white/30 backdrop-blur-md border border-white/40 shadow-sm">
@@ -338,7 +351,7 @@ export default function OfferPage() {
 						<div className="flex-1 max-w-lg mx-auto md:mx-0 relative">
 							<PastelBlob className="w-[520px] h-[420px]" style={{ left: "-10%", top: "-10%" }} />
 							<GlassCard className="p-6 sm:p-8 min-h-[420px]">
-								<QuickEstimateForm title="Book Now" submitLabel="Book Now" trackMetaLead metaEventName="Lead" />
+								<QuickEstimateForm title="Book Free Cleaning" submitLabel="Book Free Cleaning" showEmail={false} openCalendarOnSuccess={false} trackMetaLead metaEventName="Lead" />
 							</GlassCard>
 						</div>
 					</div>
@@ -381,18 +394,18 @@ export default function OfferPage() {
 					</section>
 
 					{/* Scroll-triggered Lead Form Popup */}
-					<ScrollPopupForm triggerElement="#reviews" callout="Wait! Get your $44 house cleaning" trackMetaLead metaEventName="Lead" />
+					<ScrollPopupForm triggerElement="#reviews" callout="Wait! Get your First Clean FREE!" trackMetaLead metaEventName="Lead" />
 
 					{/* Customer Reviews Grid Section */}
 					<section id="reviews" className="py-6 sm:py-12 relative z-10">
 						<div className="max-w-7xl mx-auto px-4">
 							{/* Reviews Image Grid - 2x2 on mobile, 4x4 on desktop */}
 							<div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-								{reviewImages.map((imageSrc, i) => (
-									<div key={i} className="relative py-2">
+								{(shuffledReviewImages ?? reviewImages).map((imageSrc) => (
+									<div key={imageSrc} className="relative py-2">
 										<Image 
 											src={imageSrc} 
-											alt={`Customer review ${i + 1}`} 
+											alt="Customer review" 
 											width={800}
 											height={800}
 											sizes="(max-width: 640px) 48vw, (max-width: 1024px) 30vw, 22vw"

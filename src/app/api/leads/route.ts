@@ -42,15 +42,17 @@ export async function POST(request: NextRequest) {
       : (body.quote ? 'estimate_request' : 'contact_form');
 
     // First attempt: insert minimal fields to be compatible with any schema
-    const minimalPayload: { name: string; phone: string; email?: string } = {
+    const minimalPayload: { name: string; phone: string; email: string } = {
       name: name.trim(),
       phone: phone.trim(),
+      // Provide a placeholder email when none is supplied to satisfy NOT NULL DB constraint
+      email: (() => {
+        const provided = (email || '').trim();
+        if (provided) return provided.toLowerCase();
+        const cleanedPhone = phone.replace(/\D/g, '').slice(-10) || 'user';
+        return `noemail+${cleanedPhone}-${Date.now()}@curatedcleanings.com`;
+      })(),
     };
-    
-    // Only include email if it's provided
-    if (email && email.trim()) {
-      minimalPayload.email = email.toLowerCase().trim();
-    }
 
     console.log('Attempting database insert with:', minimalPayload);
     

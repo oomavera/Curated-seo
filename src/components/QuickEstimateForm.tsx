@@ -9,9 +9,11 @@ interface QuickEstimateFormProps {
 	submitLabel?: string;
 	trackMetaLead?: boolean;
 	metaEventName?: string;
+	showEmail?: boolean;
+	openCalendarOnSuccess?: boolean;
 }
 
-export default function QuickEstimateForm({ onSubmitSuccess, title = "Quick Free Estimate", submitLabel = "Get Quick Estimate", trackMetaLead = false, metaEventName = "Lead" }: QuickEstimateFormProps) {
+export default function QuickEstimateForm({ onSubmitSuccess, title = "Quick Free Estimate", submitLabel = "Get Quick Estimate", trackMetaLead = false, metaEventName = "Lead", showEmail = true, openCalendarOnSuccess = true }: QuickEstimateFormProps) {
 	const [formData, setFormData] = useState({
 		name: "",
 		phone: "",
@@ -70,7 +72,7 @@ export default function QuickEstimateForm({ onSubmitSuccess, title = "Quick Free
 					});
 				} catch {}
 			}
-			if (typeof window !== 'undefined' && (window as typeof window & { Cal?: unknown }).Cal) {
+			if (openCalendarOnSuccess && typeof window !== 'undefined' && (window as typeof window & { Cal?: unknown }).Cal) {
 				const Cal = (window as typeof window & { Cal: unknown }).Cal as {
 					(action: string, namespace: string, config: Record<string, unknown>): void;
 					ns: { [key: string]: (action: string, config: Record<string, unknown>) => void };
@@ -101,16 +103,23 @@ export default function QuickEstimateForm({ onSubmitSuccess, title = "Quick Free
 						<path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
 					</svg>
 				</div>
-				<h3 className="text-xl font-semibold text-midnight mb-2">Thank You!</h3>
+				<h3 className="text-xl font-semibold text-midnight mb-2">Thank you!</h3>
 				<p className="text-mountain mb-4">
-					We&apos;ve received your request. Our calendar should have opened - please select a time that works for you.
+					You&apos;re all set. Our phones are open — call now, or we&apos;ll call you within 5 minutes.
 				</p>
+				<PillButton 
+					onClick={() => { window.location.href = 'tel:4072700379'; }} 
+					className="w-full justify-center"
+				>
+					Call Now
+				</PillButton>
+				<div className="text-xs text-mountain mt-3">We will call you from 407-270-0379</div>
 				<button
 					onClick={() => {
 						setSuccess(false);
 						setFormData({ name: "", phone: "", email: "" });
 					}}
-					className="text-mountain hover:text-midnight transition-colors text-sm underline"
+					className="text-mountain hover:text-midnight transition-colors text-sm underline mt-4"
 				>
 					Submit another request
 				</button>
@@ -166,21 +175,22 @@ export default function QuickEstimateForm({ onSubmitSuccess, title = "Quick Free
 					/>
 				</div>
 
-				<div>
-					<label htmlFor="email" className="block text-sm font-medium text-midnight mb-2">
-						Email Address *
-					</label>
-					<input
-						type="email"
-						id="email"
-						name="email"
-						value={formData.email}
-						onChange={handleInputChange}
-						required
-						className="input-glass px-4 py-3 w-full text-midnight placeholder-mountain/60 rounded-full"
-						placeholder="your@email.com"
-					/>
-				</div>
+				{showEmail && (
+					<div>
+						<label htmlFor="email" className="block text-sm font-medium text-midnight mb-2">
+							Email Address (optional)
+						</label>
+						<input
+							type="email"
+							id="email"
+							name="email"
+							value={formData.email}
+							onChange={handleInputChange}
+							className="input-glass px-4 py-3 w-full text-midnight placeholder-mountain/60 rounded-full"
+							placeholder="your@email.com"
+						/>
+					</div>
+				)}
 
 				{error && (
 					<div className="p-3 bg-red-50 border border-red-200 rounded-lg">
