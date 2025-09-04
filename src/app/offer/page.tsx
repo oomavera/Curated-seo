@@ -251,7 +251,7 @@ export default function OfferPage() {
 							Seminole County Homeowners! Get your first clean Free!
 						</h1>
 						<div className="text-base xs:text-lg md:text-xl font-light text-solid-black">
-							Only 5 slots left, September only, quickly filling up, please don't miss out!
+							Only 5 slots left, September only, quickly filling up, please don&apos;t miss out!
 							<div className="mt-1 sm:mt-2 flex items-center justify-center gap-2 sm:gap-3 tabular-nums">
 								<div className="flex items-center justify-center gap-2">
 									<div className="rounded-2xl px-3 sm:px-4 py-2 bg-white/30 backdrop-blur-md border border-white/40 shadow-sm">
