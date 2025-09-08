@@ -7,7 +7,7 @@ import { usePrefersReducedMotion } from "../../utils/usePrefersReducedMotion";
 import logo from "../../../public/Logo2.png";
 import GlassCard from "../../components/ui/GlassCard";
 import PillButton from "../../components/ui/PillButton";
-import Cal, { getCalApi } from "@calcom/embed-react";
+// Removed @calcom/embed-react; using iframe embed instead
 
 // Defer Aurora to idle
 const DynamicAurora = dynamic(() => import("../../components/ui/ParallaxAurora"), { ssr: false });
@@ -32,76 +32,8 @@ export default function SchedulePage() {
     }, []);
 
     const prefersReducedMotion = usePrefersReducedMotion();
-
-    // Initialize Cal.com immediately on mount, but suppress any auto-scroll during init
-    useEffect(() => {
-        if (typeof window === 'undefined') return;
-
-        const savedY = window.scrollY;
-        type ScrollIntoViewFn = (arg?: boolean | ScrollIntoViewOptions) => void;
-        type ScrollToFn = ((x: number, y: number) => void) & ((options: ScrollToOptions) => void);
-
-        const elProto = Element.prototype as unknown as { scrollIntoView: ScrollIntoViewFn };
-        const originalScrollIntoView = elProto.scrollIntoView.bind(Element.prototype) as ScrollIntoViewFn;
-        const originalScrollTo = window.scrollTo.bind(window) as ScrollToFn;
-
-        const deadline = Date.now() + 3000; // 3s suppression window
-        let restored = false;
-
-        // Override scrollIntoView to no-op temporarily
-        (elProto as { scrollIntoView: ScrollIntoViewFn }).scrollIntoView = function (arg?: boolean | ScrollIntoViewOptions) {
-            if (Date.now() < deadline) {
-                return;
-            }
-            return originalScrollIntoView.call(this as unknown as Element, arg);
-        };
-
-        // Override window.scrollTo to clamp during suppression
-        (window as unknown as { scrollTo: ScrollToFn }).scrollTo = function (
-            xOrOptions?: number | ScrollToOptions,
-            y?: number
-        ) {
-            if (Date.now() < deadline) {
-                return originalScrollTo(0, savedY);
-            }
-            if (typeof xOrOptions === 'number') {
-                return originalScrollTo(xOrOptions, y ?? 0);
-            }
-            return originalScrollTo(xOrOptions as ScrollToOptions);
-        } as ScrollToFn;
-
-        const restore = () => {
-            if (restored) return;
-            restored = true;
-            try { (elProto as { scrollIntoView: ScrollIntoViewFn }).scrollIntoView = originalScrollIntoView; } catch {}
-            try { (window as unknown as { scrollTo: ScrollToFn }).scrollTo = originalScrollTo; } catch {}
-            try { originalScrollTo(0, savedY); } catch {}
-        };
-
-        const timer = setTimeout(restore, 3200);
-        window.addEventListener('beforeunload', restore, { once: true });
-
-        (async function () {
-            try {
-                const cal = await getCalApi({ namespace: "firstclean" });
-                cal("ui", {
-                    theme: "light",
-                    cssVarsPerTheme: {
-                        light: { "cal-brand": "#000000" },
-                        dark: { "cal-brand": "#ffffff" },
-                    },
-                    hideEventTypeDetails: true,
-                    layout: "week_view",
-                });
-            } catch {}
-        })();
-
-        return () => {
-            clearTimeout(timer);
-            window.removeEventListener('beforeunload', restore);
-            restore();
-        };
-    }, []);
+    // Cal.com React SDK removed; no initialization needed
+    useEffect(() => {}, []);
 
     // Gallery configuration
     const galleryImages = [
@@ -316,15 +248,15 @@ export default function SchedulePage() {
 						</p>
 					</div>
 
-					{/* Cal.com React Embed */}
+					{/* Cal.com iframe Embed */}
 					<div className="w-full max-w-5xl mx-auto mb-28 sm:mb-36 relative isolate z-0">
 						<div className="rounded-2xl border border-white/20 bg-white/60 backdrop-blur p-3 sm:p-4">
 							<div className="h-[900px] sm:h-[1000px] lg:h-[1100px] overflow-hidden rounded-xl" style={calContainerStyle}>
-								<Cal
-									namespace="firstclean"
-									calLink="curatedcleanings/firstclean"
-									style={{ width: "100%", height: "100%" }}
-									config={{ layout: "week_view", theme: "light" }}
+								<iframe
+									src="https://cal.com/curatedcleanings/firstclean?layout=week_view&theme=light&hideEventTypeDetails=1"
+									style={{ width: "100%", height: "100%", border: 0, overflow: "hidden" }}
+									loading="lazy"
+									title="Schedule with Curated Cleanings"
 								/>
 							</div>
 						</div>
