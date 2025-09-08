@@ -32,8 +32,8 @@ export default function SchedulePage() {
     }, []);
 
     const prefersReducedMotion = usePrefersReducedMotion();
-    // Suppress Cal.com iframe-induced auto-scroll/focus during initial load
-    const calIframeRef = useRef<HTMLIFrameElement | null>(null);
+    // Cal inline container ref
+    const calContainerRef = useRef<HTMLDivElement | null>(null);
     useEffect(() => {
         if (typeof window === 'undefined') return;
 
@@ -45,7 +45,8 @@ export default function SchedulePage() {
         const originalScrollIntoView = elProto.scrollIntoView.bind(Element.prototype) as ScrollIntoViewFn;
         const originalScrollTo = window.scrollTo.bind(window) as ScrollToFn;
 
-        const deadline = Date.now() + 3500; // suppression window in ms
+        const suppressionMs = 6000;
+        const deadline = Date.now() + suppressionMs; // suppression window in ms
         let restored = false;
 
         (elProto as { scrollIntoView: ScrollIntoViewFn }).scrollIntoView = function (arg?: boolean | ScrollIntoViewOptions) {
@@ -69,13 +70,67 @@ export default function SchedulePage() {
         } as ScrollToFn;
 
         const onFocusIn = () => {
-            if (document.activeElement === calIframeRef.current && Date.now() < deadline) {
+            const container = calContainerRef.current;
+            const iframe = container?.querySelector('iframe') as HTMLIFrameElement | null;
+            if (Date.now() < deadline && (document.activeElement === iframe || document.activeElement === container)) {
                 try { (document.activeElement as HTMLElement | null)?.blur?.(); } catch {}
                 try { (document.body as HTMLElement).focus(); } catch {}
                 try { originalScrollTo(0, savedY); } catch {}
             }
         };
         document.addEventListener('focusin', onFocusIn);
+
+        // Inject Cal inline embed script and initialize
+        const containerSelector = '#my-cal-inline-firstclean';
+        const container = calContainerRef.current ?? document.querySelector(containerSelector);
+        if (container instanceof HTMLElement) {
+            container.innerHTML = '';
+        }
+
+        const script = document.createElement('script');
+        script.src = 'https://app.cal.com/embed/embed.js';
+        script.async = true;
+        document.head.appendChild(script);
+
+        const tryInit = () => {
+            const CalAny = (window as unknown as { Cal?: any }).Cal;
+            if (!CalAny) return false;
+            try {
+                CalAny('init', 'firstclean', { origin: 'https://app.cal.com' });
+                CalAny.ns.firstclean('inline', {
+                    elementOrSelector: containerSelector,
+                    config: { layout: 'week_view', theme: 'light' },
+                    calLink: 'curatedcleanings/firstclean',
+                });
+                CalAny.ns.firstclean('ui', { theme: 'light', hideEventTypeDetails: true, layout: 'week_view' });
+                return true;
+            } catch {
+                return false;
+            }
+        };
+
+        const onScriptLoad = () => { tryInit(); };
+        script.addEventListener('load', onScriptLoad);
+
+        // Poll briefly until Cal is available
+        const start = Date.now();
+        const poll = window.setInterval(() => {
+            if (tryInit() || Date.now() - start > 15000) {
+                window.clearInterval(poll);
+            }
+        }, 100);
+
+        // Observe for injected iframe to make it unfocusable and prevent scroll
+        const mo = container instanceof HTMLElement ? new MutationObserver(() => {
+            const iframe = (container as HTMLElement).querySelector('iframe') as HTMLIFrameElement | null;
+            if (iframe) {
+                try { iframe.setAttribute('tabindex', '-1'); } catch {}
+                try { iframe.addEventListener('load', () => { try { (document.body as HTMLElement).focus(); } catch {}; try { originalScrollTo(0, savedY); } catch {}; }, { once: true }); } catch {}
+            }
+        }) : null;
+        if (container instanceof HTMLElement && mo) {
+            mo.observe(container, { childList: true, subtree: true });
+        }
 
         const restore = () => {
             if (restored) return;
@@ -84,9 +139,12 @@ export default function SchedulePage() {
             try { (window as unknown as { scrollTo: ScrollToFn }).scrollTo = originalScrollTo; } catch {}
             try { originalScrollTo(0, savedY); } catch {}
             document.removeEventListener('focusin', onFocusIn);
+            try { script.removeEventListener('load', onScriptLoad); } catch {}
+            try { window.clearInterval(poll); } catch {}
+            try { mo?.disconnect(); } catch {}
         };
 
-        const timer = setTimeout(restore, 3800);
+        const timer = setTimeout(restore, suppressionMs + 800);
         window.addEventListener('beforeunload', restore, { once: true });
 
         return () => {
@@ -313,14 +371,7 @@ export default function SchedulePage() {
 					<div className="w-full max-w-5xl mx-auto mb-28 sm:mb-36 relative isolate z-0">
 						<div className="rounded-2xl border border-white/20 bg-white/60 backdrop-blur p-3 sm:p-4">
 							<div className="h-[900px] sm:h-[1000px] lg:h-[1100px] overflow-hidden rounded-xl" style={calContainerStyle}>
-								<iframe
-									ref={calIframeRef}
-									tabIndex={-1}
-									src="https://cal.com/curatedcleanings/firstclean?layout=week_view&theme=light&hideEventTypeDetails=1"
-									style={{ width: "100%", height: "100%", border: 0, overflow: "hidden" }}
-									loading="lazy"
-									title="Schedule with Curated Cleanings"
-								/>
+								<div id="my-cal-inline-firstclean" ref={calContainerRef} style={{ width: '100%', height: '100%', overflow: 'scroll' }} />
 							</div>
 						</div>
 					</div>
