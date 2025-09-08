@@ -190,12 +190,12 @@ export default function OfferPage() {
 					{/* Mobile: Phone and Call Now Button Row */}
 					<div className="flex justify-between items-center w-full sm:hidden order-2 mt-2">
 						<a 
-							href="tel:+14072700379" 
+							href="tel:+14074701780" 
 							className="text-xs font-semibold tracking-wider text-mountain hover:text-midnight transition-colors duration-300 whitespace-nowrap"
 						>
-							(407) 270-0379
+							407-470-1780
 						</a>
-						<PillButton onClick={() => window.location.href = 'tel:+14072700379'} className="px-4 py-2 text-xs">
+						<PillButton onClick={() => window.location.href = 'tel:+14074701780'} className="px-4 py-2 text-xs">
 							CALL NOW
 						</PillButton>
 					</div>
@@ -204,10 +204,10 @@ export default function OfferPage() {
 					{/* Phone Number - Left */}
 					<div className="hidden sm:flex items-center flex-1 -mt-3 sm:-mt-4">
 						<a 
-							href="tel:+14072700379" 
+							href="tel:+14074701780" 
 							className="text-xl font-semibold tracking-wider text-mountain hover:text-midnight transition-colors duration-300 whitespace-nowrap"
 						>
-							(407) 270-0379
+							407-470-1780
 						</a>
 					</div>
 					
@@ -229,7 +229,7 @@ export default function OfferPage() {
 					
 					{/* Navigation & Call Now Button - Right */}
 					<div className="hidden sm:flex items-center justify-end flex-1 -mt-3 sm:-mt-4 gap-4">
-						<PillButton onClick={() => window.location.href = 'tel:+14072700379'} className="px-5 py-2 sm:px-8 sm:py-3 text-xs sm:text-base">
+						<PillButton onClick={() => window.location.href = 'tel:+14074701780'} className="px-5 py-2 sm:px-8 sm:py-3 text-xs sm:text-base">
 							CALL NOW
 						</PillButton>
 					</div>
@@ -420,7 +420,7 @@ export default function OfferPage() {
 					{/* LARGE CALL TO ACTION SECTION */}
 					<section className="py-6 sm:py-8 text-center">
 						<a 
-							href="tel:+14072700379" 
+							href="tel:+14074701780" 
 							className="inline-flex items-center gap-5 bg-white/20 backdrop-blur-md border border-white/30 text-midnight px-14 py-10 rounded-full text-3xl sm:text-4xl font-bold shadow-lg hover:bg-white/30 hover:border-white/40 transform scale-120 hover:scale-125 transition-all duration-300"
 						>
 							<FaPhone className="text-4xl" />
@@ -564,9 +564,9 @@ export default function OfferPage() {
 						<div className="text-center text-base text-black mb-8">Call or text us to schedule your free estimate and receive a detailed cleaning proposal</div>
 						
 						<div className="flex flex-col md:flex-row gap-8 items-center justify-center mb-12">
-							<a href="tel:+14072700379" className="flex items-center gap-4 text-xl text-black hover:text-gray-700 transition-colors">
+							<a href="tel:+14074701780" className="flex items-center gap-4 text-xl text-black hover:text-gray-700 transition-colors">
 								<FaPhone className="text-2xl" />
-								<span>(407) 270-0379</span>
+								<span>407-470-1780</span>
 							</a>
 							<a href="mailto:admin@curatedcleanings.com" className="flex items-center gap-4 text-xl text-black hover:text-gray-700 transition-colors">
 								<FaEnvelope className="text-2xl" />
@@ -587,14 +587,14 @@ export default function OfferPage() {
 					{/* CONTACT & FOOTER SECTION */}
 					<footer className="flex flex-col items-center gap-4 py-8 border-t border-gray-200 mt-12">
 						<div className="text-center text-sm text-midnight font-light">
-							Curated Cleanings provides trusted house cleaning and maid services in Oviedo, Winter Park, Lake Mary, and surrounding Central Florida areas. Licensed, insured, and 5-star rated. Call (407) 270-0379 or email admin@curatedcleanings.com for a free estimate.
+							Curated Cleanings provides trusted house cleaning and maid services in Oviedo, Winter Park, Lake Mary, and surrounding Central Florida areas. Licensed, insured, and 5-star rated. Call 407-470-1780 or email admin@curatedcleanings.com for a free estimate.
 						</div>
 						<div className="flex gap-6 text-base mt-2">
 							<a href="mailto:admin@curatedcleanings.com" aria-label="Email" className="hover:text-blue-600 transition-colors flex items-center gap-2">
 								<FaEnvelope /> admin@curatedcleanings.com
 							</a>
-							<a href="tel:+14072700379" aria-label="Phone" className="hover:text-blue-600 transition-colors flex items-center gap-2">
-								<FaPhone /> (407) 270-0379
+							<a href="tel:+14074701780" aria-label="Phone" className="hover:text-blue-600 transition-colors flex items-center gap-2">
+								<FaPhone /> 407-470-1780
 							</a>
 						</div>
 						<div className="text-xs text-mountain mt-2">© Curated Cleanings. All rights reserved.</div>

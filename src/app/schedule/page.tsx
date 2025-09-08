@@ -42,44 +42,63 @@ export default function SchedulePage() {
         type ScrollIntoViewFn = (arg?: boolean | ScrollIntoViewOptions) => void;
         type ScrollToFn = ((x: number, y: number) => void) & ((options: ScrollToOptions) => void);
 
-        const elProto = Element.prototype as unknown as { scrollIntoView: ScrollIntoViewFn };
+        const elProto = Element.prototype as unknown as { scrollIntoView: ScrollIntoViewFn; scrollTo?: ScrollToFn; scrollBy?: ScrollToFn };
         const originalScrollIntoView = elProto.scrollIntoView.bind(Element.prototype) as ScrollIntoViewFn;
-        const originalScrollTo = window.scrollTo.bind(window) as ScrollToFn;
+        const originalElementScrollTo = (elProto.scrollTo?.bind(Element.prototype) as ScrollToFn) ?? null;
+        const originalElementScrollBy = (elProto.scrollBy?.bind(Element.prototype) as ScrollToFn) ?? null;
 
-        const suppressionMs = 6000;
-        const deadline = Date.now() + suppressionMs; // suppression window in ms
+        const originalWindowScrollTo = window.scrollTo.bind(window) as ScrollToFn;
+        const originalWindowScroll = (window.scroll as unknown as ScrollToFn)?.bind(window) ?? null;
+        const originalWindowScrollBy = (window.scrollBy as unknown as ScrollToFn)?.bind(window) ?? null;
+
+		const isDesktopViewport = typeof window !== 'undefined' && window.matchMedia('(min-width: 640px)').matches;
+		const suppressionMs = isDesktopViewport ? 30000 : 0;
         let restored = false;
 
-        (elProto as { scrollIntoView: ScrollIntoViewFn }).scrollIntoView = function (arg?: boolean | ScrollIntoViewOptions) {
-            if (Date.now() < deadline) {
-                return; // no-op
-            }
-            return originalScrollIntoView.call(this as unknown as Element, arg);
-        };
-
-        (window as unknown as { scrollTo: ScrollToFn }).scrollTo = function (
-            xOrOptions?: number | ScrollToOptions,
-            y?: number
-        ) {
-            if (Date.now() < deadline) {
-                return originalScrollTo(0, savedY);
-            }
-            if (typeof xOrOptions === 'number') {
-                return originalScrollTo(xOrOptions, y ?? 0);
-            }
-            return originalScrollTo(xOrOptions as ScrollToOptions);
-        } as ScrollToFn;
-
-        const onFocusIn = () => {
+        const onFocusIn = (e: FocusEvent) => {
             const container = calContainerRef.current;
             const iframe = container?.querySelector('iframe') as HTMLIFrameElement | null;
-            if (Date.now() < deadline && (document.activeElement === iframe || document.activeElement === container)) {
+            if (isDesktopViewport && (document.activeElement === iframe || document.activeElement === container)) {
+                try { e.preventDefault?.(); } catch {}
                 try { (document.activeElement as HTMLElement | null)?.blur?.(); } catch {}
                 try { (document.body as HTMLElement).focus(); } catch {}
-                try { originalScrollTo(0, savedY); } catch {}
+                try { originalWindowScrollTo(window.scrollX, savedY); } catch {}
             }
         };
         document.addEventListener('focusin', onFocusIn);
+
+        if (isDesktopViewport) {
+            try { if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; } catch {}
+        }
+
+        if (isDesktopViewport) {
+            // Element-level scroll blockers
+            (elProto as { scrollIntoView: ScrollIntoViewFn }).scrollIntoView = function () { return; };
+            if (elProto.scrollTo) (elProto as { scrollTo: ScrollToFn }).scrollTo = function () { return; } as ScrollToFn;
+            if (elProto.scrollBy) (elProto as { scrollBy: ScrollToFn }).scrollBy = function () { return; } as ScrollToFn;
+
+            // Window-level scroll blockers
+            (window as unknown as { scrollTo: ScrollToFn }).scrollTo = function () { return; } as ScrollToFn;
+            if (typeof window.scroll === 'function') (window as unknown as { scroll: ScrollToFn }).scroll = function () { return; } as ScrollToFn;
+            if (typeof window.scrollBy === 'function') (window as unknown as { scrollBy: ScrollToFn }).scrollBy = function () { return; } as ScrollToFn;
+        }
+
+        // Hard guard: keep view pinned to top briefly in case a library assigns scrollTop directly
+        let rafId: number | null = null;
+        const lockUntil = Date.now() + 4000;
+        const scrollingEl = (document.scrollingElement || document.documentElement) as HTMLElement;
+        const enforceTop = () => {
+            if (!isDesktopViewport) return;
+            if (Date.now() > lockUntil) { if (rafId) cancelAnimationFrame(rafId); return; }
+            try {
+                if (window.scrollY !== savedY || (scrollingEl && scrollingEl.scrollTop !== savedY)) {
+                    try { originalWindowScrollTo(0, savedY); } catch {}
+                    try { scrollingEl.scrollTop = savedY; } catch {}
+                }
+            } catch {}
+            rafId = requestAnimationFrame(enforceTop);
+        };
+        enforceTop();
 
         // Initialize Cal React SDK UI once available
         (async function () {
@@ -93,17 +112,18 @@ export default function SchedulePage() {
             if (restored) return;
             restored = true;
             try { (elProto as { scrollIntoView: ScrollIntoViewFn }).scrollIntoView = originalScrollIntoView; } catch {}
-            try { (window as unknown as { scrollTo: ScrollToFn }).scrollTo = originalScrollTo; } catch {}
-            try { originalScrollTo(0, savedY); } catch {}
+            try { if (originalElementScrollTo) (elProto as { scrollTo: ScrollToFn }).scrollTo = originalElementScrollTo; } catch {}
+            try { if (originalElementScrollBy) (elProto as { scrollBy: ScrollToFn }).scrollBy = originalElementScrollBy; } catch {}
+            try { (window as unknown as { scrollTo: ScrollToFn }).scrollTo = originalWindowScrollTo; } catch {}
+            try { if (originalWindowScroll) (window as unknown as { scroll: ScrollToFn }).scroll = originalWindowScroll; } catch {}
+            try { if (originalWindowScrollBy) (window as unknown as { scrollBy: ScrollToFn }).scrollBy = originalWindowScrollBy; } catch {}
             document.removeEventListener('focusin', onFocusIn);
-            // nothing extra to cleanup for Cal React SDK
+            if (rafId) cancelAnimationFrame(rafId);
         };
 
-        const timer = setTimeout(restore, suppressionMs + 800);
         window.addEventListener('beforeunload', restore, { once: true });
 
         return () => {
-            clearTimeout(timer);
             window.removeEventListener('beforeunload', restore);
             restore();
         };
@@ -164,7 +184,7 @@ export default function SchedulePage() {
 
     const smsHref = (prefill?: string) => {
         const body = prefill ? encodeURIComponent(prefill) : undefined;
-        return body ? `sms:+14072700379?&body=${body}` : `sms:+14072700379`;
+        return body ? `sms:+14074701780?&body=${body}` : `sms:+14074701780`;
     };
 
     const calContainerStyle: CSSProperties = {
@@ -201,12 +221,12 @@ export default function SchedulePage() {
                     {/* Mobile: Phone and Call Now Button Row */}
                     <div className="flex justify-between items-center w-full sm:hidden order-2 mt-2">
                         <a 
-                            href="tel:+14072700379" 
+                            href="tel:+14074701780" 
                             className="text-xs font-semibold tracking-wider text-mountain hover:text-midnight transition-colors duration-300 whitespace-nowrap"
                         >
-                            (407) 270-0379
+                            407-470-1780
                         </a>
-                        <PillButton onClick={() => window.location.href = 'tel:+14072700379'} className="px-4 py-2 text-xs">
+                        <PillButton onClick={() => window.location.href = 'tel:+14074701780'} className="px-4 py-2 text-xs">
                             CALL NOW
                         </PillButton>
                     </div>
@@ -215,10 +235,10 @@ export default function SchedulePage() {
                     {/* Phone Number - Left */}
                     <div className="hidden sm:flex items-center flex-1 -mt-3 sm:-mt-4">
                         <a 
-                            href="tel:+14072700379" 
+                            href="tel:+14074701780" 
                             className="text-xl font-semibold tracking-wider text-mountain hover:text-midnight transition-colors duration-300 whitespace-nowrap"
                         >
-                            (407) 270-0379
+                            407-470-1780
                         </a>
                     </div>
                     
@@ -240,7 +260,7 @@ export default function SchedulePage() {
                     
                     {/* Navigation & Call Now Button - Right */}
                     <div className="hidden sm:flex items-center justify-end flex-1 -mt-3 sm:-mt-4 gap-4">
-                        <PillButton onClick={() => window.location.href = 'tel:+14072700379'} className="px-5 py-2 sm:px-8 sm:py-3 text-xs sm:text-base">
+                        <PillButton onClick={() => window.location.href = 'tel:+14074701780'} className="px-5 py-2 sm:px-8 sm:py-3 text-xs sm:text-base">
                             CALL NOW
                         </PillButton>
                     </div>
@@ -259,9 +279,9 @@ export default function SchedulePage() {
                                 <a
                                     href={smsHref("Hi Angelica! I can take a call at [time] to schedule my clean.")}
                                     className="text-solid-black hover:opacity-90 focus:outline-none focus:ring-4 ring-white/60 ring-offset-2 ring-offset-white/40"
-                                    aria-label="Text (407) 270-0379"
+                                    aria-label="Text 407-470-1780"
                                 >
-                                    (407) 270-0379
+                                    407-470-1780
                                 </a>
                             </p>
                             <p>Chose a time between 7am - 7pm</p>
@@ -447,14 +467,14 @@ export default function SchedulePage() {
                     {/* CONTACT & FOOTER SECTION */}
                     <footer className="flex flex-col items-center gap-4 py-8 border-t border-gray-200 mt-12">
                         <div className="text-center text-sm text-midnight font-light">
-                            Curated Cleanings provides trusted house cleaning and maid services in Oviedo, Winter Park, Lake Mary, and surrounding Central Florida areas. Licensed, insured, and 5-star rated. Call (407) 270-0379 or email admin@curatedcleanings.com for a free estimate.
+                            Curated Cleanings provides trusted house cleaning and maid services in Oviedo, Winter Park, Lake Mary, and surrounding Central Florida areas. Licensed, insured, and 5-star rated. Call 407-470-1780 or email admin@curatedcleanings.com for a free estimate.
                         </div>
                         <div className="flex gap-6 text-base mt-2">
                             <a href="mailto:admin@curatedcleanings.com" aria-label="Email" className="hover:text-blue-600 transition-colors flex items-center gap-2">
                                 <FaEnvelope /> admin@curatedcleanings.com
                             </a>
-                            <a href="tel:+14072700379" aria-label="Phone" className="hover:text-blue-600 transition-colors flex items-center gap-2">
-                                <FaPhone /> (407) 270-0379
+                            <a href="tel:+14074701780" aria-label="Phone" className="hover:text-blue-600 transition-colors flex items-center gap-2">
+                                <FaPhone /> 407-470-1780
                             </a>
                         </div>
                         <div className="text-xs text-mountain mt-2">© Curated Cleanings. All rights reserved.</div>
