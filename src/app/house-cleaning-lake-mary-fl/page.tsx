@@ -17,7 +17,7 @@ export default function LakeMaryHouseCleaningPage() {
             "name": "Curated Cleanings",
             "url": "https://curatedcleanings.com/house-cleaning-lake-mary-fl",
             "image": "https://curatedcleanings.com/images/lake-mary-hero.jpg",
-            "telephone": "+1-407-270-0379",
+            "telephone": "+1-407-470-1780",
             "priceRange": "$$",
             "address": {
               "@type": "PostalAddress",

@@ -13,7 +13,7 @@ interface QuickEstimateFormProps {
 	openCalendarOnSuccess?: boolean;
 }
 
-export default function QuickEstimateForm({ onSubmitSuccess, title = "Quick Free Estimate", submitLabel = "Get Quick Estimate", trackMetaLead = false, metaEventName = "Lead", showEmail = true, openCalendarOnSuccess = true }: QuickEstimateFormProps) {
+export default function QuickEstimateForm({ onSubmitSuccess, title = "Quick Free Estimate", submitLabel = "Get Quick Estimate", trackMetaLead = false, metaEventName = "Lead", showEmail = true }: QuickEstimateFormProps) {
 	const [formData, setFormData] = useState({
 		name: "",
 		phone: "",
@@ -72,15 +72,10 @@ export default function QuickEstimateForm({ onSubmitSuccess, title = "Quick Free
 					});
 				} catch {}
 			}
-			if (openCalendarOnSuccess && typeof window !== 'undefined' && (window as typeof window & { Cal?: unknown }).Cal) {
-				const Cal = (window as typeof window & { Cal: unknown }).Cal as {
-					(action: string, namespace: string, config: Record<string, unknown>): void;
-					ns: { [key: string]: (action: string, config: Record<string, unknown>) => void };
-				};
-				Cal("init", "firstclean", {origin:"https://app.cal.com"});
-				Cal.ns.firstclean("ui", {"theme":"light","hideEventTypeDetails":false,"layout":"month_view"});
-				const calButton = document.getElementById('cal-trigger-button');
-				if (calButton) calButton.click();
+			// Redirect to /schedule after successful submission
+			if (typeof window !== 'undefined') {
+				window.location.assign('/schedule');
+				return;
 			}
 			onSubmitSuccess?.();
 		} catch {
@@ -108,12 +103,12 @@ export default function QuickEstimateForm({ onSubmitSuccess, title = "Quick Free
 					You&apos;re all set. Our phones are open — call now, or we&apos;ll call you within 5 minutes.
 				</p>
 				<PillButton 
-					onClick={() => { window.location.href = 'tel:4072700379'; }} 
+					onClick={() => { window.location.href = 'tel:+14072700379'; }} 
 					className="w-full justify-center"
 				>
 					Call Now
 				</PillButton>
-				<div className="text-xs text-mountain mt-3">We will call you from 407-270-0379</div>
+				<div className="text-xs text-mountain mt-3">We will call you from 407-470-1780</div>
 				<button
 					onClick={() => {
 						setSuccess(false);

@@ -9,7 +9,7 @@ const LocalSchema = () => {
     "alternateName": "Curated Cleanings House Cleaning Services",
     "description": "Professional house cleaning services in Oviedo, Florida. We provide standard and deep cleaning packages for residential properties. Top-rated cleaning service in Oviedo, Winter Park, Casselberry, and surrounding areas.",
     "url": "https://curatedcleanings.com",
-    "telephone": "(407) 270-0379",
+    "telephone": "(407) 470-1780",
     "email": "admin@curatedcleanings.com",
     "address": {
       "@type": "PostalAddress",

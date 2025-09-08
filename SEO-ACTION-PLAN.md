@@ -178,7 +178,7 @@
 
 **Business Details to Use Consistently:**
 - **Name**: Curated Cleanings
-- **Phone**: (407) 270-0379
+- **Phone**: (407) 470-1780
 - **Email**: admin@curatedcleanings.com
 - **Service Area**: Oviedo, Winter Park, Casselberry, Winter Springs, Altamonte Springs, Longwood, FL
 - **Services**: Standard Cleaning ($125+), Deep Cleaning ($150+)
@@ -619,7 +619,7 @@ curated-cleanings-seo/
 
 ## 📞 Contact Information
 
-- **Phone**: (407) 270-0379
+- **Phone**: (407) 470-1780
 - **Email**: admin@curatedcleanings.com
 - **Service Hours**: Monday-Saturday 8:00 AM - 6:00 PM
 - **Service Area**: Central Florida (Oviedo and surrounding areas)

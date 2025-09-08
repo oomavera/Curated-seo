@@ -26,7 +26,7 @@ export default function OfferPage() {
 	useEffect(() => {
 		if (typeof window === 'undefined') return;
 		const w = window as Window & { Cal?: unknown; requestIdleCallback?: (cb: () => void) => number };
-		if (w.Cal) return;
+		if (typeof w.Cal !== 'undefined') return;
 		const load = () => {
 			const script = document.createElement('script');
 			script.innerHTML = `
@@ -114,30 +114,22 @@ export default function OfferPage() {
 
 	// Removed unused mobile detection code
 
-	// Mix team and clean photos from the start
+	// Use all available .webp images from /public/Gallery/cleans (no duplicates)
 	const galleryImages = [
-		// Start with a team photo
-		"/Gallery/team/IMG_5963.webp",
-		// Mix in clean photos immediately
+		"/Gallery/cleans/IMG_0952.webp",
 		"/Gallery/cleans/IMG_1378.webp",
+		"/Gallery/cleans/IMG_2360.webp",
+		"/Gallery/cleans/IMG_2479.webp",
+		"/Gallery/cleans/IMG_2529.webp",
+		"/Gallery/cleans/IMG_2537.webp",
+		"/Gallery/cleans/IMG_2538.webp",
+		"/Gallery/cleans/IMG_2603.webp",
 		"/Gallery/cleans/IMG_2647.webp",
-		// Replaced missing team image with an existing asset
-		"/Gallery/team/ChatGPT Image Aug 23, 2025, 11_33_53 AM.webp",
 		"/Gallery/cleans/IMG_2655.webp",
 		"/Gallery/cleans/IMG_2727.webp",
 		"/Gallery/cleans/IMG_2731.webp",
-		"/Gallery/team/ChatGPT Image Aug 23, 2025, 11_33_53 AM.webp",
 		"/Gallery/cleans/IMG_2780.webp",
 		"/Gallery/cleans/IMG_2845.webp",
-		"/Gallery/cleans/IMG_2538.webp",
-		"/Gallery/team/ChatGPT Image Aug 24, 2025, 09_12_39 AM.webp",
-		"/Gallery/cleans/IMG_2603.webp",
-		"/Gallery/cleans/IMG_0952.webp",
-		"/Gallery/team/IMG_6841(1).webp",
-		"/Gallery/cleans/IMG_2537.webp",
-		"/Gallery/cleans/IMG_2529.webp",
-		"/Gallery/cleans/IMG_2479.webp",
-		"/Gallery/cleans/IMG_2360.webp",
 		"/Gallery/cleans/IMG_3035.webp",
 		"/Gallery/cleans/IMG_3083.webp",
 		"/Gallery/cleans/IMG_3085.webp",
@@ -146,7 +138,7 @@ export default function OfferPage() {
 		"/Gallery/cleans/IMG_3244.webp",
 		"/Gallery/cleans/IMG_3249.webp",
 		"/Gallery/cleans/IMG_3275.webp",
-		"/Gallery/cleans/IMG_6841.webp"
+		"/Gallery/cleans/IMG_6841.webp",
 	];
 	// Smooth CSS-based gallery animation - no JavaScript intervals or state updates needed
 
@@ -155,7 +147,7 @@ export default function OfferPage() {
 	const desktopSlideWidth = 450;
 	const mobileSlideWidth = 220;
 	const desktopSlidesCount = galleryImages.length * 2;
-	const mobileSubset = galleryImages.slice(0, Math.min(10, galleryImages.length));
+	const mobileSubset = galleryImages; // Use all images on mobile as well
 	const mobileSlidesCount = mobileSubset.length * 2;
 	const mobileTrackWidthPx = mobileSlidesCount * mobileSlideWidth + (mobileSlidesCount - 1) * gapPx;
 	const desktopTrackWidthPx = desktopSlidesCount * desktopSlideWidth + (desktopSlidesCount - 1) * gapPx;
@@ -198,12 +190,12 @@ export default function OfferPage() {
 					{/* Mobile: Phone and Call Now Button Row */}
 					<div className="flex justify-between items-center w-full sm:hidden order-2 mt-2">
 						<a 
-							href="tel:4072700379" 
+							href="tel:+14072700379" 
 							className="text-xs font-semibold tracking-wider text-mountain hover:text-midnight transition-colors duration-300 whitespace-nowrap"
 						>
 							(407) 270-0379
 						</a>
-						<PillButton onClick={() => window.open('https://cal.com/curatedcleanings/firstclean', '_blank')} className="px-4 py-2 text-xs">
+						<PillButton onClick={() => window.location.href = 'tel:+14072700379'} className="px-4 py-2 text-xs">
 							CALL NOW
 						</PillButton>
 					</div>
@@ -212,7 +204,7 @@ export default function OfferPage() {
 					{/* Phone Number - Left */}
 					<div className="hidden sm:flex items-center flex-1 -mt-3 sm:-mt-4">
 						<a 
-							href="tel:4072700379" 
+							href="tel:+14072700379" 
 							className="text-xl font-semibold tracking-wider text-mountain hover:text-midnight transition-colors duration-300 whitespace-nowrap"
 						>
 							(407) 270-0379
@@ -237,7 +229,7 @@ export default function OfferPage() {
 					
 					{/* Navigation & Call Now Button - Right */}
 					<div className="hidden sm:flex items-center justify-end flex-1 -mt-3 sm:-mt-4 gap-4">
-						<PillButton onClick={() => window.open('https://cal.com/curatedcleanings/firstclean', '_blank')} className="px-5 py-2 sm:px-8 sm:py-3 text-xs sm:text-base">
+						<PillButton onClick={() => window.location.href = 'tel:+14072700379'} className="px-5 py-2 sm:px-8 sm:py-3 text-xs sm:text-base">
 							CALL NOW
 						</PillButton>
 					</div>
@@ -428,7 +420,7 @@ export default function OfferPage() {
 					{/* LARGE CALL TO ACTION SECTION */}
 					<section className="py-6 sm:py-8 text-center">
 						<a 
-							href="tel:4072700379" 
+							href="tel:+14072700379" 
 							className="inline-flex items-center gap-5 bg-white/20 backdrop-blur-md border border-white/30 text-midnight px-14 py-10 rounded-full text-3xl sm:text-4xl font-bold shadow-lg hover:bg-white/30 hover:border-white/40 transform scale-120 hover:scale-125 transition-all duration-300"
 						>
 							<FaPhone className="text-4xl" />
@@ -572,7 +564,7 @@ export default function OfferPage() {
 						<div className="text-center text-base text-black mb-8">Call or text us to schedule your free estimate and receive a detailed cleaning proposal</div>
 						
 						<div className="flex flex-col md:flex-row gap-8 items-center justify-center mb-12">
-							<a href="tel:4072700379" className="flex items-center gap-4 text-xl text-black hover:text-gray-700 transition-colors">
+							<a href="tel:+14072700379" className="flex items-center gap-4 text-xl text-black hover:text-gray-700 transition-colors">
 								<FaPhone className="text-2xl" />
 								<span>(407) 270-0379</span>
 							</a>
@@ -601,7 +593,7 @@ export default function OfferPage() {
 							<a href="mailto:admin@curatedcleanings.com" aria-label="Email" className="hover:text-blue-600 transition-colors flex items-center gap-2">
 								<FaEnvelope /> admin@curatedcleanings.com
 							</a>
-							<a href="tel:4072700379" aria-label="Phone" className="hover:text-blue-600 transition-colors flex items-center gap-2">
+							<a href="tel:+14072700379" aria-label="Phone" className="hover:text-blue-600 transition-colors flex items-center gap-2">
 								<FaPhone /> (407) 270-0379
 							</a>
 						</div>

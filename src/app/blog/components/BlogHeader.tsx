@@ -109,14 +109,14 @@ export default function BlogHeader({ variant = 'blog' }: BlogHeaderProps) {
               {/* Right: Contact */}
               <div className="flex items-center space-x-6">
                 <a
-                  href="tel:4072700379"
+                  href="tel:+14074701780"
                   className="text-sm font-medium hover:underline transition-colors hidden sm:block"
                   style={{ color: '#000000' }}
                 >
-                  (407) 270-0379
+                  (407) 470-1780
                 </a>
                 <a
-                  href="tel:4072700379"
+                  href="tel:+14074701780"
                   className="px-4 py-2 rounded-full text-sm font-medium hover:opacity-90 transition-all"
                   style={{ backgroundColor: '#000000', color: '#ffffff' }}
                 >

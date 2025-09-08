@@ -17,7 +17,7 @@ export default function LongwoodHouseCleaningPage() {
             "name": "Curated Cleanings",
             "url": "https://curatedcleanings.com/house-cleaning-longwood-fl",
             "image": "https://curatedcleanings.com/images/longwood-hero.jpg",
-            "telephone": "+1-407-270-0379",
+            "telephone": "+1-407-470-1780",
             "priceRange": "$$",
             "address": {"@type":"PostalAddress","addressLocality":"Longwood","addressRegion":"FL","postalCode":"32750","addressCountry":"US"},
             "areaServed": [{"@type":"City","name":"Longwood"},{"@type":"City","name":"Altamonte Springs"},{"@type":"City","name":"Wekiva Springs"}],

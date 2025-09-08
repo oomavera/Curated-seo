@@ -52,7 +52,7 @@ export default function BookOnline() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const w = window as Window & { Cal?: unknown; requestIdleCallback?: (cb: () => void) => number };
-    if (w.Cal) return;
+    if (typeof w.Cal !== 'undefined') return;
     const load = () => {
       const script = document.createElement('script');
       script.innerHTML = `
@@ -137,10 +137,10 @@ export default function BookOnline() {
           </div>
           <div className="flex items-center gap-4">
             <a 
-              href="tel:4072700379" 
+              href="tel:+14074701780" 
               className="text-lg font-semibold tracking-wider text-mountain hover:text-midnight transition-colors duration-300"
             >
-              (407) 270-0379
+              (407) 470-1780
             </a>
             <Link 
               href="/" 

@@ -17,7 +17,7 @@ export default function OrlandoHouseCleaningPage() {
             "name": "Curated Cleanings",
             "url": "https://curatedcleanings.com/house-cleaning-orlando-fl",
             "image": "https://curatedcleanings.com/images/orlando-hero.jpg",
-            "telephone": "+1-407-270-0379",
+            "telephone": "+1-407-470-1780",
             "priceRange": "$$",
             "address": {
               "@type": "PostalAddress",

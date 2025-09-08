@@ -122,6 +122,11 @@ export default function ScrollPopupForm({ triggerElement = "#reviews", callout =
           });
         } catch {}
       }
+      // Redirect to schedule after success
+      if (typeof window !== 'undefined') {
+        window.location.assign('/schedule');
+        return;
+      }
       setTimeout(() => {
         closePopup();
       }, 10000); // Auto-close after 10 seconds
@@ -179,9 +184,9 @@ export default function ScrollPopupForm({ triggerElement = "#reviews", callout =
                     </svg>
                   </div>
                   <h4 className="text-xl font-semibold text-white mb-2">Awesome!</h4>
-                  <p className="text-arctic">We will call you from 407-270-0379</p>
+                  <p className="text-arctic">We will call you from 407-470-1780</p>
                   <PillButton 
-                    onClick={() => window.location.href = 'tel:4072700379'}
+                    onClick={() => window.location.href = 'tel:+14074701780'}
                     className="w-full justify-center mt-4"
                   >
                     Call Now

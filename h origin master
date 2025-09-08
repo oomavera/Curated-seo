@@ -1,5 +1,0 @@
-[33m071094b[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m)[m chore(deploy): production push from WSL
-[33m70bf47d[m[33m ([m[1;31morigin/master[m[33m)[m chore: quick push
-[33m42ca113[m perf: Phase 1 image/LCP/CLS fixes + reduce main-thread work on /, /offer, /offer2; SSR form; prioritize LCP images; remove framer-motion above fold
-[33m9e9ffcc[m feat(offer2): duplicate offer page for Lake Mary with updated hero copy
-[33mf7fa4e3[m feat: Implement Meta Pixel and Conversions API deduplication

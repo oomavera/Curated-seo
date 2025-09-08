@@ -16,7 +16,7 @@ export default function WinterParkHouseCleaningPage() {
             "name": "Curated Cleanings",
             "url": "https://curatedcleanings.com/house-cleaning-winter-park-fl",
             "image": "https://curatedcleanings.com/Gallery/cleans/IMG_0935.webp",
-            "telephone": "+1-XXX-XXX-XXXX",
+            "telephone": "+1-407-470-1780",
             "priceRange": "$$"
           })
         }}

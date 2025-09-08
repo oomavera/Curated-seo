@@ -112,7 +112,11 @@ export default function LeadForm({ quote, onCancel, isSubmitting }: LeadFormProp
     } catch (err) {
       console.error('Unexpected error saving lead on Show Estimate (API):', err);
     }
-    // Move to estimate step
+    // On success, route visitors to /schedule
+    if (typeof window !== 'undefined') {
+      window.location.assign('/schedule');
+      return;
+    }
     setStep('estimate');
     setErrors({});
   };

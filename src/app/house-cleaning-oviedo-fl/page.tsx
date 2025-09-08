@@ -16,7 +16,7 @@ export default function OviedoHouseCleaningPage() {
 						"name": "Curated Cleanings",
 						"url": "https://curatedcleanings.com/house-cleaning-oviedo-fl",
 						"image": "https://curatedcleanings.com/images/oviedo-hero.jpg",
-						"telephone": "+1-XXX-XXX-XXXX",
+						"telephone": "+1-407-470-1780",
 						"priceRange": "$$",
 						"address": {
 							"@type": "PostalAddress",
