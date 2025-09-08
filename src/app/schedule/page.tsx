@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import { FaEnvelope, FaPhone } from "react-icons/fa";
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import dynamic from "next/dynamic";
 import { usePrefersReducedMotion } from "../../utils/usePrefersReducedMotion";
 import logo from "../../../public/Logo2.png";
@@ -32,8 +32,69 @@ export default function SchedulePage() {
     }, []);
 
     const prefersReducedMotion = usePrefersReducedMotion();
-    // Cal.com React SDK removed; no initialization needed
-    useEffect(() => {}, []);
+    // Suppress Cal.com iframe-induced auto-scroll/focus during initial load
+    const calIframeRef = useRef<HTMLIFrameElement | null>(null);
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+
+        const savedY = window.scrollY;
+        type ScrollIntoViewFn = (arg?: boolean | ScrollIntoViewOptions) => void;
+        type ScrollToFn = ((x: number, y: number) => void) & ((options: ScrollToOptions) => void);
+
+        const elProto = Element.prototype as unknown as { scrollIntoView: ScrollIntoViewFn };
+        const originalScrollIntoView = elProto.scrollIntoView.bind(Element.prototype) as ScrollIntoViewFn;
+        const originalScrollTo = window.scrollTo.bind(window) as ScrollToFn;
+
+        const deadline = Date.now() + 3500; // suppression window in ms
+        let restored = false;
+
+        (elProto as { scrollIntoView: ScrollIntoViewFn }).scrollIntoView = function (arg?: boolean | ScrollIntoViewOptions) {
+            if (Date.now() < deadline) {
+                return; // no-op
+            }
+            return originalScrollIntoView.call(this as unknown as Element, arg);
+        };
+
+        (window as unknown as { scrollTo: ScrollToFn }).scrollTo = function (
+            xOrOptions?: number | ScrollToOptions,
+            y?: number
+        ) {
+            if (Date.now() < deadline) {
+                return originalScrollTo(0, savedY);
+            }
+            if (typeof xOrOptions === 'number') {
+                return originalScrollTo(xOrOptions, y ?? 0);
+            }
+            return originalScrollTo(xOrOptions as ScrollToOptions);
+        } as ScrollToFn;
+
+        const onFocusIn = () => {
+            if (document.activeElement === calIframeRef.current && Date.now() < deadline) {
+                try { (document.activeElement as HTMLElement | null)?.blur?.(); } catch {}
+                try { (document.body as HTMLElement).focus(); } catch {}
+                try { originalScrollTo(0, savedY); } catch {}
+            }
+        };
+        document.addEventListener('focusin', onFocusIn);
+
+        const restore = () => {
+            if (restored) return;
+            restored = true;
+            try { (elProto as { scrollIntoView: ScrollIntoViewFn }).scrollIntoView = originalScrollIntoView; } catch {}
+            try { (window as unknown as { scrollTo: ScrollToFn }).scrollTo = originalScrollTo; } catch {}
+            try { originalScrollTo(0, savedY); } catch {}
+            document.removeEventListener('focusin', onFocusIn);
+        };
+
+        const timer = setTimeout(restore, 3800);
+        window.addEventListener('beforeunload', restore, { once: true });
+
+        return () => {
+            clearTimeout(timer);
+            window.removeEventListener('beforeunload', restore);
+            restore();
+        };
+    }, []);
 
     // Gallery configuration
     const galleryImages = [
@@ -253,6 +314,8 @@ export default function SchedulePage() {
 						<div className="rounded-2xl border border-white/20 bg-white/60 backdrop-blur p-3 sm:p-4">
 							<div className="h-[900px] sm:h-[1000px] lg:h-[1100px] overflow-hidden rounded-xl" style={calContainerStyle}>
 								<iframe
+									ref={calIframeRef}
+									tabIndex={-1}
 									src="https://cal.com/curatedcleanings/firstclean?layout=week_view&theme=light&hideEventTypeDetails=1"
 									style={{ width: "100%", height: "100%", border: 0, overflow: "hidden" }}
 									loading="lazy"
