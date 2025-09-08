@@ -52,8 +52,7 @@ export default function SchedulePage() {
         const originalWindowScrollBy = (window.scrollBy as unknown as ScrollToFn)?.bind(window) ?? null;
 
 		const isDesktopViewport = typeof window !== 'undefined' && window.matchMedia('(min-width: 640px)').matches;
-		const suppressionMs = isDesktopViewport ? 30000 : 0;
-        let restored = false;
+		let restored = false;
 
         const onFocusIn = (e: FocusEvent) => {
             const container = calContainerRef.current;
