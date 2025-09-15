@@ -66,7 +66,13 @@ export const metadata: Metadata = {
     canonical: "https://curatedcleanings.com"
   },
   icons: {
-    icon: "/NewestFavicon.png"
+    icon: [
+      { url: "/NewestFavicon.png", type: "image/png" },
+      { url: "/NewestFavicon.png", sizes: "32x32", type: "image/png" },
+      { url: "/NewestFavicon.png", sizes: "192x192", type: "image/png" }
+    ],
+    shortcut: "/NewestFavicon.png",
+    apple: "/NewestFavicon.png"
   }
 };
 
