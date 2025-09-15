@@ -127,7 +127,7 @@ export default function EstimatePage() {
 
           {/* Right Column - Quote Form */}
           <div className="order-1 lg:order-2">
-            <div className="bg-white rounded-lg shadow-sm p-6 space-y-6">
+            <div className="bg-white lead-form-black rounded-lg shadow-sm p-6 space-y-6">
               <FrequencyField
                 value={quoteInput.frequency}
                 onChange={(frequency) => handleQuoteInputChange('frequency', frequency)}

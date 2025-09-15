@@ -77,10 +77,11 @@ export default function MarketingImage() {
 
           {/* Service Areas Quick List */}
           <div className="mt-4 text-center">
-            <h4 className="text-sm font-semibold text-midnight mb-2">Serving Greater Orlando</h4>
+            <h4 className="text-sm font-semibold text-midnight mb-2">Serving All of Seminole County</h4>
             <div className="text-xs text-mountain space-y-1">
-              <div>Winter Park • Lake Mary • Oviedo</div>
-              <div>Orlando • Longwood • Altamonte Springs</div>
+              <div>Altamonte Springs • Casselberry • Lake Mary • Longwood • Oviedo • Sanford</div>
+              <div>Winter Springs • Heathrow • Wekiwa Springs • Fern Park • Chuluota</div>
+              <div>Geneva • Goldenrod • Midway • Black Hammock</div>
             </div>
           </div>
         </div>

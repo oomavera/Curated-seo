@@ -51,6 +51,7 @@ export default function QuickEstimateForm({ onSubmitSuccess, title = "Quick Free
 					source: 'Landing Page',
 					eventId,
 					externalId,
+					suppressMeta: true,
 				}),
 			});
 
@@ -72,9 +73,9 @@ export default function QuickEstimateForm({ onSubmitSuccess, title = "Quick Free
 					});
 				} catch {}
 			}
-			// Redirect to /schedule after successful submission
+			// Redirect to /qualify after successful submission
 			if (typeof window !== 'undefined') {
-				window.location.assign('/schedule');
+				window.location.assign('/qualify');
 				return;
 			}
 			onSubmitSuccess?.();
@@ -88,18 +89,18 @@ export default function QuickEstimateForm({ onSubmitSuccess, title = "Quick Free
 	if (success) {
 		return (
 			<motion.div 
-				className="bg-arctic/40 backdrop-blur-sm border border-slopes/30 rounded-2xl p-6 shadow-xl text-center"
+				className="bg-arctic/40 backdrop-blur-sm border border-slopes/30 rounded-xl p-5 shadow-xl text-center"
 				initial={{ opacity: 0, scale: 0.95 }}
 				animate={{ opacity: 1, scale: 1 }}
 				transition={{ duration: 0.3 }}
 			>
-				<div className="text-green-600 mb-4">
-					<svg className="w-16 h-16 mx-auto" fill="currentColor" viewBox="0 0 20 20">
+				<div className="text-green-600 mb-3">
+					<svg className="w-14 h-14 mx-auto" fill="currentColor" viewBox="0 0 20 20">
 						<path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
 					</svg>
 				</div>
-				<h3 className="text-xl font-semibold text-midnight mb-2">Thank you!</h3>
-				<p className="text-mountain mb-4">
+				<h3 className="text-lg font-semibold text-midnight mb-1">Thank you!</h3>
+				<p className="text-sm text-mountain mb-3">
 					You&apos;re all set. Our phones are open — call now, or we&apos;ll call you within 5 minutes.
 				</p>
 				<PillButton 
@@ -108,13 +109,13 @@ export default function QuickEstimateForm({ onSubmitSuccess, title = "Quick Free
 				>
 					Call Now
 				</PillButton>
-				<div className="text-xs text-mountain mt-3">We will call you from 407-470-1780</div>
+				<div className="text-xs text-mountain mt-2">We will call you from 407-470-1780</div>
 				<button
 					onClick={() => {
 						setSuccess(false);
 						setFormData({ name: "", phone: "", email: "" });
 					}}
-					className="text-mountain hover:text-midnight transition-colors text-sm underline mt-4"
+					className="text-mountain hover:text-midnight transition-colors text-sm underline mt-3"
 				>
 					Submit another request
 				</button>
@@ -124,22 +125,21 @@ export default function QuickEstimateForm({ onSubmitSuccess, title = "Quick Free
 
 	return (
 		<motion.div 
-			className="bg-arctic/40 backdrop-blur-sm border border-slopes/30 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-500"
+			className="lead-form-black bg-arctic/40 backdrop-blur-sm border border-slopes/30 rounded-xl p-4 shadow-xl"
 			initial={{ opacity: 0, y: 20 }}
 			animate={{ opacity: 1, y: 0 }}
 			transition={{ duration: 0.6 }}
 		>
-			<div className="text-center mb-6">
-				<div className="inline-flex items-center gap-2 mb-4 px-4 py-2 bg-gradient-to-r from-mountain/10 to-apres-ski/10 rounded-full border border-mountain/20">
-					<div className="w-2 h-2 bg-gradient-to-r from-mountain to-midnight rounded-full animate-pulse"></div>
-					<h2 className="text-lg font-semibold text-midnight tracking-wider">{title}</h2>
+			<div className="text-center mb-4">
+				<div className="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-mountain/10 to-apres-ski/10 rounded-full border border-mountain/20">
+					<div className="w-1.5 h-1.5 bg-gradient-to-r from-mountain to-midnight rounded-full"></div>
+					<h2 className="text-base font-semibold text-midnight tracking-wider whitespace-nowrap">{title}</h2>
 				</div>
-				<p className="text-sm text-mountain">Get your personalized cleaning quote in 60 seconds</p>
 			</div>
 
-			<form onSubmit={handleSubmit} className="space-y-4">
+			<form onSubmit={handleSubmit} className="space-y-3">
 				<div>
-					<label htmlFor="name" className="block text-sm font-medium text-midnight mb-2">
+					<label htmlFor="name" className="block text-xs font-medium text-midnight mb-1.5">
 						Full Name *
 					</label>
 					<input
@@ -149,13 +149,13 @@ export default function QuickEstimateForm({ onSubmitSuccess, title = "Quick Free
 						value={formData.name}
 						onChange={handleInputChange}
 						required
-						className="input-glass px-4 py-3 w-full text-midnight placeholder-mountain/60 rounded-full"
+						className="input-glass px-3 py-2.5 w-full text-midnight placeholder-mountain/60 rounded-full"
 						placeholder="Enter your full name"
 					/>
 				</div>
 
 				<div>
-					<label htmlFor="phone" className="block text-sm font-medium text-midnight mb-2">
+					<label htmlFor="phone" className="block text-xs font-medium text-midnight mb-1.5">
 						Phone Number *
 					</label>
 					<input
@@ -165,15 +165,15 @@ export default function QuickEstimateForm({ onSubmitSuccess, title = "Quick Free
 						value={formData.phone}
 						onChange={handleInputChange}
 						required
-						className="input-glass px-4 py-3 w-full text-midnight placeholder-mountain/60 rounded-full"
+						className="input-glass px-3 py-2.5 w-full text-midnight placeholder-mountain/60 rounded-full"
 						placeholder="(407) 123-4567"
 					/>
 				</div>
 
 				{showEmail && (
 					<div>
-						<label htmlFor="email" className="block text-sm font-medium text-midnight mb-2">
-							Email Address (optional)
+						<label htmlFor="email" className="block text-xs font-medium text-midnight mb-1.5">
+							Email Address *
 						</label>
 						<input
 							type="email"
@@ -181,15 +181,16 @@ export default function QuickEstimateForm({ onSubmitSuccess, title = "Quick Free
 							name="email"
 							value={formData.email}
 							onChange={handleInputChange}
-							className="input-glass px-4 py-3 w-full text-midnight placeholder-mountain/60 rounded-full"
+							required
+							className="input-glass px-3 py-2.5 w-full text-midnight placeholder-mountain/60 rounded-full"
 							placeholder="your@email.com"
 						/>
 					</div>
 				)}
 
 				{error && (
-					<div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-						<p className="text-sm text-red-800">{error}</p>
+					<div className="p-2 bg-red-50 border border-red-200 rounded-lg">
+						<p className="text-xs text-red-800">{error}</p>
 					</div>
 				)}
 
@@ -204,12 +205,6 @@ export default function QuickEstimateForm({ onSubmitSuccess, title = "Quick Free
 					)}
 				</PillButton>
 			</form>
-
-			<div className="mt-4 text-center text-xs text-mountain">
-				By submitting, you agree to receive calls and texts about our services. 
-				<br />
-				We respect your privacy and won&apos;t spam you.
-			</div>
 		</motion.div>
 	);
 }

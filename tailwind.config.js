@@ -15,6 +15,7 @@ module.exports = {
         slopes: '#B3B7BA',
         arctic: '#D3D1CE',
         snow: '#F8F7F4',
+        brand: '#0000F0',
       },
     },
   },

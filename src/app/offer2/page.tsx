@@ -2,7 +2,6 @@
 import Image from "next/image";
 import { FaEnvelope, FaPhone } from "react-icons/fa";
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import dynamic from "next/dynamic";
 import { usePrefersReducedMotion } from "../../utils/usePrefersReducedMotion";
 import logo from "../../../public/Logo2.png";
@@ -160,104 +159,59 @@ export default function OfferPageLakeMary() {
 	const desktopTrackWidthPx = desktopSlidesCount * desktopSlideWidth + (desktopSlidesCount - 1) * gapPx;
 
 	return (
-		<div id="main-content" className="textured-background min-h-screen w-full font-sans text-midnight">
+		<div id="main-content" className="min-h-screen w-full font-sans text-midnight">
+			{/* ABOVE THE FOLD (white) */}
+			<div className="bg-white text-midnight">
 			{/* HERO SECTION - ABOVE THE FOLD */}
-			<section className="relative bg-gradient-to-br from-snow via-arctic/50 to-slopes/20 min-h-screen flex flex-col overflow-visible">
+				<section className="relative bg-white min-h-screen flex flex-col overflow-visible">
 				{showAurora && <DynamicAurora />}
 				{/* Header */}
-				<header className="flex flex-col sm:flex-row justify-center sm:justify-between items-center py-4 sm:py-6 px-4 sm:px-8 max-w-7xl mx-auto w-full gap-2 sm:gap-4 rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl">
-					{/* Mobile: Centered Logo First */}
-					<div className="flex justify-center items-center sm:hidden order-1">
-						<div className="relative">
-							<Image 
-								src={logo} 
-								alt="Curated Cleanings Logo" 
-								width={360} 
-								height={72} 
-								className="object-cover max-w-[70vw]" 
-								style={{ height: '36px', width: 'auto', objectFit: 'cover', objectPosition: 'center', opacity: 0.8 }}
-							/>
+					<header className="w-full max-w-7xl mx-auto px-4 sm:px-8 py-2 sm:py-3">
+						{/* Mobile header (Apple-like) */}
+						<div className="flex items-center justify-between sm:hidden">
+							<div className="flex items-center">
+								<Image src={logo} alt="Curated Cleanings" width={320} height={80} style={{ height: '64px', width: 'auto', objectFit: 'contain', opacity: 0.95 }} />
+							</div>
+							<div className="flex-1" />
+							<PillButton onClick={() => window.location.href = 'tel:+14074701780'} variant="inverse" className="px-2 py-[2px] text-[10px]">CALL NOW</PillButton>
 						</div>
-					</div>
 
-					{/* Mobile: Phone and Call Now Button Row */}
-					<div className="flex justify-between items-center w-full sm:hidden order-2 mt-2">
-						<a 
-							href="tel:+14074701780" 
-							className="text-xs font-semibold tracking-wider text-mountain hover:text-midnight transition-colors duration-300 whitespace-nowrap"
-						>
-							(407) 470-1780
-						</a>
-						<PillButton onClick={() => window.location.href = 'tel:+14074701780'} className="px-4 py-2 text-xs">
-							CALL NOW
-						</PillButton>
+						{/* Desktop header */}
+						<div className="hidden sm:flex items-center justify-between">
+							<div className="flex justify-start items-center">
+								<Image src={logo} alt="Curated Cleanings" width={540} height={72} style={{ height: '186px', width: 'auto', opacity: 0.95 }} />
 					</div>
-
-					{/* Desktop Layout */}
-					{/* Phone Number - Left */}
-					<div className="hidden sm:flex items-center flex-1 -mt-3 sm:-mt-4">
-						<a 
-							href="tel:+14074701780" 
-							className="text-xl font-semibold tracking-wider text-mountain hover:text-midnight transition-colors duration-300 whitespace-nowrap"
-						>
-							(407) 470-1780
-						</a>
+							<div className="flex-1" />
+							<div className="flex items-center justify-end">
+								<PillButton onClick={() => window.location.href = 'tel:+14074701780'} variant="inverse" className="px-4 py-1.5 text-sm">CALL NOW</PillButton>
 					</div>
-					
-					{/* Logo - Center */}
-					<div className="hidden sm:flex justify-center items-center">
-						<div className="relative mt-2 sm:mt-3">
-							<Image 
-								src={logo} 
-								alt="Curated Cleanings Logo" 
-								width={600} 
-								height={120} 
-								priority 
-								placeholder="blur" 
-								className="object-cover max-w-[60vw]" 
-								style={{ height: '60px', width: 'auto', objectFit: 'cover', objectPosition: 'center', opacity: 0.8 }} 
-							/>
-						</div>
-					</div>
-					
-					{/* Navigation & Call Now Button - Right */}
-					<div className="hidden sm:flex items-center justify-end flex-1 -mt-3 sm:-mt-4 gap-4">
-						<Link 
-							href="/blog" 
-							className="text-mountain hover:text-midnight transition-colors duration-300 font-medium text-sm sm:text-base hidden sm:block"
-						>
-							Blog
-						</Link>
-						<PillButton onClick={() => window.location.href = 'tel:+14074701780'} className="px-5 py-2 sm:px-8 sm:py-3 text-xs sm:text-base">
-							CALL NOW
-						</PillButton>
 					</div>
 				</header>
 
 				{/* Main Content */}
-				<div className="flex-1 flex flex-col justify-center px-8 max-w-7xl mx-auto w-full mt-4 sm:mt-12">
+				<div className="flex-1 flex flex-col justify-center px-8 max-w-7xl mx-auto w-full mt-1 sm:mt-6">
 					{/* Hero Text */}
 					<div className="relative z-20 text-center mb-4 sm:mb-12 no-blend">
-						<h1 className="text-3xl xs:text-4xl md:text-5xl xl:text-6xl font-black mb-3 leading-tight text-solid-black tracking-tight" style={{ fontFamily: 'var(--font-sora), Sora, Inter, Arial, Helvetica, sans-serif' }}>
+							<h1 className="font-hero text-2xl xs:text-3xl md:text-4xl xl:text-5xl mb-2 leading-tight text-midnight">
 							Lake Mary Homeowners: Get your first clean for $44
 						</h1>
-						<div className="text-base xs:text-lg md:text-xl font-light text-solid-black">
+							<div className="font-hero-sub text-base xs:text-lg md:text-xl text-mountain">
 							Here&apos;s a sign you need a spotless, fast, easy & stress-free house cleaning! Offer ends soon
 							<div className="mt-1 sm:mt-2 flex items-center justify-center gap-2 sm:gap-3 tabular-nums">
 								<div className="flex items-center justify-center gap-2">
-									<div className="rounded-2xl px-3 sm:px-4 py-2 bg-white/30 backdrop-blur-md border border-white/40 shadow-sm">
+									<div className="rounded-2xl px-3 sm:px-4 py-2 bg-black/5 backdrop-blur-md border border-black/10 shadow-sm">
 										<div className="text-2xl sm:text-4xl font-extrabold text-midnight leading-none tracking-tight" style={{ minWidth: '2.5ch', textAlign: 'center' }}>{String(timeLeft.d).padStart(2, '0')}</div>
 										<div className="text-[10px] sm:text-xs text-mountain -mt-0.5 text-center">days</div>
 									</div>
-									<div className="rounded-2xl px-3 sm:px-4 py-2 bg-white/30 backdrop-blur-md border border-white/40 shadow-sm">
+									<div className="rounded-2xl px-3 sm:px-4 py-2 bg-black/5 backdrop-blur-md border border-black/10 shadow-sm">
 										<div className="text-2xl sm:text-4xl font-extrabold text-midnight leading-none tracking-tight" style={{ minWidth: '2.5ch', textAlign: 'center' }}>{String(timeLeft.h).padStart(2, '0')}</div>
 										<div className="text-[10px] sm:text-xs text-mountain -mt-0.5 text-center">hrs</div>
 									</div>
-									<div className="rounded-2xl px-3 sm:px-4 py-2 bg-white/30 backdrop-blur-md border border-white/40 shadow-sm">
+									<div className="rounded-2xl px-3 sm:px-4 py-2 bg-black/5 backdrop-blur-md border border-black/10 shadow-sm">
 										<div className="text-2xl sm:text-4xl font-extrabold text-midnight leading-none tracking-tight" style={{ minWidth: '2.5ch', textAlign: 'center' }}>{String(timeLeft.m).padStart(2, '0')}</div>
 										<div className="text-[10px] sm:text-xs text-mountain -mt-0.5 text-center">min</div>
 									</div>
-									<div className="rounded-2xl px-3 sm:px-4 py-2 bg-white/30 backdrop-blur-md border border-white/40 shadow-sm">
+									<div className="rounded-2xl px-3 sm:px-4 py-2 bg-black/5 backdrop-blur-md border border-black/10 shadow-sm">
 										<div className="text-2xl sm:text-4xl font-extrabold text-midnight leading-none tracking-tight" style={{ minWidth: '2.5ch', textAlign: 'center' }}>{String(timeLeft.s).padStart(2, '0')}</div>
 										<div className="text-[10px] sm:text-xs text-mountain -mt-0.5 text-center">sec</div>
 									</div>
@@ -291,12 +245,7 @@ export default function OfferPageLakeMary() {
 								className="w-16 sm:w-20 h-auto opacity-70 hover:opacity-100 transition-opacity duration-300"
 							/>
 						</div>
-						<div className="flex items-center gap-2 text-midnight">
-							<svg className="w-5 h-5 text-black" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-								<path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-							</svg>
-							<span className="text-sm sm:text-base font-light text-solid-black" style={{ fontFamily: 'var(--font-sora), Sora, Inter, Arial, Helvetica, sans-serif', letterSpacing: '-0.025em' }}>Partnered & Verified</span>
-						</div>
+							{/* Partner badge removed for compactness */}
 					</div>
 
 					{/* Main Sections - Desktop: Left Photo Gallery, Right Form | Mobile: Form Center */}
@@ -309,7 +258,7 @@ export default function OfferPageLakeMary() {
 										className="gallery-slider flex h-full items-center gap-4 absolute"
 										style={{
 											width: `${desktopTrackWidthPx}px`,
-											animation: prefersReducedMotion ? 'none' : `slideGallery ${galleryImages.length * 5}s linear infinite`,
+												animation: prefersReducedMotion ? 'none' : `slideGallery ${galleryImages.length * 2.5}s linear infinite`,
 											transform: 'translate3d(0, 0, 0)',
 											willChange: 'transform'
 										}}
@@ -355,7 +304,7 @@ export default function OfferPageLakeMary() {
 									className="gallery-slider flex h-full items-center gap-4 absolute"
 									style={{
 										width: `${mobileTrackWidthPx}px`,
-										animation: prefersReducedMotion ? 'none' : `slideGalleryMobile ${mobileSubset.length * 3.5}s linear infinite`,
+											animation: prefersReducedMotion ? 'none' : `slideGalleryMobile ${mobileSubset.length * 1.75}s linear infinite`,
 										transform: 'translate3d(0, 0, 0)',
 										willChange: 'transform'
 									}}
@@ -382,11 +331,16 @@ export default function OfferPageLakeMary() {
 								<div className="pane-bottom-highlight" />
 							</div>
 						</GlassCard>
+						</section>
+					</div>
 					</section>
 
 					{/* Scroll-triggered Lead Form Popup */}
-					<ScrollPopupForm triggerElement="#reviews" callout="Wait! Get your $44 house cleaning" trackMetaLead metaEventName="Lead" />
+					<ScrollPopupForm triggerElement="#reviews" callout="Wait! Get your $44 house cleaning" trackMetaLead metaEventName="Lead" buttonClassName="bg-black text-white" />
+			</div>
 
+			{/* BELOW (pure white) */}
+			<div className="bg-white text-midnight">
 					{/* Customer Reviews Grid Section */}
 					<section id="reviews" className="py-6 sm:py-12 relative z-10">
 						<div className="max-w-7xl mx-auto px-4">
@@ -431,7 +385,7 @@ export default function OfferPageLakeMary() {
 					<section className="py-8 sm:py-12 relative">
 						<div className="max-w-6xl mx-auto px-4 sm:px-6">
 							<GlassCard className="p-12 sm:p-16 lg:p-20 transition-transform duration-300 hover:scale-[1.005] overflow-hidden">
-								<div className="bg-behind-glass" style={{ background: "radial-gradient(120% 120% at 50% 10%, rgba(255,182,193,0.25), rgba(173,216,230,0.20)), radial-gradient(100% 100% at 80% 80%, rgba(255,255,255,0.6), transparent 50%)" }} />
+							
 								
 								<div className="relative z-10 text-left text-lg sm:text-xl text-black font-light leading-relaxed max-w-5xl mx-auto">
 									<div className="mb-12 sm:mb-16 text-center">
@@ -456,17 +410,16 @@ export default function OfferPageLakeMary() {
 					<section id="packages" className="py-12 flex flex-col items-center">
 						{/* Standard Cleaning Card */}
 						<GlassCard className="mb-12 w-full max-w-2xl p-4 sm:p-10 transition-transform duration-300 hover:scale-[1.02] overflow-hidden">
-							{/* Background bleed for frosted effect (clipped to card) */}
-							<div className="bg-behind-glass" style={{ background: "radial-gradient(120% 120% at 50% 10%, rgba(255,182,193,0.35), rgba(173,216,230,0.25))" }} />
-							<h2 className="text-2xl sm:text-3xl tracking-[0.2em] text-center mb-4 sm:mb-6 font-light text-solid-black">STANDARD HOUSE CLEANING</h2>
-							<ul className="text-base sm:text-lg text-midnight flex flex-col gap-3 sm:gap-4 mb-6 sm:mb-10 font-light leading-snug sm:leading-relaxed">
-								<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-midnight bg-white/20 backdrop-blur-md border border-white/30 shadow-sm">✓</span><span>Dusting all surfaces (furniture, shelves, baseboards)</span></li>
-								<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-midnight bg-white/20 backdrop-blur-md border border-white/30 shadow-sm">✓</span><span>Vacuuming carpets and rugs</span></li>
-								<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-midnight bg-white/20 backdrop-blur-md border border-white/30 shadow-sm">✓</span><span>Sweeping and mopping floors</span></li>
-								<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-midnight bg-white/20 backdrop-blur-md border border-white/30 shadow-sm">✓</span><span>Cleaning and disinfecting bathroom(s): toilet, sink, shower/tub, mirrors)</span></li>
-								<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-midnight bg-white/20 backdrop-blur-md border border-white/30 shadow-sm">✓</span><span>Wiping kitchen counters and exterior of appliances (fridge, oven, microwave)</span></li>
-								<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-midnight bg-white/20 backdrop-blur-md border border-white/30 shadow-sm">✓</span><span>Emptying trash bins and replacing liners</span></li>
-								<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-midnight bg-white/20 backdrop-blur-md border border-white/30 shadow-sm">✓</span><span>Making beds (not changing linens)</span></li>
+						
+							<h2 className="font-hero-sub text-2xl sm:text-3xl tracking-[0.2em] text-center mb-4 sm:mb-6 text-brand font-bold">STANDARD HOUSE CLEANING</h2>
+						<ul className="text-base sm:text-lg text-black flex flex-col gap-3 sm:gap-4 mb-6 sm:mb-10 leading-snug sm:leading-relaxed" style={{ fontWeight: 300 }}>
+							<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-black bg-white border border-gray-300 shadow-sm">✓</span><span className="text-black">Dusting all surfaces (furniture, shelves)</span></li>
+							<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-black bg-white border border-gray-300 shadow-sm">✓</span><span className="text-black">Vacuuming carpets and rugs</span></li>
+							<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-black bg-white border border-gray-300 shadow-sm">✓</span><span className="text-black">Sweeping and mopping floors</span></li>
+							<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-black bg-white border border-gray-300 shadow-sm">✓</span><span className="text-black">Cleaning and disinfecting bathroom(s): toilet, sink, shower/tub, mirrors)</span></li>
+							<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-black bg-white border border-gray-300 shadow-sm">✓</span><span className="text-black">Wiping kitchen counters and exterior of appliances (fridge, oven, microwave)</span></li>
+							<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-black bg-white border border-gray-300 shadow-sm">✓</span><span className="text-black">Emptying trash bins and replacing liners</span></li>
+							<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-black bg-white border border-gray-300 shadow-sm">✓</span><span className="text-black">Making beds (not changing linens)</span></li>
 							</ul>
 							<div className="flex flex-wrap justify-center gap-2 sm:gap-4 mt-6 sm:mt-12">
 								<PillButton onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>GET ESTIMATE</PillButton>
@@ -475,19 +428,18 @@ export default function OfferPageLakeMary() {
 						</GlassCard>
 						{/* Deep Clean Card */}
 						<GlassCard className="mb-12 w-full max-w-2xl p-4 sm:p-10 transition-transform duration-300 hover:scale-[1.02] overflow-hidden">
-							<div className="bg-behind-glass" style={{ background: "radial-gradient(120% 120% at 50% 10%, rgba(255,182,193,0.35), rgba(173,216,230,0.25))" }} />
-							<h2 className="text-2xl sm:text-3xl tracking-[0.2em] text-center mb-4 sm:mb-6 font-light text-solid-black">DEEP CLEANING SERVICES</h2>
-							<ul className="text-base sm:text-lg text-midnight flex flex-col gap-3 sm:gap-4 mb-6 sm:mb-10 font-light leading-snug sm:leading-relaxed">
-								<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-midnight bg-white/20 backdrop-blur-md border border-white/30 shadow-sm">+</span><span>All Standard Services plus</span></li>
-								<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-midnight bg-white/20 backdrop-blur-md border border-white/30 shadow-sm">✓</span><span>Back of Toilet</span></li>
-								<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-midnight bg-white/20 backdrop-blur-md border border-white/30 shadow-sm">✓</span><span>Inside Microwave</span></li>
-								<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-midnight bg-white/20 backdrop-blur-md border border-white/30 shadow-sm">✓</span><span>Exterior of Kitchen Cabinets</span></li>
-								<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-midnight bg-white/20 backdrop-blur-md border border-white/30 shadow-sm">✓</span><span>Dust Very High / Cluttered Shelves</span></li>
-								<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-midnight bg-white/20 backdrop-blur-md border border-white/30 shadow-sm">✓</span><span>Change Bed Linens</span></li>
-								<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-midnight bg-white/20 backdrop-blur-md border border-white/30 shadow-sm">✓</span><span>Inside Fridge</span></li>
-								<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-midnight bg-white/20 backdrop-blur-md border border-white/30 shadow-sm">✓</span><span>Inside Oven</span></li>
-								<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-midnight bg-white/20 backdrop-blur-md border border-white/30 shadow-sm">✓</span><span>Ceiling Fans ($7 per fan)</span></li>
-								<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-midnight bg-white/20 backdrop-blur-md border border-white/30 shadow-sm">✓</span><span>Interior Windows</span></li>
+						
+							<h2 className="font-hero-sub text-2xl sm:text-3xl tracking-[0.2em] text-center mb-4 sm:mb-6 text-brand font-bold">DEEP CLEANING SERVICES</h2>
+						<ul className="text-base sm:text-lg text-black flex flex-col gap-3 sm:gap-4 mb-6 sm:mb-10 leading-snug sm:leading-relaxed" style={{ fontWeight: 300 }}>
+							<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-black bg-white border border-gray-300 shadow-sm">+</span><span className="text-black">All Standard Services plus</span></li>
+							<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-black bg-white border border-gray-300 shadow-sm">✓</span><span className="text-black">Inside Microwave</span></li>
+							<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-black bg-white border border-gray-300 shadow-sm">✓</span><span className="text-black">Exterior of Kitchen Cabinets</span></li>
+							<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-black bg-white border border-gray-300 shadow-sm">✓</span><span className="text-black">Dust Very High / Cluttered Shelves</span></li>
+							<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-black bg-white border border-gray-300 shadow-sm">✓</span><span className="text-black">Change Bed Linens</span></li>
+							<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-black bg-white border border-gray-300 shadow-sm">✓</span><span className="text-black">Inside Fridge</span></li>
+							<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-black bg-white border border-gray-300 shadow-sm">✓</span><span className="text-black">Inside Oven</span></li>
+							<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-black bg-white border border-gray-300 shadow-sm">✓</span><span className="text-black">Ceiling Fans</span></li>
+							<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-black bg-white border border-gray-300 shadow-sm">✓</span><span className="text-black">Interior Windows</span></li>
 							</ul>
 							<div className="flex flex-wrap justify-center gap-2 sm:gap-4 mt-6 sm:mt-12">
 								<PillButton onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>GET ESTIMATE</PillButton>
@@ -496,20 +448,20 @@ export default function OfferPageLakeMary() {
 						</GlassCard>
 						{/* Add-ons Card */}
 						<GlassCard className="mb-12 w-full max-w-2xl p-4 sm:p-10 transition-transform duration-300 hover:scale-[1.02] overflow-hidden">
-							<div className="bg-behind-glass" style={{ background: "radial-gradient(120% 120% at 50% 10%, rgba(255,182,193,0.35), rgba(173,216,230,0.25))" }} />
-							<h2 className="text-2xl sm:text-3xl tracking-[0.2em] text-center mb-4 sm:mb-6 font-light text-solid-black">ADDONS</h2>
-							<ul className="text-base sm:text-lg text-midnight flex flex-col gap-3 sm:gap-4 mb-6 sm:mb-10 font-light leading-snug sm:leading-relaxed">
-								<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-midnight bg-white/20 backdrop-blur-md border border-white/30 shadow-sm">★</span><span>Laundry</span></li>
-								<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-midnight bg-white/20 backdrop-blur-md border border-white/30 shadow-sm">★</span><span>Spot Cleaning Walls</span></li>
-								<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-midnight bg-white/20 backdrop-blur-md border border-white/30 shadow-sm">★</span><span>Hand Scrubbing Baseboards</span></li>
-								<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-midnight bg-white/20 backdrop-blur-md border border-white/30 shadow-sm">★</span><span>Vacuum Dusting Baseboards</span></li>
-								<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-midnight bg-white/20 backdrop-blur-md border border-white/30 shadow-sm">★</span><span>Eco-friendly Consumables</span></li>
-								<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-midnight bg-white/20 backdrop-blur-md border border-white/30 shadow-sm">★</span><span>QC Photos</span></li>
-								<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-midnight bg-white/20 backdrop-blur-md border border-white/30 shadow-sm">★</span><span>Air Freshener</span></li>
-								<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-midnight bg-white/20 backdrop-blur-md border border-white/30 shadow-sm">★</span><span>Reset Fridge</span></li>
-								<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-midnight bg-white/20 backdrop-blur-md border border-white/30 shadow-sm">★</span><span>Deodorizer</span></li>
-								<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-midnight bg-white/20 backdrop-blur-md border border-white/30 shadow-sm">★</span><span>Paper Towel Reset</span></li>
-								<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-midnight bg-white/20 backdrop-blur-md border border-white/30 shadow-sm">★</span><span>Swap Sponges</span></li>
+						
+							<h2 className="font-hero-sub text-2xl sm:text-3xl tracking-[0.2em] text-center mb-4 sm:mb-6 text-brand font-bold">ADD-ONS</h2>
+						<ul className="text-base sm:text-lg text-black flex flex-col gap-3 sm:gap-4 mb-6 sm:mb-10 leading-snug sm:leading-relaxed" style={{ fontWeight: 300 }}>
+							<li className="flex items-start gap-3"><span className="text-black">Laundry</span></li>
+							<li className="flex items-start gap-3"><span className="text-black">Spot Cleaning Walls</span></li>
+							<li className="flex items-start gap-3"><span className="text-black">Hand Scrubbing</span></li>
+							<li className="flex items-start gap-3"><span className="text-black">Vacuum Dusting</span></li>
+							<li className="flex items-start gap-3"><span className="text-black">Eco-friendly Consumables</span></li>
+							<li className="flex items-start gap-3"><span className="text-black">QC Photos</span></li>
+							<li className="flex items-start gap-3"><span className="text-black">Air Freshener</span></li>
+							<li className="flex items-start gap-3"><span className="text-black">Reset Fridge</span></li>
+							<li className="flex items-start gap-3"><span className="text-black">Deodorizer</span></li>
+							<li className="flex items-start gap-3"><span className="text-black">Paper Towel Reset</span></li>
+							<li className="flex items-start gap-3"><span className="text-black">Swap Sponges</span></li>
 							</ul>
 							<div className="flex flex-wrap justify-center gap-2 sm:gap-4 mt-6 sm:mt-12">
 								<PillButton onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>GET ESTIMATE</PillButton>
@@ -521,39 +473,29 @@ export default function OfferPageLakeMary() {
 					{/* SERVICE AREA SECTION */}
 					<section className="py-12 flex flex-col items-center bg-white">
 						<div className="max-w-4xl text-center">
-							<h3 className="text-3xl font-light mb-6 text-midnight">Serving Oviedo and Surrounding Areas</h3>
+						<h3 className="font-hero-sub text-3xl mb-6 text-midnight">Serving All of Seminole County</h3>
 							<p className="text-lg text-mountain mb-8 font-light leading-relaxed">
-								Proudly providing professional house cleaning services throughout Central Florida. Our experienced team serves homeowners in:
+							We proudly serve every city and community in Seminole County. If you live in Seminole, you&apos;re covered.
 							</p>
 							<div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-base text-midnight">
-								<div className="p-4 bg-snow/80 rounded-lg shadow-sm border border-slopes/20 transform transition-transform duration-200 hover:scale-105">
-									<strong>Orlando, FL</strong><br />
-									<span className="text-sm text-mountain">32801, 32803</span>
-								</div>
-								<div className="p-4 bg-snow/80 rounded-lg shadow-sm border border-slopes/20 transform transition-transform duration-200 hover:scale-105">
-									<strong>Winter Park, FL</strong><br />
-									<span className="text-sm text-mountain">32789, 32792</span>
-								</div>
-								<div className="p-4 bg-snow/80 rounded-lg shadow-sm border border-slopes/20 transform transition-transform duration-200 hover:scale-105">
-									<strong>Lake Mary, FL</strong><br />
-									<span className="text-sm text-mountain">32746</span>
-								</div>
-								<div className="p-4 bg-snow/80 rounded-lg shadow-sm border border-slopes/20 transform transition-transform duration-200 hover:scale-105">
-									<strong>Oviedo, FL</strong><br />
-									<span className="text-sm text-mountain">32765, 32766</span>
-								</div>
-								<div className="p-4 bg-snow/80 rounded-lg shadow-sm border border-slopes/20 transform transition-transform duration-200 hover:scale-105">
-									<strong>Apopka, FL</strong><br />
-									<span className="text-sm text-mountain">32703, 32712</span>
-								</div>
-								<div className="p-4 bg-snow/80 rounded-lg shadow-sm border border-slopes/20 transform transition-transform duration-200 hover:scale-105">
-									<strong>Longwood, FL</strong><br />
-									<span className="text-sm text-mountain">32750, 32779</span>
-								</div>
-								<div className="p-4 bg-snow/80 rounded-lg shadow-sm border border-slopes/20 transform transition-transform duration-200 hover:scale-105">
-									<strong>Altamonte Springs, FL</strong><br />
-									<span className="text-sm text-mountain">32701, 32714</span>
-								</div>
+							<div className="p-4 bg-white rounded-lg shadow-sm border border-slopes/20 col-span-2 md:col-span-3">
+								<strong>All of Seminole County</strong>
+							</div>
+							<div className="p-4 bg-white rounded-lg shadow-sm border border-slopes/20"><strong>Altamonte Springs, FL</strong></div>
+							<div className="p-4 bg-white rounded-lg shadow-sm border border-slopes/20"><strong>Casselberry, FL</strong></div>
+							<div className="p-4 bg-white rounded-lg shadow-sm border border-slopes/20"><strong>Lake Mary, FL</strong></div>
+							<div className="p-4 bg-white rounded-lg shadow-sm border border-slopes/20"><strong>Longwood, FL</strong></div>
+							<div className="p-4 bg-white rounded-lg shadow-sm border border-slopes/20"><strong>Oviedo, FL</strong></div>
+							<div className="p-4 bg-white rounded-lg shadow-sm border border-slopes/20"><strong>Sanford, FL</strong></div>
+							<div className="p-4 bg-white rounded-lg shadow-sm border border-slopes/20"><strong>Winter Springs, FL</strong></div>
+							<div className="p-4 bg-white rounded-lg shadow-sm border border-slopes/20"><strong>Heathrow, FL</strong></div>
+							<div className="p-4 bg-white rounded-lg shadow-sm border border-slopes/20"><strong>Wekiwa Springs, FL</strong></div>
+							<div className="p-4 bg-white rounded-lg shadow-sm border border-slopes/20"><strong>Fern Park, FL</strong></div>
+							<div className="p-4 bg-white rounded-lg shadow-sm border border-slopes/20"><strong>Chuluota, FL</strong></div>
+							<div className="p-4 bg-white rounded-lg shadow-sm border border-slopes/20"><strong>Geneva, FL</strong></div>
+							<div className="p-4 bg-white rounded-lg shadow-sm border border-slopes/20"><strong>Goldenrod, FL</strong></div>
+							<div className="p-4 bg-white rounded-lg shadow-sm border border-slopes/20"><strong>Midway, FL</strong></div>
+							<div className="p-4 bg-white rounded-lg shadow-sm border border-slopes/20"><strong>Black Hammock, FL</strong></div>
 							</div>
 						</div>
 					</section>
@@ -612,7 +554,6 @@ export default function OfferPageLakeMary() {
 					Hidden Cal Trigger
 				</button>
 
-			</section>
 		</div>
 	);
 }

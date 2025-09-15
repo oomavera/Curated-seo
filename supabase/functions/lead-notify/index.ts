@@ -27,6 +27,7 @@ interface LeadRecord {
   email?: string;
   email_address?: string;
   created_at?: string;
+  quote_payload?: unknown;
 }
 
 // Redact PII for logging (mask phone and email)
@@ -38,16 +39,62 @@ function redactPII(text: string): string {
 
 // Format lead data for Telegram message
 function formatLeadMessage(record: LeadRecord): string {
-  // Extract fields with fallbacks
+  const timestamp = record.created_at || new Date().toISOString();
+  // If this is a Qualify submission forwarded via /api/leads without quote_payload,
+  // try to parse answers embedded in the name ("Name | QUALIFIED: key=value; key=value").
+  try {
+    // First path: quote_payload.answers (if your DB later adds it)
+    const qp = (record as any).quote_payload as { answers?: Record<string, string> } | undefined;
+    const answers = qp?.answers as Record<string,string> | undefined;
+    if (answers && typeof answers === 'object') {
+      const name = answers.name || record.full_name || record.name || 'Unknown';
+      const owns = answers.ownsHome || 'Unknown';
+      const sqft = answers.squareFootage || 'Unknown';
+      const freq = answers.frequency || 'Unknown';
+      const priority = answers.priority || 'Unknown';
+      return `✅ *QUALIFIED LEAD*
+
+👤 *Name:* ${name}
+🏠 *Owns Home:* ${owns}
+📐 *Square Footage:* ${sqft}
+🔁 *Frequency:* ${freq}
+⭐ *Priority:* ${priority}
+📅 *Time:* ${new Date(timestamp).toLocaleString('en-US', { timeZone: 'America/New_York' })}`;
+    }
+    // Second path: parse from name like "John Doe | QUALIFIED name=John; ownsHome=Yes; ..."
+    const rawName = record.full_name || record.name || '';
+    if (rawName.includes('QUALIFIED')) {
+      const parts = rawName.split('|');
+      const baseName = parts[0]?.trim() || 'Unknown';
+      const rest = parts.slice(1).join('|');
+      const kvs = rest.split(/[:]/).slice(1).join(':');
+      const pairs = kvs.split(';').map(s => s.trim()).filter(Boolean);
+      const map: Record<string,string> = {};
+      for (const p of pairs) {
+        const [k,v] = p.split('=').map(x => (x||'').trim());
+        if (k) map[k] = v || '';
+      }
+      const owns = map.ownsHome || 'Unknown';
+      const sqft = map.squareFootage || 'Unknown';
+      const freq = map.frequency || 'Unknown';
+      const priority = map.priority || 'Unknown';
+      return `✅ *QUALIFIED LEAD*
+
+👤 *Name:* ${baseName}
+🏠 *Owns Home:* ${owns}
+📐 *Square Footage:* ${sqft}
+🔁 *Frequency:* ${freq}
+⭐ *Priority:* ${priority}
+📅 *Time:* ${new Date(timestamp).toLocaleString('en-US', { timeZone: 'America/New_York' })}`;
+    }
+  } catch {}
+
+  // Default message for standard leads
   const name = record.full_name || record.name || 'Unknown';
   const phone = record.phone_number || record.phone || 'Unknown';
   const email = record.email || record.email_address || 'Unknown';
-  const timestamp = record.created_at || new Date().toISOString();
-  
-  // Create tap-to-dial link if phone is available
   const phoneDisplay = phone !== 'Unknown' ? phone : 'Unknown';
   const dialLink = phone !== 'Unknown' ? `tel:${phone.replace(/\D/g, '')}` : '#';
-  
   return `📣 *New Estimate Lead*
 
 👤 *Name:* ${name}

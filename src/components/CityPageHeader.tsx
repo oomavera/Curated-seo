@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import logo from "../../public/Logo.png";
+import logo from "../../public/Logo2.png";
 
 export default function CityPageHeader() {
   return (

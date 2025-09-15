@@ -13,7 +13,7 @@ import FrequencyField from "../../components/QuoteForm/FrequencyField";
 import NumberField from "../../components/QuoteForm/NumberField";
 import AddonsField from "../../components/QuoteForm/AddonsField";
 import { usePrefersReducedMotion } from "../../utils/usePrefersReducedMotion";
-import logo from "../../../public/Logo.png";
+import logo from "../../../public/Logo2.png";
 
 const HouseVisualization = dynamic(() => import("../../components/HouseVisualization"), { ssr: false });
 const DynamicLeadForm = dynamic(() => import("../../components/LeadModal/LeadForm"), { ssr: false });

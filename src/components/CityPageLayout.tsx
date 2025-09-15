@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import dynamic from "next/dynamic";
-import logo from "../../public/Logo.png";
+import logo from "../../public/Logo2.png";
 import { QuoteInput } from "../types/quote";
 import { computeQuote, validateQuoteInput } from "../lib/quote";
 import { CONFIG } from "../lib/config";

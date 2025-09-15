@@ -9,14 +9,16 @@ interface ScrollPopupFormProps {
   callout?: string; // Custom headline text
   trackMetaLead?: boolean;
   metaEventName?: string;
+  buttonClassName?: string;
 }
 
-export default function ScrollPopupForm({ triggerElement = "#reviews", callout = "Wait! Get Your Free Quote 🎁", trackMetaLead = false, metaEventName = "Lead" }: ScrollPopupFormProps) {
+export default function ScrollPopupForm({ triggerElement = "#reviews", callout = "Wait! Get your FREE cleaning voucher!", trackMetaLead = false, metaEventName = "Lead", buttonClassName = "" }: ScrollPopupFormProps) {
   const [showPopup, setShowPopup] = useState(false);
   const [hasTriggered, setHasTriggered] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
+    email: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -29,9 +31,12 @@ export default function ScrollPopupForm({ triggerElement = "#reviews", callout =
       if (!trigger) return;
 
       const triggerRect = trigger.getBoundingClientRect();
-      const isInView = triggerRect.top <= window.innerHeight && triggerRect.bottom >= 0;
+      // Fire when the midpoint of the trigger section is near the viewport center
+      const viewportCenterY = window.innerHeight * 0.5;
+      const sectionMidY = triggerRect.top + triggerRect.height * 0.5;
+      const nearMiddle = Math.abs(sectionMidY - viewportCenterY) <= 120; // ~middle of section
 
-      if (isInView) {
+      if (nearMiddle) {
         setShowPopup(true);
         setHasTriggered(true);
       }
@@ -81,13 +86,13 @@ export default function ScrollPopupForm({ triggerElement = "#reviews", callout =
     try {
       // Generate dedup event id
       const eventId = `lead-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
-      const externalId = formData.phone || formData.name || undefined;
+      const externalId = formData.email || formData.phone || formData.name || undefined;
       const payload = {
         ...formData,
-        email: 'popup@curatedcleanings.com', // Default email since database requires it
         source: 'Popup Lead Form',
         eventId,
         externalId,
+        suppressMeta: true,
       };
       
       console.log('Submitting popup form with:', payload);
@@ -122,9 +127,9 @@ export default function ScrollPopupForm({ triggerElement = "#reviews", callout =
           });
         } catch {}
       }
-      // Redirect to schedule after success
+      // Redirect to qualify after success
       if (typeof window !== 'undefined') {
-        window.location.assign('/schedule');
+        window.location.assign('/qualify');
         return;
       }
       setTimeout(() => {
@@ -168,9 +173,9 @@ export default function ScrollPopupForm({ triggerElement = "#reviews", callout =
             </button>
 
             {/* Popup Content */}
-            <GlassCard className="p-6 overflow-hidden">
+            <GlassCard className="p-6 overflow-hidden lead-form-black">
               <div className="text-center mb-6">
-                <h3 className="text-2xl font-bold text-white">
+                <h3 className="text-2xl font-bold text-black">
                   {callout}
                 </h3>
               </div>
@@ -178,16 +183,16 @@ export default function ScrollPopupForm({ triggerElement = "#reviews", callout =
               {success ? (
                 /* Success Message */
                 <div className="text-center py-4 space-y-4">
-                  <div className="text-green-400 mb-4">
+                  <div className="text-green-600 mb-4">
                     <svg className="w-16 h-16 mx-auto" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>
                   </div>
-                  <h4 className="text-xl font-semibold text-white mb-2">Awesome!</h4>
-                  <p className="text-arctic">We will call you from 407-470-1780</p>
+                  <h4 className="text-xl font-semibold text-black mb-2">Awesome!</h4>
+                  <p className="text-brand">We will call you from 407-470-1780</p>
                   <PillButton 
                     onClick={() => window.location.href = 'tel:+14074701780'}
-                    className="w-full justify-center mt-4"
+                    className={`w-full justify-center mt-4 ${buttonClassName}`}
                   >
                     Call Now
                   </PillButton>
@@ -202,7 +207,7 @@ export default function ScrollPopupForm({ triggerElement = "#reviews", callout =
                       placeholder="Full Name"
                       value={formData.name}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 bg-white/80 border border-white/60 rounded-full text-midnight placeholder-mountain focus:outline-none focus:ring-2 focus:ring-white/70 focus:bg-white/90"
+                      className="w-full px-4 py-3 bg-white border border-gray-300 rounded-full text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand/40 focus:border-brand"
                       required
                     />
                   </div>
@@ -213,23 +218,34 @@ export default function ScrollPopupForm({ triggerElement = "#reviews", callout =
                       placeholder="Phone Number"
                       value={formData.phone}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 bg-white/80 border border-white/60 rounded-full text-midnight placeholder-mountain focus:outline-none focus:ring-2 focus:ring-white/70 focus:bg-white/90"
+                      className="w-full px-4 py-3 bg-white border border-gray-300 rounded-full text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand/40 focus:border-brand"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <input
+                      type="email"
+                      name="email"
+                      placeholder="Email Address"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 bg-white border border-gray-300 rounded-full text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand/40 focus:border-brand"
                       required
                     />
                   </div>
                   <PillButton 
                     type="submit" 
                     disabled={isSubmitting}
-                    className="w-full justify-center"
+                    className={`w-full justify-center ${buttonClassName}`}
                     animated={!isSubmitting}
                   >
                     {isSubmitting ? (
                       <span className="flex items-center justify-center gap-2">
-                        <div className="w-4 h-4 border-2 border-arctic border-t-transparent rounded-full animate-spin"></div>
+                        <div className="w-4 h-4 border-2 border-gray-200 border-t-transparent rounded-full animate-spin"></div>
                         Submitting...
                       </span>
                     ) : (
-                      "Get Free Quote"
+                      "Get Free Voucher"
                     )}
                   </PillButton>
                 </form>

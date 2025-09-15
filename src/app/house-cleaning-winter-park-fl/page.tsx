@@ -88,7 +88,8 @@ export default function WinterParkHouseCleaningPage() {
         {/* Service Areas */}
         <section className="mb-12 max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">Areas We Serve Near Winter Park</h2>
-          <p className="text-lg text-gray-700 mb-4">We routinely clean across ZIP codes 32789 and 32792, including neighborhoods like Olde Winter Park, Windsong, Winter Park Pines, Lake Killarney, and Orwin Manor. Just outside the city? See our pages for <a href="/house-cleaning-oviedo-fl" className="text-blue-600 hover:text-blue-800 underline">Oviedo house cleaning</a> and <a href="/house-cleaning-lake-mary-fl" className="text-blue-600 hover:text-blue-800 underline">Lake Mary maid service</a>.</p>
+          <p className="text-lg text-gray-700 mb-4"><strong>All of Seminole County:</strong> Altamonte Springs, Casselberry, Lake Mary, Longwood, Oviedo, Sanford, Winter Springs, Heathrow, Wekiwa Springs, Fern Park, Chuluota, Geneva, Goldenrod, Midway, Black Hammock.</p>
+          <p className="text-lg text-gray-700 mb-4">We routinely clean across ZIP codes 32789 and 32792, including neighborhoods like Olde Winter Park, Windsong, Winter Park Pines, Lake Killarney, and Orwin Manor. Just outside the city? See our pages for <a href="/house-cleaning-oviedo-fl" className="text-brand hover:opacity-80 underline">Oviedo house cleaning</a> and <a href="/house-cleaning-lake-mary-fl" className="text-brand hover:opacity-80 underline">Lake Mary maid service</a>.</p>
           <p className="text-lg text-gray-700">Landmarks we know well: Rollins College, Central Park, Mead Botanical Garden, Winter Park Farmers’ Market. We respect community schedules (hello, Saturday market traffic) and plan accordingly.</p>
         </section>
 

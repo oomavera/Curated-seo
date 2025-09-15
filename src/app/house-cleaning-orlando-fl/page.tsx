@@ -128,10 +128,11 @@ export default function OrlandoHouseCleaningPage() {
         {/* Service Areas */}
         <section className="mb-12 max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">Areas We Serve in Orlando</h2>
+          <p className="text-lg text-gray-700 mb-4"><strong>All of Seminole County:</strong> Altamonte Springs, Casselberry, Lake Mary, Longwood, Oviedo, Sanford, Winter Springs, Heathrow, Wekiwa Springs, Fern Park, Chuluota, Geneva, Goldenrod, Midway, Black Hammock.</p>
           <p className="text-lg text-gray-700 mb-4">
             We regularly clean across ZIP codes 32801, 32803, 32804, 32806, and 32814, plus neighborhoods like Downtown Orlando, Baldwin Park, College Park, Lake Eola Heights, and Thornton Park. Need service beyond central Orlando? Check out our dedicated pages for{' '}
-            <a href="/house-cleaning-lake-mary-fl" className="text-blue-600 hover:text-blue-800 underline">Lake Mary house cleaning</a> and{' '}
-            <a href="/house-cleaning-winter-park-fl" className="text-blue-600 hover:text-blue-800 underline">Winter Park maid service</a>.
+            <a href="/house-cleaning-lake-mary-fl" className="text-brand hover:opacity-80 underline">Lake Mary house cleaning</a> and{' '}
+            <a href="/house-cleaning-winter-park-fl" className="text-brand hover:opacity-80 underline">Winter Park maid service</a>.
           </p>
           <p className="text-lg text-gray-700">
             Landmarks we know and love: Lake Eola Park, Amway Center, Orlando Science Center, Dr. Phillips Center for the Performing Arts—yes, we've cleaned homes and apartments all around them.

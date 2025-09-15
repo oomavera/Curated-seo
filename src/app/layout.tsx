@@ -22,11 +22,11 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://curatedcleanings.co
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: "Best House Cleaning Services Oviedo FL | Curated Cleanings | Free Estimate",
+  title: "Seminole County House Cleaning | Deep & Standard Cleaning | Oviedo, Lake Mary, Winter Springs, Heathrow, Winter Park, Sanford, Geneva, Longwood, Casselberry",
   description: "Top-rated house cleaning services in Oviedo, Florida. Professional residential cleaning starting at $125. Serving Oviedo, Winter Park, Casselberry, Winter Springs. 5-star rated. Book free estimate today!",
   keywords: "house cleaning Oviedo FL, best cleaning services Oviedo Florida, residential cleaning Oviedo, maid service Oviedo, deep cleaning Oviedo, professional cleaners Oviedo, home cleaning Winter Park, cleaning services Casselberry, move in cleaning Oviedo, move out cleaning Oviedo, weekly cleaning Oviedo, biweekly cleaning Oviedo",
   openGraph: {
-    title: "Best House Cleaning Services Oviedo FL | Curated Cleanings",
+    title: "Seminole County House Cleaning | Deep & Standard Cleaning | Oviedo, Lake Mary, Winter Springs, Heathrow, Winter Park, Sanford, Geneva, Longwood, Casselberry",
     description: "Top-rated house cleaning services in Oviedo, Florida. Professional residential cleaning starting at $125. 5-star rated. Book free estimate today!",
     type: "website",
     locale: "en_US",
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     url: "https://curatedcleanings.com",
     images: [
       {
-        url: "https://curatedcleanings.com/og-image.jpg",
+        url: "/og.png",
         width: 1200,
         height: 630,
         alt: "Curated Cleanings - Professional House Cleaning Services Oviedo FL"
@@ -43,9 +43,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Best House Cleaning Services Oviedo FL | Curated Cleanings",
+    title: "Seminole County House Cleaning | Deep & Standard Cleaning | Oviedo, Lake Mary, Winter Springs, Heathrow, Winter Park, Sanford, Geneva, Longwood, Casselberry",
     description: "Top-rated house cleaning services in Oviedo, Florida. Professional residential cleaning starting at $125. 5-star rated.",
-    images: ["https://curatedcleanings.com/twitter-image.jpg"]
+    images: ["/og.png"]
   },
   robots: {
     index: true,
@@ -66,7 +66,7 @@ export const metadata: Metadata = {
     canonical: "https://curatedcleanings.com"
   },
   icons: {
-    icon: "/favicon.png"
+    icon: "/NewestFavicon.png"
   }
 };
 
@@ -77,7 +77,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${sora.variable} font-sans bg-snow min-h-screen`}>
+      <body className={`${inter.variable} ${sora.variable} bg-snow min-h-screen`}>
         <a href="#main-content" className="skip-link">Skip to main content</a>
         <LocalSchema />
         <MetaPixel />

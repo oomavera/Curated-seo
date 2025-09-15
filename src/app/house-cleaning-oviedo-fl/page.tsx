@@ -127,10 +127,11 @@ export default function OviedoHouseCleaningPage() {
 				{/* Service Areas */}
 				<section className="mb-12 max-w-4xl mx-auto">
 					<h2 className="text-3xl font-bold text-gray-900 mb-4">Areas We Serve Near Oviedo</h2>
+					<p className="text-lg text-gray-700 mb-4"><strong>All of Seminole County:</strong> Altamonte Springs, Casselberry, Lake Mary, Longwood, Oviedo, Sanford, Winter Springs, Heathrow, Wekiwa Springs, Fern Park, Chuluota, Geneva, Goldenrod, Midway, Black Hammock.</p>
 					<p className="text-lg text-gray-700 mb-4">
 						We regularly clean across ZIP codes 32765 and 32766, plus neighborhoods like Alafaya Woods, Live Oak Reserve, Twin Rivers, Remington Park, and Kingsbridge East. Need service just beyond Oviedo? Check out our dedicated pages for{' '}
-						<a href="/winter-park-cleaning-services/" className="text-blue-600 hover:text-blue-800 underline">Winter Park house cleaning</a> and{' '}
-						<a href="/lake-mary-cleaning-services/" className="text-blue-600 hover:text-blue-800 underline">Lake Mary maid service</a>.
+						<a href="/winter-park-cleaning-services/" className="text-brand hover:opacity-80 underline">Winter Park house cleaning</a> and{' '}
+						<a href="/lake-mary-cleaning-services/" className="text-brand hover:opacity-80 underline">Lake Mary maid service</a>.
 					</p>
 					<p className="text-lg text-gray-700">
 						Landmarks we know and love: Oviedo on the Park, Lukas Nursery, Black Hammock Wilderness Area, Oviedo Mall—yes, we&apos;ve cleaned homes all around them.

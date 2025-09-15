@@ -193,75 +193,34 @@ export default function SchedulePage() {
     };
 
     return (
-        <div id="main-content" className="textured-background min-h-screen w-full font-sans text-midnight">
+        <div id="main-content" className="min-h-screen w-full font-nhd text-midnight">
             {/* HERO SECTION - ABOVE THE FOLD */}
-            <section className="relative bg-gradient-to-br from-snow via-arctic/50 to-slopes/20 min-h-screen flex flex-col overflow-visible">
+            <section className="relative bg-white min-h-screen flex flex-col overflow-visible">
                 {showAurora && (
                     <div className="pointer-events-none absolute inset-0 -z-10">
                         <DynamicAurora />
                     </div>
                 )}
-                {/* Header */}
-                <header className="flex flex-col sm:flex-row justify-center sm:justify-between items-center py-4 sm:py-6 px-4 sm:px-8 max-w-7xl mx-auto w-full gap-2 sm:gap-4 rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl">
-                    {/* Mobile: Centered Logo First */}
-                    <div className="flex justify-center items-center sm:hidden order-1">
-                        <div className="relative">
-                            <Image 
-                                src={logo} 
-                                alt="Curated Cleanings Logo" 
-                                width={360} 
-                                height={72} 
-                                className="object-cover max-w-[70vw]" 
-                                style={{ height: '36px', width: 'auto', objectFit: 'cover', objectPosition: 'center', opacity: 0.8 }}
-                            />
+                {/* Header (match /offer) */}
+                <header className="w-full max-w-7xl mx-auto px-4 sm:px-8 py-2 sm:py-3">
+                    {/* Mobile header (Apple-like) */}
+                    <div className="flex items-center justify-between sm:hidden">
+                        <div className="flex items-center">
+                            <Image src={logo} alt="Curated Cleanings" width={128} height={32} style={{ height: '26px', width: 'auto', objectFit: 'contain', opacity: 0.95 }} />
                         </div>
+                        <div className="flex-1" />
+                        <PillButton onClick={() => window.location.href = 'tel:+14074701780'} variant="inverse" className="px-2 py-[2px] text-[10px]">CALL NOW</PillButton>
                     </div>
 
-                    {/* Mobile: Phone and Call Now Button Row */}
-                    <div className="flex justify-between items-center w-full sm:hidden order-2 mt-2">
-                        <a 
-                            href="tel:+14074701780" 
-                            className="text-xs font-semibold tracking-wider text-mountain hover:text-midnight transition-colors duration-300 whitespace-nowrap"
-                        >
-                            407-470-1780
-                        </a>
-                        <PillButton onClick={() => window.location.href = 'tel:+14074701780'} className="px-4 py-2 text-xs">
-                            CALL NOW
-                        </PillButton>
-                    </div>
-
-                    {/* Desktop Layout */}
-                    {/* Phone Number - Left */}
-                    <div className="hidden sm:flex items-center flex-1 -mt-3 sm:-mt-4">
-                        <a 
-                            href="tel:+14074701780" 
-                            className="text-xl font-semibold tracking-wider text-mountain hover:text-midnight transition-colors duration-300 whitespace-nowrap"
-                        >
-                            407-470-1780
-                        </a>
-                    </div>
-                    
-                    {/* Logo - Center */}
-                    <div className="hidden sm:flex justify-center items-center">
-                        <div className="relative mt-2 sm:mt-3">
-                            <Image 
-                                src={logo} 
-                                alt="Curated Cleanings Logo" 
-                                width={600} 
-                                height={120} 
-                                priority 
-                                placeholder="blur" 
-                                className="object-cover max-w-[60vw]" 
-                                style={{ height: '60px', width: 'auto', objectFit: 'cover', objectPosition: 'center', opacity: 0.8 }}
-                            />
+                    {/* Desktop header */}
+                    <div className="hidden sm:flex items-center justify-between">
+                        <div className="flex justify-start items-center">
+                            <Image src={logo} alt="Curated Cleanings" width={192} height={48} style={{ height: '38px', width: 'auto', objectFit: 'contain', opacity: 0.95 }} />
                         </div>
-                    </div>
-                    
-                    {/* Navigation & Call Now Button - Right */}
-                    <div className="hidden sm:flex items-center justify-end flex-1 -mt-3 sm:-mt-4 gap-4">
-                        <PillButton onClick={() => window.location.href = 'tel:+14074701780'} className="px-5 py-2 sm:px-8 sm:py-3 text-xs sm:text-base">
-                            CALL NOW
-                        </PillButton>
+                        <div className="flex-1" />
+                        <div className="flex items-center justify-end">
+                            <PillButton onClick={() => window.location.href = 'tel:+14074701780'} variant="inverse" className="px-4 py-1.5 text-sm">CALL NOW</PillButton>
+                        </div>
                     </div>
                 </header>
 
@@ -269,12 +228,12 @@ export default function SchedulePage() {
                 <div className="flex-1 flex flex-col justify-center px-8 max-w-7xl mx-auto w-full mt-4 sm:mt-12">
                     {/* Hero Text */}
                     <div className="relative z-20 text-center mb-4 sm:mb-12 no-blend">
-                        <h1 className="text-4xl xs:text-5xl md:text-6xl xl:text-7xl font-medium mb-4 leading-tight text-solid-black tracking-tight" style={{ fontFamily: 'var(--font-sora), Sora, Inter, Arial, Helvetica, sans-serif' }}>
+                        <h1 className="font-hero-title text-4xl xs:text-5xl md:text-6xl xl:text-7xl mb-4 leading-tight text-solid-black tracking-tight">
                             ONE LAST STEP!
                         </h1>
                         <div className="text-xl xs:text-2xl md:text-3xl xl:text-4xl font-light text-solid-black space-y-2">
                             <p><span className="font-extrabold underline">Text Angelica</span> what time you can take a phone call to schedule at</p>
-                            <p className="font-extrabold text-4xl xs:text-5xl md:text-6xl">
+                            <p className="font-black text-4xl xs:text-5xl md:text-6xl">
                                 <a
                                     href={smsHref("Hi Angelica! I can take a call at [time] to schedule my clean.")}
                                     className="text-solid-black hover:opacity-90 focus:outline-none focus:ring-4 ring-white/60 ring-offset-2 ring-offset-white/40"

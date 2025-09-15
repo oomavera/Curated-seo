@@ -139,7 +139,7 @@ export default function LeadForm({ quote, onCancel, isSubmitting }: LeadFormProp
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-midnight/50 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-snow rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto border border-slopes/20">
+      <div className="bg-snow lead-form-black rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto border border-slopes/20">
         <div className="p-6">
           {step === 'contact' ? (
             <>

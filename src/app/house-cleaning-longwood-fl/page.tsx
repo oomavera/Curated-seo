@@ -91,7 +91,8 @@ export default function LongwoodHouseCleaningPage() {
         {/* Service Areas */}
         <section className="mb-12 max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">Areas We Serve Near Longwood</h2>
-          <p className="text-lg text-gray-700 mb-4">We regularly clean across ZIP codes 32750 and 32779, plus neighborhoods like Sweetwater Oaks, Wekiva Cove, The Springs, Sanlando Springs, and Longwood Club. Need service just beyond Longwood? Check out our dedicated pages for <a href="/house-cleaning-orlando-fl" className="text-blue-600 hover:text-blue-800 underline">Orlando house cleaning</a> and <a href="/house-cleaning-lake-mary-fl" className="text-blue-600 hover:text-blue-800 underline">Lake Mary maid service</a>.</p>
+          <p className="text-lg text-gray-700 mb-4"><strong>All of Seminole County:</strong> Altamonte Springs, Casselberry, Lake Mary, Longwood, Oviedo, Sanford, Winter Springs, Heathrow, Wekiwa Springs, Fern Park, Chuluota, Geneva, Goldenrod, Midway, Black Hammock.</p>
+          <p className="text-lg text-gray-700 mb-4">We regularly clean across ZIP codes 32750 and 32779, plus neighborhoods like Sweetwater Oaks, Wekiva Cove, The Springs, Sanlando Springs, and Longwood Club. Need service just beyond Longwood? Check out our dedicated pages for <a href="/house-cleaning-orlando-fl" className="text-brand hover:opacity-80 underline">Orlando house cleaning</a> and <a href="/house-cleaning-lake-mary-fl" className="text-brand hover:opacity-80 underline">Lake Mary maid service</a>.</p>
           <p className="text-lg text-gray-700">Landmarks we know and love: Big Tree Park, Wekiva Island, Bradlee-McIntyre House, Reiter Park—yes, we've cleaned homes all around these beautiful Longwood spots.</p>
         </section>
 

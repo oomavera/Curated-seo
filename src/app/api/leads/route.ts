@@ -41,8 +41,8 @@ export async function POST(request: NextRequest) {
       ? body.service
       : (body.quote ? 'estimate_request' : 'contact_form');
 
-    // First attempt: insert minimal fields to be compatible with any schema
-    const minimalPayload: { name: string; phone: string; email: string } = {
+    // First attempt: insert minimal fields (and include quote_payload if provided) so webhook gets answers on INSERT
+    const minimalPayload: Record<string, unknown> = {
       name: name.trim(),
       phone: phone.trim(),
       // Provide a placeholder email when none is supplied to satisfy NOT NULL DB constraint
@@ -53,6 +53,7 @@ export async function POST(request: NextRequest) {
         return `noemail+${cleanedPhone}-${Date.now()}@curatedcleanings.com`;
       })(),
     };
+    // Do not include quote_payload unless your DB has that column. Keep leads insert minimal so regular /offer works.
 
     console.log('Attempting database insert with:', minimalPayload);
     
@@ -71,20 +72,13 @@ export async function POST(request: NextRequest) {
       const extendedPayload: Record<string, unknown> = {};
       const hasService = typeof body.service === 'string' || body.quote;
       if (hasService) extendedPayload.service = service;
-      if (body.quote && typeof body.quote === 'object') {
-        extendedPayload.quote_payload = body.quote;
-      }
-
       if (Object.keys(extendedPayload).length > 0) {
-        // Try to update with extended fields; swallow errors to not block success path
         try {
           await supabase
             .from('leads')
             .update(extendedPayload)
             .eq('id', data?.id as string);
-        } catch {
-          // ignore
-        }
+        } catch {}
       }
     }
 
@@ -96,8 +90,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Fire Meta Conversions API for /offer leads (best-effort)
+    // Fire Meta Conversions API unless suppressed (best-effort)
     try {
+      if (body?.suppressMeta === true) {
+        // Skip Meta pixel server event per funnel change
+        return NextResponse.json(
+          { 
+            success: true, 
+            message: 'Lead submitted successfully (meta suppressed)',
+            leadId: data?.id
+          },
+          { status: 200 }
+        );
+      }
       const accessToken = process.env.META_ACCESS_TOKEN as string | undefined;
       const pixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID as string | undefined || '1290791285375063';
       if (accessToken && pixelId) {

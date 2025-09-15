@@ -26,4 +26,4 @@ const nextConfig: NextConfig = withBundleAnalyzer({
   }
 });
 
-export default withMDX(nextConfig);
+export default nextConfig;

@@ -124,10 +124,11 @@ export default function LakeMaryHouseCleaningPage() {
         {/* Service Areas */}
         <section className="mb-12 max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">Areas We Serve Near Lake Mary</h2>
+          <p className="text-lg text-gray-700 mb-4"><strong>All of Seminole County:</strong> Altamonte Springs, Casselberry, Lake Mary, Longwood, Oviedo, Sanford, Winter Springs, Heathrow, Wekiwa Springs, Fern Park, Chuluota, Geneva, Goldenrod, Midway, Black Hammock.</p>
           <p className="text-lg text-gray-700 mb-4">
             We regularly clean across ZIP code 32746, plus neighborhoods like Heathrow, Timacuan, Cardinal Oaks Cove, Huntington Pointe, and Lake Mary Woods. Need service just beyond Lake Mary? Check out our dedicated pages for{' '}
-            <a href="/house-cleaning-oviedo-fl" className="text-blue-600 hover:text-blue-800 underline">Oviedo house cleaning</a> and{' '}
-            <a href="/house-cleaning-winter-park-fl" className="text-blue-600 hover:text-blue-800 underline">Winter Park maid service</a>.
+            <a href="/house-cleaning-oviedo-fl" className="text-brand hover:opacity-80 underline">Oviedo house cleaning</a> and{' '}
+            <a href="/house-cleaning-winter-park-fl" className="text-brand hover:opacity-80 underline">Winter Park maid service</a>.
           </p>
           <p className="text-lg text-gray-700">
             Landmarks we know and love: Central Park at Lake Mary City Hall, Trailblazer Park, Lake Mary Farmers Market, Colonial TownPark—yes, we've cleaned homes all around them.

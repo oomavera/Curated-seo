@@ -1,6 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* Utility to force Neue Haas Display sitewide when needed */
+.font-nhd { font-family: 'Neue Haas Display', var(--font-sora), Sora, Inter, Arial, Helvetica, sans-serif; }
 
 :root {
   /* New Color Palette */
@@ -12,8 +14,72 @@
   --snow: #F8F7F4;
   
   /* Legacy support */
-  --background: #F8F7F4;
+  --background: #FFFFFF;
   --foreground: #000000;
+}
+
+/* Self-hosted font (place files in public/fonts/) */
+@font-face {
+  font-family: 'Neue Haas Display';
+  src: url('/fonts/NeueHaasDisplay-Medium.woff2') format('woff2'),
+       url('/fonts/NeueHaasDisplay-Medium.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Neue Haas Display';
+  src: url('/fonts/NeueHaasDisplay-Light.woff2') format('woff2'),
+       url('/fonts/NeueHaasDisplay-Light.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Hero font utility */
+.font-hero {
+  font-family: 'Neue Haas Display', var(--font-sora), Sora, Inter, Arial, Helvetica, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+}
+/* Hero subtext: medium */
+.font-hero-sub {
+  font-family: 'Neue Haas Display', var(--font-sora), Sora, Inter, Arial, Helvetica, sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.28;
+}
+
+/* Hero title heavier (service card titles) */
+.font-hero-title {
+  font-family: 'Neue Haas Display', var(--font-sora), Sora, Inter, Arial, Helvetica, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+/* Force black text inside lead/estimate forms (but keep buttons styled) */
+.lead-form-black :is(label, p, small, input, textarea, select, h1, h2, h3, h4, h5, h6, li, a, span) {
+  color: #000000 !important;
+}
+.lead-form-black input::placeholder,
+.lead-form-black textarea::placeholder {
+  color: #6b7280 !important; /* gray-500 */
+}
+
+/* Keep existing explicit button styles; do not override here to avoid affecting controls */
+
+/* Ensure text is black on white backgrounds sitewide */
+.bg-white,
+.bg-white :is(h1,h2,h3,h4,h5,h6,p,ul,ol,li,span,small,strong,em,label,a,blockquote,figcaption) {
+  color: #000000 !important;
+}
+
+/* Keep buttons white text inside lead/estimate forms (overrides sitewide bg-white text rules) */
+.lead-form-black button,
+.lead-form-black button * {
+  color: #ffffff !important;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -36,14 +102,14 @@ body {
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: var(--font-inter), Inter, Arial, Helvetica, sans-serif;
+  font-family: 'Neue Haas Display', var(--font-inter), Inter, Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-weight: 300;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-sora), Sora, Inter, Arial, Helvetica, sans-serif;
+  font-family: 'Neue Haas Display', Sora, Inter, Arial, Helvetica, sans-serif;
   font-weight: 300;
   letter-spacing: -0.025em;
 }
@@ -95,7 +161,7 @@ a {
 .tabular-nums { font-variant-numeric: tabular-nums; }
 
 /* Modern Textured Background */
-.textured-background { background-color: #FFFFFF; background-image: radial-gradient(1200px 800px at 10% -10%, rgba(255,182,193,0.35), rgba(255,182,193,0)), radial-gradient(1000px 700px at 110% 10%, rgba(173,216,230,0.35), rgba(173,216,230,0)), radial-gradient(900px 600px at 50% 120%, rgba(255,255,176,0.25), rgba(255,255,176,0)), radial-gradient(2000px 1200px at 50% 60%, rgba(255, 255, 255, 1.0), transparent), radial-gradient(800px 600px at 50% 50%, rgba(255, 255, 255, 0.35), transparent), radial-gradient(600px 500px at 30% 70%, rgba(255, 255, 255, 0.25), transparent), radial-gradient(700px 400px at 70% 30%, rgba(255, 255, 255, 0.20), transparent); background-repeat: no-repeat; }
+.textured-background { background-color: #FFFFFF; background-image: none; }
 
 /* Custom utility classes */
 .text-midnight { color: #000000; }
@@ -115,6 +181,21 @@ a {
 .bg-slopes { background-color: #B3B7BA; }
 .bg-arctic { background-color: #D3D1CE; }
 .bg-snow { background-color: #F8F7F4; }
+
+/* Removed global brand-on-white text overrides to avoid conflicts with component styles */
+
+/* Override brand-on-white text rules inside lead/estimate forms to ensure black text */
+.bg-white.lead-form-black :is(h1,h2,h3,h4,h5,h6,p,ul,ol,li,span,small,strong,em,label,a,blockquote,figcaption,input,textarea,select) {
+  color: #000000 !important;
+}
+
+/* Enforce white text on buttons within forms after brand rules */
+.bg-white.lead-form-black button,
+.bg-white.lead-form-black button *,
+.lead-form-black button,
+.lead-form-black button * {
+  color: #ffffff !important;
+}
 
 .border-midnight { border-color: #090F15; }
 .border-mountain { border-color: #262F36; }
@@ -283,7 +364,7 @@ a {
 
 /* GlassCard visual helpers */
 .glass-shadow { position: absolute; left: 20%; right: 20%; bottom: -18px; height: 32px; border-radius: 50%; background: radial-gradient(50% 60% at 50% 40%, rgba(0,0,0,.22), transparent 65%); filter: blur(8px); opacity: .6; pointer-events: none; }
-.edge-glow { position: absolute; inset: 2px; border-radius: 26px; pointer-events: none; background: radial-gradient(400px 120px at 90% 95%, rgba(255,180,200,.35), transparent 65%), radial-gradient(400px 120px at 10% 5%, rgba(160,220,255,.35), transparent 65%); mix-blend-mode: screen; opacity: .5; }
+.edge-glow { display: none; }
 
 /* Frosted glass background bleed-through helper (clipped to card) */
 .bg-behind-glass { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; filter: blur(26px) saturate(120%); }
