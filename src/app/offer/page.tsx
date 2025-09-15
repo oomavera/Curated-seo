@@ -191,7 +191,7 @@ export default function OfferPage() {
 					{/* Hero Text */}
 					<div className="relative z-20 text-center mb-3 sm:mb-6 no-blend">
 						<h1 className="font-hero text-2xl xs:text-3xl md:text-4xl xl:text-5xl mb-1 leading-tight text-midnight">
-								Free September Cleaning Voucher For Seminole County Homeowners
+								Free Voucher for Seminole County Homeowners
 						</h1>
 						<div className="font-hero-sub text-sm xs:text-base md:text-lg text-mountain">
 							Only 5 slots left, September only, quickly filling up, please don&apos;t miss out!
@@ -297,7 +297,7 @@ export default function OfferPage() {
 						<div className="flex-1 max-w-lg mx-auto md:mx-0 relative mt-0">
 							<PastelBlob className="w-[520px] h-[420px]" style={{ left: "-10%", top: "-10%" }} />
 							<GlassCard className="p-5 sm:p-6 min-h-[420px]">
-									<QuickEstimateForm title="Get Your Voucher Now" submitLabel="Get Voucher Now" showEmail={true} openCalendarOnSuccess={false} trackMetaLead metaEventName="Lead" />
+									<QuickEstimateForm title="Get Your Voucher Now" submitLabel="Get Voucher Now" showEmail={true} openCalendarOnSuccess={false} />
 							</GlassCard>
 						</div>
 					</div>
@@ -351,7 +351,7 @@ export default function OfferPage() {
 						<div className="max-w-7xl mx-auto px-0">
 							<GlassCard className="relative overflow-hidden p-0 rounded-3xl" withShadow withEdgeGlow>
 								<video
-									src="/Wide.mov"
+									src="/Wide2.mov"
 									playsInline
 									autoPlay
 									loop
@@ -368,7 +368,7 @@ export default function OfferPage() {
 					</section>
 
 					{/* Scroll-triggered Lead Form Popup */}
-					<ScrollPopupForm triggerElement="#reviews" callout="Wait! Get your FREE cleaning voucher!" trackMetaLead metaEventName="Lead" buttonClassName="bg-black text-white" />
+					<ScrollPopupForm triggerElement="#reviews" callout="Wait! Get your FREE cleaning voucher!" buttonClassName="bg-black text-white" />
 			</div>
 
 			{/* BELOW: Pure white from reviews to footer */}

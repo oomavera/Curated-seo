@@ -316,7 +316,7 @@ export default function Home() {
 					<div className="max-w-7xl mx-auto px-8">
 						<GlassCard className="relative overflow-hidden p-0 rounded-3xl" withShadow withEdgeGlow>
 							<video
-								src="/Wide.mov"
+								src="/Wide2.mov"
 								playsInline
 								autoPlay
 								loop

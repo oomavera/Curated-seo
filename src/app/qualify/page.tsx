@@ -22,6 +22,12 @@ export default function QualifyPage() {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Client-side guard: ensure all answers are present before we ever send
+    const { name, ownsHome, squareFootage, frequency, priority } = answers;
+    if (!name.trim() || !ownsHome || !squareFootage || !frequency || !priority) {
+      setError('Please answer all questions before submitting.');
+      return;
+    }
     setSubmitting(true);
     setError(null);
     setSuccess(null);
@@ -70,7 +76,7 @@ export default function QualifyPage() {
       </header>
 
       <main className="max-w-3xl mx-auto px-4 sm:px-8 py-6">
-        <h1 className="font-hero text-3xl sm:text-4xl mb-4">Quick Questions</h1>
+        <h1 className="font-hero text-3xl sm:text-4xl mb-4">Get On The Schedule...Fast!</h1>
         <p className="text-mountain mb-6">Please fill out this form so we can help you in the best way possible</p>
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
@@ -111,17 +117,17 @@ export default function QualifyPage() {
             <label className="block text-sm font-medium mb-1">5) Which is most important?</label>
             <select required className="input-glass px-3 py-2.5 w-full rounded-full" value={answers.priority} onChange={e => onChange('priority', e.target.value)}>
               <option value="" disabled>Select one</option>
-              <option>Cheap</option>
               <option>Reliable</option>
               <option>Consistent</option>
               <option>Polite</option>
               <option>Fast</option>
               <option>Risk-Free</option>
+              <option>Cheap</option>
             </select>
           </div>
           <div className="pt-2">
             <PillButton type="submit" className="w-full" disabled={submitting}>
-              {submitting ? 'Submitting...' : 'Submit'}
+              {submitting ? 'Submitting...' : 'Get My Cleaning Now'}
             </PillButton>
           </div>
           {error && <div className="text-red-600 text-sm">{error}</div>}
