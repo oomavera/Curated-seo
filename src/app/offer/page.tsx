@@ -1,7 +1,6 @@
 "use client";
 import Image from "next/image";
-import { FaEnvelope, FaPhone } from "react-icons/fa";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import dynamic from "next/dynamic";
 import { usePrefersReducedMotion } from "../../utils/usePrefersReducedMotion";
 import logo from "../../../public/Logo2.png";
@@ -145,15 +144,42 @@ export default function OfferPage() {
 	// Randomize reviews order client-side after mount to avoid hydration mismatch
 	const [shuffledReviewImages, setShuffledReviewImages] = useState<string[] | null>(null);
 	useEffect(() => {
-		const prioritized = [6, 19, 21, 10] // 1-based indices
-			.map(n => `/Gallery/reviews/${n}.webp`);
+		const prioritized = [6, 19, 21, 10].map(n => `/Gallery/reviews/${n}.webp`);
 		const rest = reviewImages.filter(src => !prioritized.includes(src));
-		// Shuffle the rest
 		for (let i = rest.length - 1; i > 0; i--) {
 			const j = Math.floor(Math.random() * (i + 1));
 			[rest[i], rest[j]] = [rest[j], rest[i]];
 		}
 		setShuffledReviewImages([...prioritized, ...rest]);
+	}, []);
+
+	// Lazy-render: only mount the reviews grid when the section is near viewport
+	const [reviewsVisible, setReviewsVisible] = useState(false);
+	const reviewsRef = useRef<HTMLElement | null>(null);
+	useEffect(() => {
+		if (reviewsVisible) return;
+		const el = reviewsRef.current ?? document.getElementById('reviews');
+		if (!el) return;
+		const io = new IntersectionObserver((entries, obs) => {
+			entries.forEach(e => {
+				if (e.isIntersecting) { setReviewsVisible(true); obs.disconnect(); }
+			});
+		}, { root: null, rootMargin: '200px 0px', threshold: 0.1 });
+		io.observe(el);
+		return () => io.disconnect();
+	}, [reviewsVisible]);
+
+	// Lazy-mount the wide video only when visible to avoid initial bandwidth
+	const [showVideo, setShowVideo] = useState(false);
+	const videoSectionRef = useRef<HTMLElement | null>(null);
+	useEffect(() => {
+		const el = videoSectionRef.current ?? document.getElementById('offer-video');
+		if (!el) return;
+		const io = new IntersectionObserver((entries, obs) => {
+			entries.forEach(e => { if (e.isIntersecting) { setShowVideo(true); obs.disconnect(); } });
+		}, { root: null, rootMargin: '200px 0px', threshold: 0.1 });
+		io.observe(el);
+		return () => io.disconnect();
 	}, []);
 
 	return (
@@ -163,38 +189,28 @@ export default function OfferPage() {
 				{/* HERO SECTION - ABOVE THE FOLD */}
 				<section className="relative bg-white min-h-screen flex flex-col overflow-visible">
 				{showAurora && <DynamicAurora />}
-				{/* Header */}
-				<header className="w-full max-w-7xl mx-auto px-4 sm:px-8 py-2 sm:py-3">
-					{/* Mobile header (Apple-like) */}
-					<div className="flex items-center justify-between sm:hidden">
-						<div className="flex items-center">
+					{/* Header */}
+					<header className="w-full max-w-7xl mx-auto px-4 sm:px-8 py-2 sm:py-3">
+						{/* Mobile header (centered logo) */}
+						<div className="flex items-center justify-center sm:hidden">
 							<Image src={logo} alt="Curated Cleanings" width={128} height={32} style={{ height: '26px', width: 'auto', objectFit: 'contain', opacity: 0.95 }} />
 						</div>
-						<div className="flex-1" />
-						<PillButton onClick={() => window.location.href = 'tel:+14074701780'} variant="inverse" className="px-2 py-[2px] text-[10px]">CALL NOW</PillButton>
-					</div>
 
-					{/* Desktop header */}
-					<div className="hidden sm:flex items-center justify-between">
-						<div className="flex justify-start items-center">
+						{/* Desktop header (centered logo) */}
+						<div className="hidden sm:flex items-center justify-center">
 							<Image src={logo} alt="Curated Cleanings" width={192} height={48} style={{ height: '38px', width: 'auto', objectFit: 'contain', opacity: 0.95 }} />
 						</div>
-						<div className="flex-1" />
-						<div className="flex items-center justify-end">
-							<PillButton onClick={() => window.location.href = 'tel:+14074701780'} variant="inverse" className="px-4 py-1.5 text-sm">CALL NOW</PillButton>
-						</div>
-					</div>
-				</header>
+					</header>
 
 				{/* Main Content */}
 				<div className="flex-1 flex flex-col justify-center px-8 max-w-7xl mx-auto w-full mt-1 sm:mt-6">
 					{/* Hero Text */}
 					<div className="relative z-20 text-center mb-3 sm:mb-6 no-blend">
 						<h1 className="font-hero text-2xl xs:text-3xl md:text-4xl xl:text-5xl mb-1 leading-tight text-midnight">
-								Free Voucher for Seminole County Homeowners
+							<span className="font-extrabold">&quot;The ladies are fierce and thorough in the way they clean and sanitize our home!&quot;</span> <span className="font-medium">~ Cristina Barreto</span>
 						</h1>
 						<div className="font-hero-sub text-sm xs:text-base md:text-lg text-mountain">
-							Only 5 slots left, September only, quickly filling up, please don&apos;t miss out!
+							Promo end&apos;s in :
 							<div className="mt-1 sm:mt-2 flex items-center justify-center gap-1.5 sm:gap-2 tabular-nums font-nhd">
 								<div className="flex items-center justify-center gap-2">
 									<div className="rounded-2xl px-2.5 sm:px-3.5 py-1.5 bg-black/5 backdrop-blur-md border border-black/10 shadow-sm">
@@ -297,7 +313,7 @@ export default function OfferPage() {
 						<div className="flex-1 max-w-lg mx-auto md:mx-0 relative mt-0">
 							<PastelBlob className="w-[520px] h-[420px]" style={{ left: "-10%", top: "-10%" }} />
 							<GlassCard className="p-5 sm:p-6 min-h-[420px]">
-									<QuickEstimateForm title="Get Your Voucher Now" submitLabel="Get Voucher Now" showEmail={true} openCalendarOnSuccess={false} />
+									<QuickEstimateForm title="Claim Your Free Voucher" submitLabel="YES! CLAIM MY SPOT" showEmail={true} openCalendarOnSuccess={false} />
 							</GlassCard>
 						</div>
 					</div>
@@ -346,19 +362,22 @@ export default function OfferPage() {
 							</div>
 						</GlassCard>
 						</section>
-					{/* Wide Video Window */}
-					<section className="py-4 sm:py-8">
+					{/* Wide Video Window - mobile only (hidden on md and up) */}
+					<section id="offer-video" ref={videoSectionRef as React.RefObject<HTMLElement>} className="py-4 sm:py-8 md:hidden">
 						<div className="max-w-7xl mx-auto px-0">
 							<GlassCard className="relative overflow-hidden p-0 rounded-3xl" withShadow withEdgeGlow>
-								<video
-									src="/Wide2.mov"
-									playsInline
-									autoPlay
-									loop
-									muted
-									className="w-full h-auto block"
-									style={{ display: 'block' }}
-								/>
+								{showVideo && (
+									<video
+										src="/Wide2.mov"
+										playsInline
+										autoPlay
+										loop
+										muted
+										preload="metadata"
+										className="w-full h-auto block"
+										style={{ display: 'block' }}
+									/>
+								)}
 								<div className="pane-inner-frame" />
 								<div className="pane-glare" />
 							</GlassCard>
@@ -374,19 +393,19 @@ export default function OfferPage() {
 			{/* BELOW: Pure white from reviews to footer */}
 			<div className="bg-white text-midnight">
 					{/* Customer Reviews Grid Section */}
-					<section id="reviews" className="py-6 sm:py-12 relative z-10">
+					<section id="reviews" ref={reviewsRef as React.RefObject<HTMLElement>} className="py-6 sm:py-12 relative z-10">
 						<div className="max-w-7xl mx-auto px-4">
 							{/* Reviews Image Grid - 2x2 on mobile, 4x4 on desktop */}
-							<div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-								{(shuffledReviewImages ?? reviewImages).map((imageSrc) => (
+							<div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+								{reviewsVisible && (shuffledReviewImages ?? reviewImages).map((imageSrc) => (
 									<div key={imageSrc} className="relative py-2">
 										<Image 
 											src={imageSrc} 
 											alt="Customer review" 
-											width={800}
-											height={800}
-											sizes="(max-width: 640px) 48vw, (max-width: 1024px) 30vw, 22vw"
-											quality={95}
+											width={512}
+											height={512}
+											sizes="(max-width: 640px) 45vw, (max-width: 1024px) 24vw, 18vw"
+											quality={60}
 											className="w-full h-auto"
 											style={{ 
 												filter: 'none',
@@ -402,15 +421,14 @@ export default function OfferPage() {
 						</div>
 					</section>
 
-					{/* LARGE CALL TO ACTION SECTION */}
+				{/* LARGE CALL TO ACTION SECTION */}
 					<section className="py-6 sm:py-8 text-center">
-						<a 
-							href="tel:+14074701780" 
-						className="inline-flex items-center gap-5 bg-white/20 backdrop-blur-md border border-white/30 text-midnight px-14 py-10 rounded-full text-3xl sm:text-4xl font-bold shadow-lg hover:bg-white/30 border-brand/30 hover:border-brand/50 hover:text-brand transform scale-120 hover:scale-125 transition-all duration-300"
+						<button 
+							onClick={() => window.dispatchEvent(new Event("open-lead-popup"))}
+							className="inline-flex items-center justify-center bg-white/20 backdrop-blur-md border border-white/30 text-midnight px-14 py-10 rounded-full text-3xl sm:text-4xl font-extrabold shadow-lg hover:bg-white/30 border-brand/30 hover:border-brand/50 hover:text-brand transform scale-120 hover:scale-125 transition-all duration-300"
 						>
-						<FaPhone className="text-4xl text-brand" />
-							<span>CALL NOW</span>
-						</a>
+							<span>CLAIM FREE VOUCHER!</span>
+						</button>
 					</section>
 
 				{/* SERVICE AREA SECTION - moved below CTA and styled like cards */}
@@ -461,16 +479,9 @@ export default function OfferPage() {
 							<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-black bg-white border border-gray-300 shadow-sm">✓</span><span className="text-black">Emptying trash bins and replacing liners</span></li>
 							<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-black bg-white border border-gray-300 shadow-sm">✓</span><span className="text-black">Making beds (not changing linens)</span></li>
 							</ul>
-							<div className="flex flex-wrap justify-center gap-2 sm:gap-4 mt-6 sm:mt-12">
-							<PillButton onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Get Free Voucher Now</PillButton>
-							<a
-								href="tel:+14074701780"
-								aria-label="Call Curated Cleanings"
-								className="w-12 h-12 rounded-full bg-midnight text-snow flex items-center justify-center shadow-lg hover:bg-mountain transition-colors"
-							>
-								<FaPhone />
-							</a>
-							</div>
+						<div className="flex flex-wrap justify-center gap-2 sm:gap-4 mt-6 sm:mt-12">
+						<PillButton onClick={() => window.dispatchEvent(new Event("open-lead-popup"))}>Get Free Voucher Now</PillButton>
+						</div>
 						</GlassCard>
 						{/* Deep Clean Card */}
 						<GlassCard className="mb-12 w-full max-w-2xl p-4 sm:p-10 transition-transform duration-300 hover:scale-[1.02] overflow-hidden">
@@ -487,16 +498,9 @@ export default function OfferPage() {
 							<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-black bg-white border border-gray-300 shadow-sm">✓</span><span className="text-black">Ceiling Fans</span></li>
 							<li className="flex items-start gap-3"><span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-black bg-white border border-gray-300 shadow-sm">✓</span><span className="text-black">Interior Windows</span></li>
 							</ul>
-							<div className="flex flex-wrap justify-center gap-2 sm:gap-4 mt-6 sm:mt-12">
-							<PillButton onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Get Free Voucher Now</PillButton>
-							<a
-								href="tel:+14074701780"
-								aria-label="Call Curated Cleanings"
-								className="w-12 h-12 rounded-full bg-midnight text-snow flex items-center justify-center shadow-lg hover:bg-mountain transition-colors"
-							>
-								<FaPhone />
-							</a>
-							</div>
+						<div className="flex flex-wrap justify-center gap-2 sm:gap-4 mt-6 sm:mt-12">
+						<PillButton onClick={() => window.dispatchEvent(new Event("open-lead-popup"))}>Get Free Voucher Now</PillButton>
+						</div>
 						</GlassCard>
 						{/* Add-ons Card */}
 						<GlassCard className="mb-12 w-full max-w-2xl p-4 sm:p-10 transition-transform duration-300 hover:scale-[1.02] overflow-hidden">
@@ -515,79 +519,28 @@ export default function OfferPage() {
 							<li className="flex items-start gap-3"><span className="text-black">Paper Towel Reset</span></li>
 							<li className="flex items-start gap-3"><span className="text-black">Swap Sponges</span></li>
 							</ul>
-							<div className="flex flex-wrap justify-center gap-2 sm:gap-4 mt-6 sm:mt-12">
-							<PillButton onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Get Free Voucher Now</PillButton>
-							<a
-								href="tel:+14074701780"
-								aria-label="Call Curated Cleanings"
-								className="w-12 h-12 rounded-full bg-midnight text-snow flex items-center justify-center shadow-lg hover:bg-mountain transition-colors"
-							>
-								<FaPhone />
-							</a>
-							</div>
+						<div className="flex flex-wrap justify-center gap-2 sm:gap-4 mt-6 sm:mt-12">
+						<PillButton onClick={() => window.dispatchEvent(new Event("open-lead-popup"))}>Get Free Voucher Now</PillButton>
+						</div>
 						</GlassCard>
 
-					{/* WITHOUT US / WITH US SECTION - moved below Add-ons */}
-					<GlassCard className="mb-12 w-full max-w-6xl p-8 sm:p-12 lg:p-16 transition-transform duration-300 hover:scale-[1.005] overflow-hidden">
-						
-						<div className="relative z-10 text-left text-lg sm:text-xl text-black font-light leading-relaxed max-w-5xl mx-auto">
-							<div className="mb-12 sm:mb-16 text-center">
-								<h2 className="text-5xl sm:text-6xl lg:text-7xl font-black mb-8 sm:mb-10 text-black font-sans tracking-tight">Without Us</h2>
-								<p className="text-black text-lg sm:text-xl leading-relaxed">After a 10-hour shift, you&apos;re still brushing, scrubbing, and mopping. On your knees cleaning toilets, wiping mirrors that never come streak-free, sneezing from dust, sick from fumes. Hours gone—time stolen from family, rest, or building your future. Or worse: you hire a cleaner who shows up late, rushes, leaves the job half-done, and never comes back. Guests notice. Family judges. And you&apos;re stuck in the same cycle: tired, behind, frustrated.</p>
-								</div>
-							<div className="mb-8 text-center">
-								<h2 className="text-5xl sm:text-6xl lg:text-7xl font-black mb-8 sm:mb-10 text-black font-sans tracking-tight">With Curated Cleanings</h2>
-								<p className="text-black text-lg sm:text-xl leading-relaxed">Instead, imagine walking in the door to a spotless, fresh, perfectly organized home—without lifting a finger. One call, and your home stays effortlessly clean. You gain back hours every week. You relax with family. You focus on what matters. Guests are impressed. Your kids learn order. Your health improves in a disinfected, clutter-free space. Even your relationships thrive when the stress of cleaning is gone.</p>
-							</div>
-						</div>
-						<div className="pane-inner-frame" />
-						<div className="pane-glare" />
-						<div className="pane-bottom-line" />
-					</GlassCard>
+					{/* WITHOUT US / WITH US SECTION REMOVED */}
 					</section>
 
 				{/* SERVICE AREA SECTION */}
 				{/* Moved above; original removed to avoid duplicate */}
 
-					{/* ESTIMATE SECTION */}
-					<section id="estimate" className="py-24 flex flex-col items-center">
-						<div className="text-center text-base text-black mb-8">Call or text us to schedule your free estimate and receive a detailed cleaning proposal</div>
-						
-						<div className="flex flex-col md:flex-row gap-8 items-center justify-center mb-12">
-							<a href="tel:+14074701780" className="flex items-center gap-4 text-xl text-black hover:text-gray-700 transition-colors">
-								<FaPhone className="text-2xl" />
-								<span>407-470-1780</span>
-							</a>
-							<a href="mailto:admin@curatedcleanings.com" className="flex items-center gap-4 text-xl text-black hover:text-gray-700 transition-colors">
-								<FaEnvelope className="text-2xl" />
-								<span>admin@curatedcleanings.com</span>
-							</a>
-						</div>
+					{/* ESTIMATE SECTION REMOVED TO REDUCE CLUTTER */}
 
-						<div className="max-w-2xl text-center text-lg text-black mb-8">
-							<strong>Service Hours:</strong> Monday - Saturday, 8:00 AM - 6:00 PM<br />
-							<strong>Response Time:</strong> We typically respond within 2 hours during business hours
-						</div>
-
-						<div className="text-center text-base text-black">
-							Available for residential and commercial cleaning throughout Central Florida
-						</div>
-					</section>
-
-					{/* CONTACT & FOOTER SECTION */}
+					{/* CONTACT & FOOTER SECTION - simplified */}
 					<footer className="flex flex-col items-center gap-4 py-8 border-t border-gray-200 mt-12">
-						<div className="text-center text-sm text-midnight font-light">
-							Curated Cleanings provides trusted house cleaning and maid services in Oviedo, Winter Park, Lake Mary, and surrounding Central Florida areas. Licensed, insured, and 5-star rated. Call 407-470-1780 or email admin@curatedcleanings.com for a free estimate.
-						</div>
-						<div className="flex gap-6 text-base mt-2">
-							<a href="mailto:admin@curatedcleanings.com" aria-label="Email" className="hover:text-blue-600 transition-colors flex items-center gap-2">
-								<FaEnvelope /> admin@curatedcleanings.com
-							</a>
-							<a href="tel:+14074701780" aria-label="Phone" className="hover:text-blue-600 transition-colors flex items-center gap-2">
-								<FaPhone /> 407-470-1780
-							</a>
-						</div>
-						<div className="text-xs text-mountain mt-2">© Curated Cleanings. All rights reserved.</div>
+						<button 
+							onClick={() => window.dispatchEvent(new Event("open-lead-popup"))}
+							className="px-8 py-4 rounded-full text-lg font-bold bg-midnight text-white hover:bg-black transition-colors"
+						>
+							CLAIM FREE VOUCHER
+						</button>
+						<div className="text-xs text-mountain">© Curated Cleanings</div>
 					</footer>
 				</div>
 

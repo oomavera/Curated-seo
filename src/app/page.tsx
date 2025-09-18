@@ -334,7 +334,7 @@ export default function Home() {
 			{/* BELOW (pure white) */}
 			<div className="bg-white text-midnight">
 				{/* Scroll-triggered Lead Form Popup */}
-				<ScrollPopupForm triggerElement="#reviews" />
+				<ScrollPopupForm triggerElement="#reviews" callout="Wait! Get Your 50% Off House Cleaning" />
 				{/* Customer Reviews Grid Section */}
 				<section id="reviews" className="py-6 sm:py-12 relative z-10">
 					<div className="max-w-7xl mx-auto px-4">

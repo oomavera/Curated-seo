@@ -127,11 +127,11 @@ export default function ScrollPopupForm({ triggerElement = "#reviews", callout =
           });
         } catch {}
       }
-      // Redirect to qualify after success
-      if (typeof window !== 'undefined') {
-        window.location.assign('/qualify');
-        return;
-      }
+			// Redirect to reviews after success
+			if (typeof window !== 'undefined') {
+				window.location.assign('/reviews');
+				return;
+			}
       setTimeout(() => {
         closePopup();
       }, 10000); // Auto-close after 10 seconds

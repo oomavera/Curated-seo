@@ -7,7 +7,11 @@ import sharp from 'sharp';
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 const root = path.join(__dirname, '..');
 const galleryDir = path.join(root, 'public', 'Gallery');
-const targets = [path.join(galleryDir, 'cleans'), path.join(galleryDir, 'team')];
+const targets = [
+  path.join(galleryDir, 'cleans'),
+  path.join(galleryDir, 'team'),
+  path.join(galleryDir, 'reviews2')
+];
 const validSrcExt = new Set(['.jpg', '.jpeg', '.png', '.heic', '.HEIC', '.JPG', '.JPEG', '.PNG']);
 
 async function ensureDir(dir) {

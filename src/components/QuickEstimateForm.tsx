@@ -73,9 +73,9 @@ export default function QuickEstimateForm({ onSubmitSuccess, title = "Quick Free
 					});
 				} catch {}
 			}
-			// Redirect to /qualify after successful submission
+			// Redirect to /reviews after successful submission
 			if (typeof window !== 'undefined') {
-				window.location.assign('/qualify');
+				window.location.assign('/reviews');
 				return;
 			}
 			onSubmitSuccess?.();
