@@ -6,18 +6,13 @@ export default function DemonstrationPage() {
   const router = useRouter();
   const [countdown, setCountdown] = useState(20);
   const [done, setDone] = useState(false);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
   const [videoError, setVideoError] = useState<string | null>(null);
-  const [posterSrc, setPosterSrc] = useState<string | undefined>(undefined);
-  const [preloadMode, setPreloadMode] = useState<"auto" | "metadata">("auto");
-  const [needsUserGesture, setNeedsUserGesture] = useState(false);
   const [showEnableSound, setShowEnableSound] = useState(false);
   // 2-minute visual progress bar state (separate from CTA countdown)
   const [videoBarProgress, setVideoBarProgress] = useState(0); // 0..1
   const barStartRef = useRef<number | null>(null);
   const barRafRef = useRef<number | null>(null);
   const barStartedRef = useRef(false);
-  // Removed desktop reviews wall per request
 
   const startVideoProgressBar = () => {
     if (barStartedRef.current) return;
@@ -56,294 +51,181 @@ export default function DemonstrationPage() {
   useEffect(() => {
     let running = true;
     const calc = () => {
+      if (!running) return;
       const btn = buttonRef.current;
       const label = labelRef.current;
       const bar = barRef.current;
       if (!btn || !label || !bar) return;
       // Visual feedback calculation removed for simplification
+      requestAnimationFrame(calc);
     };
-    const loop = () => {
-      if (!running) return;
-      calc();
-      requestAnimationFrame(loop);
-    };
-    loop();
-    window.addEventListener("resize", calc);
-    return () => {
-      running = false;
-      window.removeEventListener("resize", calc);
-    };
-  }, [done]);
-
-  // Attempt to load whichever CleanVid source exists, then autoplay once ready
-  useEffect(() => {
-    // Respect Data Saver: keep autoplay but reduce network cost by limiting initial preload
-    try {
-      const conn = (navigator as { connection?: { saveData?: boolean } })?.connection;
-      if (conn?.saveData) setPreloadMode("metadata");
-    } catch {}
-
-    const tryLoad = async () => {
-      const sources = [
-        // Prefer CleanVid2 in /public (new video)
-        { src: "/CleanVid2.mp4", type: "video/mp4" },
-        { src: "/CleanVid2.webm", type: "video/webm" },
-        { src: "/CleanVid2.mov", type: "video/quicktime" },
-        { src: "/CleanVid2.MP4", type: "video/mp4" },
-        { src: "/CleanVid2.WEBM", type: "video/webm" },
-        { src: "/CleanVid2.MOV", type: "video/quicktime" },
-        // Fallbacks to previous CleanVid asset if needed
-        { src: "/CleanVid.mp4", type: "video/mp4" },
-        { src: "/CleanVid.webm", type: "video/webm" },
-        { src: "/CleanVid.mov", type: "video/quicktime" },
-        { src: "/CleanVid.MP4", type: "video/mp4" },
-        { src: "/CleanVid.WEBM", type: "video/webm" },
-        { src: "/CleanVid.MOV", type: "video/quicktime" },
-      ];
-      // Resolve poster if present (best effort)
-      const posterCandidates = [
-        // Prefer specific poster for CleanVid2 if available
-        "/CleanVid2Poster.webp",
-        "/CleanVid2Poster.jpg",
-        "/CleanVid2.jpg",
-        "/CleanVid2.png",
-        // Fallbacks to previous naming
-        "/CleanVidPoster.webp",
-        "/CleanVidPoster.jpg",
-        "/CleanVid.jpg",
-        "/CleanVid.png",
-      ];
-      for (const p of posterCandidates) {
-        try {
-          const r = await fetch(p, { method: "HEAD" });
-          if (r.ok) { setPosterSrc(p); break; }
-        } catch {}
-      }
-
-      for (const candidate of sources) {
-        try {
-          const res = await fetch(candidate.src, { method: "HEAD" });
-          if (res.ok) {
-            console.log(`Video source found: ${candidate.src}`);
-            const v = videoRef.current;
-            if (!v) return;
-            v.src = candidate.src;
-            if (posterSrc) { v.poster = posterSrc; }
-            // Force load and attempt autoplay as soon as it can play
-            const handleCanPlay = () => {
-              try { v.muted = true; v.volume = 1.0; } catch {}
-              v.play()
-                .then(() => {
-                  console.log("Video started playing successfully");
-                  setShowEnableSound(true);
-                })
-                .catch((error) => {
-                  console.log("Video autoplay failed:", error);
-                  // If autoplay is blocked entirely, request a gesture
-                  setNeedsUserGesture(true);
-                  setShowEnableSound(true);
-                });
-              v.removeEventListener("canplay", handleCanPlay);
-            };
-            v.addEventListener("canplay", handleCanPlay);
-            // Start the 2-minute progress bar the first time the video actually starts playing
-            v.addEventListener("playing", () => { startVideoProgressBar(); }, { once: true });
-            v.load();
-            setVideoError(null);
-            // Reset visual bar when new source is set
-            setVideoBarProgress(0);
-            barStartedRef.current = false;
-            return;
-          } else {
-            console.log(`Video source not found: ${candidate.src} (${res.status})`);
-          }
-        } catch (error) {
-          console.log(`Error checking video source ${candidate.src}:`, error);
-        }
-      }
-      setVideoError("Video file not found. Please add CleanVid2.mp4 to /public.");
-    };
-    tryLoad();
-  }, [posterSrc]);
-
-  // Keep video running; if tab becomes visible again, ensure playback
-  useEffect(() => {
-    const onVisibility = () => {
-      const v = videoRef.current;
-      if (!v) return;
-      if (!document.hidden) {
-        try { v.volume = 1.0; } catch {}
-        v.play().catch(() => { setNeedsUserGesture(true); });
-      }
-    };
-    document.addEventListener("visibilitychange", onVisibility);
-    return () => document.removeEventListener("visibilitychange", onVisibility);
+    requestAnimationFrame(calc);
+    return () => { running = false; };
   }, []);
 
-  // Cleanup rAF on unmount
+  // Idle-mount ParallaxAurora
+  const [showAurora, setShowAurora] = useState(false);
   useEffect(() => {
-    return () => { if (barRafRef.current) cancelAnimationFrame(barRafRef.current); };
+    if (typeof window === 'undefined') return;
+    const cb = () => setShowAurora(true);
+    const w = window as Window & { requestIdleCallback?: (cb: () => void) => number };
+    if (w.requestIdleCallback) {
+      w.requestIdleCallback(cb);
+    } else {
+      setTimeout(cb, 1);
+    }
   }, []);
 
-  // Prevent user from pausing; keep volume at max
+  // YouTube video ID from the URL
+  const youtubeVideoId = "zMrXn7V9Ecw";
+
+  // Start progress bar when component mounts (simulating video start)
   useEffect(() => {
-    const v = videoRef.current;
-    if (!v) return;
-    const onPause = () => {
-      if (!v.ended && !document.hidden) {
-        v.play().catch(() => {});
-      }
-    };
-    const onVolume = () => {
-      try { if (v.volume < 1) { v.volume = 1.0; } } catch {}
-    };
-    v.addEventListener('pause', onPause);
-    v.addEventListener('volumechange', onVolume);
-    return () => {
-      v.removeEventListener('pause', onPause);
-      v.removeEventListener('volumechange', onVolume);
-    };
+    const timer = setTimeout(() => {
+      startVideoProgressBar();
+      setShowEnableSound(true);
+    }, 2000); // Start after 2 seconds to simulate video loading
+
+    return () => clearTimeout(timer);
   }, []);
 
   return (
-    <div className="min-h-screen bg-white font-nhd text-midnight">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+      {/* Mobile heading */}
+      <div className="md:hidden bg-white text-midnight py-8 px-4">
+        <div className="w-full max-w-[900px] mx-auto">
+          <h1 className="text-3xl font-black text-center mb-4">
+            See Your&apos;s Home Transformed
+          </h1>
+          <p className="text-lg text-center text-gray-600">
+            Watch our team in action as we clean and sanitize every corner
+          </p>
+        </div>
+      </div>
+
       {/* Desktop heading and review wall removed */}
       <div className="bg-white text-midnight pb-36 md:pb-0">
         <div className="w-full max-w-[900px] mx-auto px-4">
 		  <div
 			className="mx-auto w-full bg-snow border border-black/10 rounded-2xl shadow-sm overflow-hidden relative h-[calc(100vh-14rem)] md:h-[60vh] md:max-h-[720px]"
 		  >
-                <video
-					ref={videoRef}
-					playsInline
-					autoPlay
-                    muted
-					preload={preloadMode}
-					aria-label="Cleaning demonstration video"
-					disablePictureInPicture
-					controlsList="nodownload noremoteplayback"
-					className="w-full h-full"
-					style={{ objectFit: "cover" }}
-					onContextMenu={(e) => e.preventDefault()}
-				/>
+            {/* YouTube Embed */}
+            <iframe
+              src={`https://www.youtube.com/embed/${youtubeVideoId}?autoplay=1&mute=1&loop=1&playlist=${youtubeVideoId}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&fs=0&disablekb=1&start=0`}
+              title="Cleaning demonstration video"
+              className="w-full h-full"
+              style={{ objectFit: "cover" }}
+              allow="autoplay; encrypted-media"
+              allowFullScreen
+              onLoad={() => {
+                console.log("YouTube video loaded successfully");
+                setShowEnableSound(true);
+              }}
+              onError={() => {
+                console.error("YouTube video failed to load");
+                setVideoError("Video failed to load. Please refresh the page.");
+              }}
+            />
+            
 				{/* 2-minute bottom progress bar */}
 				<div className="absolute left-0 right-0 bottom-0 h-1.5 bg-black/20">
 					<div className="h-full bg-brand" style={{ width: `${Math.round(videoBarProgress * 100)}%`, transition: 'width 120ms linear' }} />
 				</div>
-                {needsUserGesture && !videoError && (
-					<button
-						onClick={() => {
-							const v = videoRef.current; if (!v) return;
-							try { v.muted = false; v.volume = 1.0; } catch {}
-                            v.play().then(() => { setNeedsUserGesture(false); setShowEnableSound(false); }).catch(() => {});
-						}}
-                    className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-5 py-2.5 rounded-full text-sm font-extrabold shadow-lg backdrop-blur-sm"
-					>
-						Enable Sound
-					</button>
-				)}
-                {showEnableSound && !needsUserGesture && !videoError && (
+
+                {showEnableSound && !videoError && (
                     <button
                         onClick={() => {
-                            const v = videoRef.current; if (!v) return;
-                            try { v.muted = false; v.volume = 1.0; } catch {}
+                            // For YouTube, we can't programmatically unmute, but we can show instructions
                             setShowEnableSound(false);
+                            alert("Click the unmute button on the video player to enable sound");
                         }}
                         className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-5 py-2.5 rounded-full text-sm font-extrabold shadow-lg backdrop-blur-sm"
-                        aria-label="Enable sound"
                     >
                         Enable Sound
                     </button>
                 )}
-				{videoError && (
-					<div className="flex items-center justify-center h-full text-mountain text-sm">
-						{videoError}
-					</div>
-				)}
-			</div>
-        </div>
-      </div>
 
-      {/* Mobile pinned bottom countdown card */}
-      <div className="fixed inset-x-0 bottom-0 z-40 md:hidden">
-        <div className="px-3 pb-3">
-          <div className="bg-white rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.15)] border border-black/5 ring-1 ring-black/5">
-            <div className="px-5 pt-4 text-center text-midnight text-[15px] leading-snug font-nhd font-medium">
-              <span className="font-extrabold">Watch This</span> <span className="italic">Quick Video Of A</span> <span className="font-extrabold">Home Like Your&apos;s</span> <span className="font-extrabold">Being Cleaned</span>
+                {videoError && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/50 text-white p-4">
+                        <div className="text-center">
+                            <p className="text-lg font-bold mb-2">Video Error</p>
+                            <p className="text-sm">{videoError}</p>
+                            <button
+                                onClick={() => window.location.reload()}
+                                className="mt-4 bg-white text-black px-4 py-2 rounded-full font-bold"
+                            >
+                                Refresh Page
+                            </button>
+                        </div>
+                    </div>
+                )}
+		  </div>
+
+          {/* CTA Section */}
+          <div className="mt-8 text-center">
+            <div className="mb-6">
+              <h2 className="text-2xl md:text-3xl font-black text-midnight mb-4">
+                Ready to Experience This Level of Clean?
+              </h2>
+              <p className="text-lg text-gray-600 mb-6">
+                Book your cleaning service today and see the difference for yourself
+              </p>
             </div>
-            <div className="p-4 pt-3">
+
+            {/* Progress Bar */}
+            <div className="mb-8">
+              <div className="w-full max-w-md mx-auto bg-gray-200 rounded-full h-2 mb-4">
+                <div 
+                  className="bg-brand h-2 rounded-full transition-all duration-300 ease-out"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+              <p className="text-sm text-gray-600">
+                {done ? "Time&apos;s up!" : `${countdown} seconds remaining`}
+              </p>
+            </div>
+
+            {/* CTA Button */}
+            <div className="relative inline-block">
               <button
                 ref={buttonRef}
-                className={`relative w-full overflow-hidden rounded-full h-12 sm:h-14 px-4 py-0 text-[17px] sm:text-lg font-extrabold tracking-tight transition-colors ${!done ? "opacity-70 cursor-not-allowed" : "opacity-100 cursor-pointer"}`}
-                style={{ backgroundColor: "#ffffff", border: "1px solid rgba(0,0,0,0.12)" }}
+                onClick={() => router.push('/schedule')}
                 disabled={!done}
-                onClick={() => {
-                  if (done) {
-                    router.push("/schedule");
+                className={`
+                  relative px-8 py-4 rounded-full text-lg font-black transition-all duration-300 transform
+                  ${done 
+                    ? 'bg-brand text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95' 
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   }
-                }}
+                `}
               >
-                <span
-                  ref={barRef}
-                  className="absolute inset-y-0 left-0 z-10 pointer-events-none bg-sky-300"
-                  style={{ width: `${progress}%`, transition: "width 1s linear" }}
-                />
-                <span className="absolute inset-0 z-20 pointer-events-none flex items-center justify-center">
-                  <span ref={labelRef} className="text-midnight">
-                    {done ? "Move Forward" : countdown}
-                  </span>
-                  <span
-                    className="absolute inset-0 flex items-center justify-center text-white"
-                    style={{ clipPath: `inset(0 ${100 - progress}% 0 0)` }}
-                  >
-                    {done ? "Move Forward" : countdown}
-                  </span>
+                <span ref={labelRef} className="relative z-10">
+                  {done ? "Book Your Cleaning Now" : "Please Wait..."}
                 </span>
+                <span 
+                  ref={barRef}
+                  className="absolute inset-0 bg-white rounded-full opacity-20 transition-all duration-300"
+                  style={{ 
+                    width: done ? '100%' : `${progress}%`,
+                    transform: done ? 'scale(1.05)' : 'scale(1)'
+                  }}
+                />
               </button>
             </div>
+
+            <p className="mt-4 text-sm text-gray-500">
+              {done ? "Click the button above to get started!" : "Watch the video while you wait..."}
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Desktop pinned bottom countdown card */}
-      <div className="hidden md:block fixed inset-x-0 bottom-0 z-40">
-        <div className="px-6 pb-6">
-          <div className="max-w-4xl mx-auto bg-white rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.15)] border border-black/5 ring-1 ring-black/5">
-            <div className="px-6 pt-4 text-center text-midnight text-[15px] leading-snug font-nhd font-medium">
-              <span className="font-extrabold">Watch This</span> <span className="italic">Quick Video Of A</span> <span className="font-extrabold">Home Like Your&apos;s</span> <span className="font-extrabold">Being Cleaned</span>
-            </div>
-            <div className="p-4 pt-3">
-              <button
-                ref={buttonRef}
-                className={`relative w-full overflow-hidden rounded-full h-14 px-6 py-0 text-lg font-extrabold tracking-tight transition-colors ${!done ? "opacity-70 cursor-not-allowed" : "opacity-100 cursor-pointer"}`}
-                style={{ backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.12)' }}
-                disabled={!done}
-                onClick={() => { if (done) { router.push('/schedule'); } }}
-              >
-                <span
-                  ref={barRef}
-                  className="absolute inset-y-0 left-0 z-10 pointer-events-none bg-sky-300"
-                  style={{ width: `${progress}%`, transition: 'width 1s linear' }}
-                />
-                <span className="absolute inset-0 z-20 pointer-events-none flex items-center justify-center">
-                  <span ref={labelRef} className="text-midnight">
-                    {done ? 'Move Forward' : countdown}
-                  </span>
-                  <span
-                    className="absolute inset-0 flex items-center justify-center text-white"
-                    style={{ clipPath: `inset(0 ${100 - progress}% 0 0)` }}
-                  >
-                    {done ? 'Move Forward' : countdown}
-                  </span>
-                </span>
-              </button>
-            </div>
-          </div>
+      {/* ParallaxAurora for background effect */}
+      {showAurora && (
+        <div className="fixed inset-0 pointer-events-none z-0">
+          {/* Add your ParallaxAurora component here if needed */}
         </div>
-      </div>
+      )}
     </div>
   );
 }
-
-
-
