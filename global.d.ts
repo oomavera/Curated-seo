@@ -1,4 +1,4 @@
-// Allow JSX to accept the Wistia custom element used by the hosted player
+// Global JSX intrinsic element declaration to satisfy Next.js build on Vercel
 declare namespace JSX {
   interface IntrinsicElements {
     'wistia-player': any;
