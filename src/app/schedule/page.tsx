@@ -114,27 +114,27 @@ export default function SchedulePage() {
                         </div>
 
 						{/* Logos directly under Text Now */}
-						<div className="mt-5 flex items-center justify-center gap-4 opacity-85">
+                        <div className="mt-5 flex items-center justify-center gap-4 opacity-85">
 							<Image 
 								src="/Gallery/logos/Google-Logo-PNG.png" 
 								alt="Google Reviews" 
 								width={96}
 								height={40}
-								className="h-7 w-auto sm:h-8"
+                                className="h-3.5 w-auto sm:h-4"
 							/>
 							<Image 
 								src="/Gallery/logos/Yelp_Logo.png" 
 								alt="Yelp Reviews" 
 								width={96}
 								height={40}
-								className="h-7 w-auto sm:h-8"
+                                className="h-3.5 w-auto sm:h-4"
 							/>
 							<Image 
 								src="/Gallery/logos/png-transparent-thumbtack-horizontal-logo-review-platforms-logos.png" 
 								alt="Thumbtack Reviews" 
 								width={120}
 								height={40}
-								className="h-7 w-auto sm:h-8"
+                                className="h-3.5 w-auto sm:h-4"
 							/>
 						</div>
                     </div>
@@ -180,8 +180,15 @@ function GreviewsStack() {
     return (
         <div className="space-y-4">
             {images.map((src: string, i: number) => (
-                <div key={i} className="w-full">
-                    <Image src={src} alt="Google review" width={1200} height={800} className="w-full h-auto rounded-xl border border-black/10" />
+                <div key={i} className="w-full overflow-visible flex justify-center">
+                    <Image 
+                        src={src} 
+                        alt="Google review" 
+                        width={1200} 
+                        height={800} 
+                        className="w-full h-auto rounded-xl border border-black/10 mx-auto block"
+                        style={{ transform: 'scale(1.2)', transformOrigin: 'center' }}
+                    />
                 </div>
             ))}
         </div>
