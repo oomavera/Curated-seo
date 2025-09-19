@@ -10,7 +10,10 @@ const galleryDir = path.join(root, 'public', 'Gallery');
 const targets = [
   path.join(galleryDir, 'cleans'),
   path.join(galleryDir, 'team'),
-  path.join(galleryDir, 'reviews2')
+  path.join(galleryDir, 'reviews2'),
+  // Add Google reviews screenshots directories (case variations)
+  path.join(galleryDir, 'Greviews'),
+  path.join(galleryDir, 'GReviews')
 ];
 const validSrcExt = new Set(['.jpg', '.jpeg', '.png', '.heic', '.HEIC', '.JPG', '.JPEG', '.PNG']);
 
