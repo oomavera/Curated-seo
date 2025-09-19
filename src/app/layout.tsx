@@ -3,6 +3,7 @@ import { Inter, Sora } from "next/font/google";
 import "./globals.css";
 import LocalSchema from "../components/LocalSchema";
 import MetaPixel from "../components/MetaPixel";
+import { Analytics } from "@vercel/analytics/react";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -87,6 +88,7 @@ export default function RootLayout({
         <a href="#main-content" className="skip-link">Skip to main content</a>
         <LocalSchema />
         <MetaPixel />
+        <Analytics />
         {children}
       </body>
     </html>
