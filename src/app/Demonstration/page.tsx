@@ -10,7 +10,7 @@ export default function DemonstrationPage() {
   const [done, setDone] = useState(false);
   const wistiaRef = useRef<HTMLElement | null>(null);
   // Wrapper to render custom element without TS JSX intrinsic checks
-  const WistiaPlayer: keyof JSX.IntrinsicElements = 'wistia-player';
+  const WistiaPlayer = 'wistia-player' as unknown as React.ElementType;
   const hasStartedRef = useRef(false);
   // 2-minute visual progress bar state (separate from CTA countdown)
   const [videoBarProgress, setVideoBarProgress] = useState(0); // 0..1
