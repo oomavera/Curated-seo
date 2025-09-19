@@ -12,12 +12,26 @@ export default function DemonstrationPage() {
   const [preloadMode, setPreloadMode] = useState<"auto" | "metadata">("auto");
   const [needsUserGesture, setNeedsUserGesture] = useState(false);
   const [showEnableSound, setShowEnableSound] = useState(false);
+  const [isBuffering, setIsBuffering] = useState(true);
   // 2-minute visual progress bar state (separate from CTA countdown)
   const [videoBarProgress, setVideoBarProgress] = useState(0); // 0..1
   const barStartRef = useRef<number | null>(null);
   const barRafRef = useRef<number | null>(null);
   const barStartedRef = useRef(false);
   // Removed desktop reviews wall per request
+
+  const stopVideo = () => {
+    const v = videoRef.current;
+    if (!v) return;
+    try {
+      v.pause();
+      v.muted = true;
+      v.removeAttribute("src");
+      // Remove any <source> children if present
+      while (v.firstChild) v.removeChild(v.firstChild);
+      v.load();
+    } catch {}
+  };
 
   const startVideoProgressBar = () => {
     if (barStartedRef.current) return;
@@ -127,6 +141,7 @@ export default function DemonstrationPage() {
             console.log(`Video source found: ${candidate.src}`);
             const v = videoRef.current;
             if (!v) return;
+            setIsBuffering(true);
             v.src = candidate.src;
             if (posterSrc) { v.poster = posterSrc; }
             // Force load and attempt autoplay as soon as it can play
@@ -136,23 +151,39 @@ export default function DemonstrationPage() {
                 .then(() => {
                   console.log("Video started playing successfully");
                   setShowEnableSound(true);
+                  setIsBuffering(false);
                 })
                 .catch((error) => {
                   console.log("Video autoplay failed:", error);
                   // If autoplay is blocked entirely, request a gesture
                   setNeedsUserGesture(true);
                   setShowEnableSound(true);
+                  setIsBuffering(false); // Hide spinner; user gesture will be shown
                 });
               v.removeEventListener("canplay", handleCanPlay);
             };
             v.addEventListener("canplay", handleCanPlay);
             // Start the 2-minute progress bar the first time the video actually starts playing
-            v.addEventListener("playing", () => { startVideoProgressBar(); }, { once: true });
+            v.addEventListener("playing", () => { startVideoProgressBar(); setIsBuffering(false); }, { once: true });
+            // Buffering indicators
+            const onWaiting = () => setIsBuffering(true);
+            const onCanPlay = () => setIsBuffering(false);
+            const onStalled = () => setIsBuffering(true);
+            v.addEventListener("waiting", onWaiting);
+            v.addEventListener("canplay", onCanPlay);
+            v.addEventListener("stalled", onStalled);
             v.load();
             setVideoError(null);
             // Reset visual bar when new source is set
             setVideoBarProgress(0);
             barStartedRef.current = false;
+            // Cleanup buffering listeners when source resolves or on next mount
+            const cleanup = () => {
+              v.removeEventListener("waiting", onWaiting);
+              v.removeEventListener("canplay", onCanPlay);
+              v.removeEventListener("stalled", onStalled);
+            };
+            v.addEventListener("ended", cleanup, { once: true });
             return;
           } else {
             console.log(`Video source not found: ${candidate.src} (${res.status})`);
@@ -182,7 +213,10 @@ export default function DemonstrationPage() {
 
   // Cleanup rAF on unmount
   useEffect(() => {
-    return () => { if (barRafRef.current) cancelAnimationFrame(barRafRef.current); };
+    return () => {
+      if (barRafRef.current) cancelAnimationFrame(barRafRef.current);
+      stopVideo();
+    };
   }, []);
 
   // Prevent user from pausing; keep volume at max
@@ -211,7 +245,7 @@ export default function DemonstrationPage() {
       <div className="bg-white text-midnight pb-36 md:pb-0">
         <div className="w-full max-w-[900px] mx-auto px-4">
 		  <div
-			className="mx-auto w-full bg-snow border border-black/10 rounded-2xl shadow-sm overflow-hidden relative h-[calc(100vh-14rem)] md:h-[60vh] md:max-h-[720px]"
+			className="mx-auto w-full bg-snow border border-black/10 rounded-2xl shadow-sm overflow-hidden relative h-[calc(100vh-11rem)] md:h-[calc(100vh-11rem)]"
 		  >
                 <video
 					ref={videoRef}
@@ -226,6 +260,12 @@ export default function DemonstrationPage() {
 					style={{ objectFit: "cover" }}
 					onContextMenu={(e) => e.preventDefault()}
 				/>
+                {/* Loading / buffering overlay */}
+                {isBuffering && !videoError && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/10">
+                    <div className="w-10 h-10 rounded-full border-4 border-white/30 border-t-white animate-spin" aria-label="Loading video" />
+                  </div>
+                )}
 				{/* 2-minute bottom progress bar */}
 				<div className="absolute left-0 right-0 bottom-0 h-1.5 bg-black/20">
 					<div className="h-full bg-brand" style={{ width: `${Math.round(videoBarProgress * 100)}%`, transition: 'width 120ms linear' }} />
@@ -279,6 +319,7 @@ export default function DemonstrationPage() {
                 disabled={!done}
                 onClick={() => {
                   if (done) {
+                    stopVideo();
                     router.push("/schedule");
                   }
                 }}
@@ -318,7 +359,7 @@ export default function DemonstrationPage() {
                 className={`relative w-full overflow-hidden rounded-full h-14 px-6 py-0 text-lg font-extrabold tracking-tight transition-colors ${!done ? "opacity-70 cursor-not-allowed" : "opacity-100 cursor-pointer"}`}
                 style={{ backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.12)' }}
                 disabled={!done}
-                onClick={() => { if (done) { router.push('/schedule'); } }}
+                onClick={() => { if (done) { stopVideo(); router.push('/schedule'); } }}
               >
                 <span
                   ref={barRef}

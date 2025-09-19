@@ -17,8 +17,13 @@ const DynamicAurora = dynamic(() => import("../components/ui/ParallaxAurora"), {
 const ScrollPopupForm = dynamic(() => import("../components/ScrollPopupForm"), { ssr: false });
 
 // Generate array of review image paths in a stable order to prevent hydration mismatch
-// Use .webp extension to match files in public/Gallery/reviews
-const reviewImages = Array.from({ length: 22 }, (_, i) => `/Gallery/reviews/${i + 1}.webp`);
+// Use actual filenames from /public/Gallery/reviews2
+const reviewImages = [
+    'Allen.webp', 'Andrea.webp', 'Cristina.webp', 'Daniela.webp', 'DanielR.webp',
+    'Deja.webp', 'Hani.webp', 'Jackie.webp', 'Kenneth.webp', 'Kia.webp',
+    'Latrell.webp', 'lauren.webp', 'Madeline.webp', 'Marlaren.webp', 'Martiza.webp',
+    'Meghan.webp', 'Nathan.webp', 'Nikolas.webp', 'Rachel.webp', 'Trey.webp'
+].map(name => `/Gallery/reviews2/${name}`);
 
 export default function Home() {
 
@@ -144,7 +149,7 @@ export default function Home() {
 			{/* ABOVE THE FOLD (white) */}
 			<div className="bg-white text-midnight">
 				{/* HERO SECTION - ABOVE THE FOLD */}
-				<section className="relative bg-white min-h-screen flex flex-col overflow-visible">
+				<section className="relative bg-white min-h-screen lg:min-h-0 flex flex-col overflow-visible lg:pt-2">
 					{showAurora && <DynamicAurora />}
 					{/* Header */}
 					<header className="w-full max-w-7xl mx-auto px-4 sm:px-8 py-3 sm:py-6">
@@ -172,9 +177,9 @@ export default function Home() {
 					</header>
 
 					{/* Main Content */}
-					<div className="flex-1 flex flex-col justify-center px-8 max-w-7xl mx-auto w-full mt-4 sm:mt-12">
+					<div className="flex-1 flex flex-col justify-center lg:justify-start px-8 max-w-7xl mx-auto w-full mt-4 sm:mt-12 lg:mt-2">
 						{/* Hero Text */}
-						<div className="relative z-20 text-center mb-4 sm:mb-12 no-blend">
+						<div className="relative z-20 text-center mb-3 sm:mb-8 lg:mb-4 no-blend">
 							<h1 className="font-hero text-2xl xs:text-3xl md:text-4xl xl:text-5xl mb-2 leading-tight text-midnight">
 								Trusted House Cleaning in Seminole County
 							</h1>
@@ -184,7 +189,7 @@ export default function Home() {
 						</div>
 
 						{/* Logos Section */}
-						<div className="flex flex-col justify-center items-center gap-3 mb-6 sm:mb-12">
+						<div className="flex flex-col justify-center items-center gap-3 mb-4 sm:mb-6 lg:mb-4">
 							<div className="flex items-center gap-4 sm:gap-6">
 								<Image 
 									src="/Gallery/logos/Google-Logo-PNG.png" 
@@ -311,8 +316,8 @@ export default function Home() {
 						</section>
 					</div>
 				</section>
-				{/* Wide Video Window */}
-				<section className="py-4 sm:py-8">
+				{/* Wide Video Window (hidden on desktop) */}
+				<section className="py-4 sm:py-8 lg:hidden">
 					<div className="max-w-7xl mx-auto px-8">
 						<GlassCard className="relative overflow-hidden p-0 rounded-3xl" withShadow withEdgeGlow>
 							<video
@@ -336,7 +341,7 @@ export default function Home() {
 				{/* Scroll-triggered Lead Form Popup */}
 				<ScrollPopupForm triggerElement="#reviews" callout="Wait! Get Your 50% Off House Cleaning" />
 				{/* Customer Reviews Grid Section */}
-				<section id="reviews" className="py-6 sm:py-12 relative z-10">
+				<section id="reviews" className="py-4 sm:py-8 lg:py-4 relative z-10">
 					<div className="max-w-7xl mx-auto px-4">
 						{/* Reviews Image Grid - 2x2 on mobile, 4x4 on desktop */}
 						<div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -496,7 +501,7 @@ export default function Home() {
 				</section>
 
 				{/* COMPANY DESCRIPTION SECTION - moved bottom */}
-				<section className="py-8 sm:py-12 relative">
+				<section className="py-8 sm:py-12 relative lg:hidden">
 					<div className="max-w-6xl mx-auto px-4 sm:px-6">
 						<GlassCard className="p-12 sm:p-16 lg:p-20 transition-transform duration-300 hover:scale-[1.005] overflow-hidden">
 							<div className="relative z-10 text-left text-lg sm:text-xl text-black font-light leading-relaxed max-w-5xl mx-auto">

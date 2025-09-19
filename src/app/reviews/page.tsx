@@ -3,6 +3,7 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 // Removed unused UI imports for a cleaner page
+import PinnedCountdownDesktop from "../../components/PinnedCountdownDesktop";
 
 // Generate arrays of review image paths (use only reviews2 on this page)
 const namedReviewBases = [
@@ -68,37 +69,37 @@ export default function ReviewsPage() {
   return (
     <div className="min-h-screen bg-white font-nhd text-midnight">
       {/* Main Content */}
-		<div className="bg-white text-midnight pb-36 md:pb-24">{/* extra bottom space for pinned cards */}
-			{/* Hero copy at top */}
+		<div className="bg-white text-midnight pb-24 sm:pb-28 md:pb-40 lg:pb-56">{/* extra bottom space for pinned cards */}
+			{/* Hero copy at top (visible on all breakpoints) */}
 			<section className="pt-6 sm:pt-10">
 				<div className="max-w-7xl mx-auto px-4">
-					<h1 className="font-hero font-black text-2xl sm:text-3xl md:text-4xl lg:text-5xl leading-tight text-center text-midnight">
+					<h1 className="font-hero font-black text-2xl sm:text-3xl md:text-4xl leading-tight text-center text-midnight">
 						Here&apos;s how we transformed the lives of people just like you
 					</h1>
 				</div>
 			</section>
-        {/* Customer Review Images Grid - unified wall */}
-			<section className="py-3 sm:py-6">
-          <div className="max-w-7xl mx-auto px-4">
-            {/* Unified wall of reviews */}
-					<div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-3 md:gap-2">
+			{/* Customer Review Images Grid - unified wall */}
+			<section className="py-0 lg:py-4 min-h-screen flex items-start lg:items-stretch">
+				<div className="w-full px-2 sm:px-4">
+					{/* Unified wall of reviews */}
+					<div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 md:gap-4 lg:gap-6">
               {allReviews.map((item, i) => (
-                <div key={i} className="relative overflow-hidden rounded-2xl" style={{ aspectRatio: '3 / 4' }}>
+                <div key={i} className="relative overflow-hidden rounded-2xl bg-white" style={{ aspectRatio: '3 / 4' }}>
                   <Image
                     src={item.src}
                     alt={`Customer review ${i + 1}`}
                     width={640}
                     height={853}
-									sizes="(max-width: 640px) 33vw, (max-width: 1024px) 25vw, (max-width: 1536px) 12vw, 10vw"
+								sizes="(min-width:1536px) 16vw, (min-width:1024px) 18vw, (min-width:768px) 20vw, 33vw"
                     quality={88}
-                    className="w-full h-full object-cover"
-                    style={{ filter: 'none', mixBlendMode: 'normal', opacity: 1, transform: 'scale(1.28)' }}
+                    className="w-full h-full object-contain"
+                    style={{ filter: 'none', mixBlendMode: 'normal', opacity: 1 }}
                   />
                 </div>
               ))}
-            </div>
-          </div>
-        </section>
+					</div>
+				</div>
+			</section>
 
         {/* Removed testimonials, CTA, and footer per request */}
       </div>
@@ -110,9 +111,9 @@ export default function ReviewsPage() {
         }
       `}</style>
       {/* Mobile pinned bottom countdown card */}
-      <div className="fixed inset-x-0 bottom-0 z-40 md:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-[9999] md:hidden pointer-events-none">
         <div className="px-3 pb-3">
-          <div className="bg-white rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.15)] border border-black/5 ring-1 ring-black/5">
+          <div className="bg-white rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.15)] border border-black/5 ring-1 ring-black/5 pointer-events-auto">
             <div className="px-5 pt-4 text-center text-midnight text-[13px] leading-snug font-nhd font-medium">
               Before you get your Free voucher... Check out what people like you had to say!
             </div>
@@ -146,42 +147,8 @@ export default function ReviewsPage() {
           </div>
         </div>
 
-		{/* Desktop pinned bottom countdown card */}
-		<div className="fixed inset-x-0 bottom-0 z-40 hidden md:block">
-			<div className="px-6 pb-6">
-				<div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.18)] border border-black/5 ring-1 ring-black/5">
-					<div className="px-6 pt-5 text-center text-midnight text-sm leading-snug font-nhd font-medium">
-						Before you get your Free voucher... Check out what people like you had to say!
-					</div>
-					<div className="p-5 pt-3">
-						<button
-							ref={buttonRef}
-							className={`relative w-full overflow-hidden rounded-full h-14 px-6 py-0 text-lg font-extrabold tracking-tight transition-colors ${!done ? 'opacity-70 cursor-not-allowed' : 'opacity-100 cursor-pointer'}`}
-							style={{ backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.12)' }}
-							disabled={!done}
-							onClick={() => { if (done) { router.push('/Demonstration'); } }}
-						>
-							<span
-								ref={barRef}
-								className="absolute inset-y-0 left-0 z-10 pointer-events-none bg-sky-300"
-								style={{ width: `${progress}%`, transition: 'width 1s linear' }}
-							/>
-							<span className="absolute inset-0 z-20 pointer-events-none flex items-center justify-center">
-								<span ref={labelRef} className="text-midnight">
-									{done ? 'Move Forward' : countdown}
-								</span>
-								<span
-									className="absolute inset-0 flex items-center justify-center text-white"
-									style={{ clipPath: `inset(0 ${100 - progress}% 0 0)` }}
-								>
-									{done ? 'Move Forward' : countdown}
-								</span>
-							</span>
-						</button>
-					</div>
-				</div>
-			</div>
-		</div>
+        {/* Desktop pinned bottom countdown card via portal */}
+        <PinnedCountdownDesktop />
       </div>
     </div>
   );

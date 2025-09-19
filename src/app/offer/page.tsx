@@ -14,9 +14,16 @@ const DynamicAurora = dynamic(() => import("../../components/ui/ParallaxAurora")
 const QuickEstimateForm = dynamic(() => import("../../components/QuickEstimateForm"), { ssr: false });
 const ScrollPopupForm = dynamic(() => import("../../components/ScrollPopupForm"), { ssr: false });
 
-// Generate array of review image paths in a stable order to prevent hydration mismatch
-// Use .webp extension to match files in public/Gallery/reviews
-const reviewImages = Array.from({ length: 22 }, (_, i) => `/Gallery/reviews/${i + 1}.webp`);
+// Review images
+// Desktop: use exact filenames from /public/Gallery/reviews2
+const reviewImagesDesktop = [
+    'Allen.webp', 'Andrea.webp', 'Cristina.webp', 'Daniela.webp', 'DanielR.webp',
+    'Deja.webp', 'Hani.webp', 'Jackie.webp', 'Kenneth.webp', 'Kia.webp',
+    'Latrell.webp', 'lauren.webp', 'Madeline.webp', 'Marlaren.webp', 'Martiza.webp',
+    'Meghan.webp', 'Nathan.webp', 'Nikolas.webp', 'Rachel.webp', 'Trey.webp'
+].map(name => `/Gallery/reviews2/${name}`);
+// Mobile: keep original numeric /Gallery/reviews set
+const reviewImagesMobile = Array.from({ length: 22 }, (_, i) => `/Gallery/reviews/${i + 1}.webp`);
 
 export default function OfferPage() {
 
@@ -141,11 +148,11 @@ export default function OfferPage() {
 	const mobileTrackWidthPx = mobileSlidesCount > 0 ? (mobileSlidesCount * mobileSlideWidth + (mobileSlidesCount - 1) * gapPx) : 0;
 	const desktopTrackWidthPx = desktopSlidesCount > 0 ? (desktopSlidesCount * desktopSlideWidth + (desktopSlidesCount - 1) * gapPx) : 0;
 
-	// Randomize reviews order client-side after mount to avoid hydration mismatch
-	const [shuffledReviewImages, setShuffledReviewImages] = useState<string[] | null>(null);
+// Randomize mobile reviews order client-side after mount to avoid hydration mismatch
+const [shuffledReviewImages, setShuffledReviewImages] = useState<string[] | null>(null);
 	useEffect(() => {
-		const prioritized = [6, 19, 21, 10].map(n => `/Gallery/reviews/${n}.webp`);
-		const rest = reviewImages.filter(src => !prioritized.includes(src));
+    const prioritized = [6, 19, 21, 10].map(n => `/Gallery/reviews/${n}.webp`);
+    const rest = reviewImagesMobile.filter(src => !prioritized.includes(src));
 		for (let i = rest.length - 1; i > 0; i--) {
 			const j = Math.floor(Math.random() * (i + 1));
 			[rest[i], rest[j]] = [rest[j], rest[i]];
@@ -187,7 +194,7 @@ export default function OfferPage() {
 			{/* ABOVE THE FOLD + HERO AREA (white background) */}
 			<div className="bg-white text-midnight">
 				{/* HERO SECTION - ABOVE THE FOLD */}
-				<section className="relative bg-white min-h-screen flex flex-col overflow-visible">
+				<section className="relative bg-white min-h-screen lg:min-h-0 flex flex-col overflow-visible lg:pt-2">
 				{showAurora && <DynamicAurora />}
 					{/* Header */}
 					<header className="w-full max-w-7xl mx-auto px-4 sm:px-8 py-2 sm:py-3">
@@ -203,9 +210,9 @@ export default function OfferPage() {
 					</header>
 
 				{/* Main Content */}
-				<div className="flex-1 flex flex-col justify-center px-8 max-w-7xl mx-auto w-full mt-1 sm:mt-6">
+			<div className="flex-1 flex flex-col justify-center lg:justify-start px-8 max-w-7xl mx-auto w-full mt-1 sm:mt-6 lg:mt-2">
 					{/* Hero Text */}
-					<div className="relative z-20 text-center mb-3 sm:mb-6 no-blend">
+				<div className="relative z-20 text-center mb-3 sm:mb-6 lg:mb-4 no-blend">
 						<h1 className="font-hero text-2xl xs:text-3xl md:text-4xl xl:text-5xl mb-1 leading-tight text-midnight">
 							<span className="font-extrabold">&quot;The ladies are fierce and thorough in the way they clean and sanitize our home!&quot;</span> <span className="font-medium">~ Cristina Barreto</span>
 						</h1>
@@ -235,7 +242,7 @@ export default function OfferPage() {
 					</div>
 
 					{/* Logos Section */}
-					<div className="flex flex-col justify-center items-center gap-2 mb-4 sm:mb-6">
+				<div className="flex flex-col justify-center items-center gap-2 mb-4 sm:mb-6 lg:mb-4">
 						<div className="flex items-center gap-3 sm:gap-4">
 							<Image 
 								src="/Gallery/logos/Google-Logo-PNG.png" 
@@ -363,7 +370,7 @@ export default function OfferPage() {
 						</GlassCard>
 						</section>
 					{/* Wide Video Window - mobile only (hidden on md and up) */}
-					<section id="offer-video" ref={videoSectionRef as React.RefObject<HTMLElement>} className="py-4 sm:py-8 md:hidden">
+			<section id="offer-video" ref={videoSectionRef as React.RefObject<HTMLElement>} className="py-4 sm:py-8 lg:hidden">
 						<div className="max-w-7xl mx-auto px-0">
 							<GlassCard className="relative overflow-hidden p-0 rounded-3xl" withShadow withEdgeGlow>
 								{showVideo && (
@@ -393,30 +400,53 @@ export default function OfferPage() {
 			{/* BELOW: Pure white from reviews to footer */}
 			<div className="bg-white text-midnight">
 					{/* Customer Reviews Grid Section */}
-					<section id="reviews" ref={reviewsRef as React.RefObject<HTMLElement>} className="py-6 sm:py-12 relative z-10">
+				<section id="reviews" ref={reviewsRef as React.RefObject<HTMLElement>} className="py-4 sm:py-8 lg:py-4 relative z-10">
 						<div className="max-w-7xl mx-auto px-4">
-							{/* Reviews Image Grid - 2x2 on mobile, 4x4 on desktop */}
-							<div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-								{reviewsVisible && (shuffledReviewImages ?? reviewImages).map((imageSrc) => (
-									<div key={imageSrc} className="relative py-2">
-										<Image 
-											src={imageSrc} 
-											alt="Customer review" 
-											width={512}
-											height={512}
-											sizes="(max-width: 640px) 45vw, (max-width: 1024px) 24vw, 18vw"
-											quality={60}
-											className="w-full h-auto"
-											style={{ 
-												filter: 'none',
-												mixBlendMode: 'normal',
-												opacity: 1,
-												backdropFilter: 'none'
-											}}
-										/>
-									</div>
-								))}
-							</div>
+						{/* Mobile grid */}
+						<div className="grid grid-cols-2 sm:grid-cols-4 gap-3 lg:hidden">
+							{reviewsVisible && (shuffledReviewImages ?? reviewImagesMobile).map((imageSrc) => (
+								<div key={imageSrc} className="relative py-2">
+									<Image 
+										src={imageSrc} 
+										alt="Customer review" 
+										width={512}
+										height={512}
+										sizes="(max-width: 640px) 45vw, (max-width: 1024px) 24vw, 18vw"
+										quality={60}
+										className="w-full h-auto"
+										style={{ 
+											filter: 'none',
+											mixBlendMode: 'normal',
+											opacity: 1,
+											backdropFilter: 'none'
+										}}
+									/>
+								</div>
+							))}
+						</div>
+
+						{/* Desktop grid */}
+						<div className="hidden lg:grid grid-cols-4 gap-4">
+							{reviewsVisible && reviewImagesDesktop.map((imageSrc, i) => (
+								<div key={i} className="relative py-2">
+									<Image 
+										src={imageSrc} 
+										alt={`Customer review ${i + 1}`} 
+										width={800}
+										height={800}
+										sizes="22vw"
+										quality={95}
+										className="w-full h-auto"
+										style={{ 
+											filter: 'none',
+											mixBlendMode: 'normal',
+											opacity: 1,
+											backdropFilter: 'none'
+										}}
+									/>
+								</div>
+							))}
+						</div>
 							
 						</div>
 					</section>
