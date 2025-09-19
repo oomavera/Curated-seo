@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import GlassCard from "./ui/GlassCard";
 import PillButton from "./ui/PillButton";
+import { track } from "../lib/ga4";
 
 interface ScrollPopupFormProps {
   triggerElement?: string; // CSS selector for trigger element
@@ -114,6 +115,9 @@ export default function ScrollPopupForm({ triggerElement = "#reviews", callout =
       }
 
       setSuccess(true);
+
+      // GA4 event: lead submit (popup form)
+      try { track({ name: 'lead_submit', params: { form: 'offer_popup' } }); } catch {}
 
       // Meta Pixel conversion (only when enabled)
       if (trackMetaLead && typeof window !== 'undefined') {

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 // Removed unused UI imports for a cleaner page
 import PinnedCountdownDesktop from "../../components/PinnedCountdownDesktop";
+import { track } from "../../lib/ga4";
 
 // Generate arrays of review image paths (use only reviews2 on this page)
 const namedReviewBases = [
@@ -123,7 +124,7 @@ export default function ReviewsPage() {
                 className={`relative w-full overflow-hidden rounded-full h-12 sm:h-14 px-4 py-0 text-[17px] sm:text-lg font-extrabold tracking-tight transition-colors ${!done ? 'opacity-70 cursor-not-allowed' : 'opacity-100 cursor-pointer'}`}
                 style={{ backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.12)' }}
                 disabled={!done}
-                onClick={() => { if (done) { router.push('/Demonstration'); } }}
+                onClick={() => { if (done) { try { track({ name: 'reviews_move_forward_click', params: { device: 'mobile' } }); } catch {}; router.push('/Demonstration'); } }}
               >
                 <span
                   ref={barRef}

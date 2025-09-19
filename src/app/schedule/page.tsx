@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { track } from "../../lib/ga4";
 // Removed Cal.com embed
 import dynamic from "next/dynamic";
 import logo from "../../../public/Logo2.png";
@@ -38,6 +39,8 @@ export default function SchedulePage() {
 				event_source: 'schedule_page'
 			});
 		} catch {}
+    // GA4 funnel step: arrived schedule page
+    try { track({ name: 'schedule_page_view' }); } catch {}
 	}, []);
 
 
@@ -180,7 +183,7 @@ function GreviewsStack() {
     return (
         <div className="space-y-4">
             {images.map((src: string, i: number) => (
-                <div key={i} className="w-full overflow-visible flex justify-center">
+                <div key={i} className="w-full overflow-hidden flex justify-center">
                     <Image 
                         src={src} 
                         alt="Google review" 

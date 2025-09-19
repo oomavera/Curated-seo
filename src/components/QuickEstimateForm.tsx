@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import PillButton from "./ui/PillButton";
+import { track } from "../lib/ga4";
 
 interface QuickEstimateFormProps {
 	onSubmitSuccess?: () => void;
@@ -60,6 +61,9 @@ export default function QuickEstimateForm({ onSubmitSuccess, title = "Quick Free
 			}
 
 			setSuccess(true);
+
+			// GA4 event: lead submit (main form)
+			try { track({ name: 'lead_submit', params: { form: 'offer_main' } }); } catch {}
 
 			// Meta Pixel conversion (only when enabled)
 			if (trackMetaLead && typeof window !== 'undefined') {

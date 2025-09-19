@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
+import { track } from "../lib/ga4";
 
 /**
  * Desktop-only pinned countdown CTA rendered via a portal to avoid stacking/transform issues.
@@ -68,7 +69,7 @@ export default function PinnedCountdownDesktop() {
               className={`relative w-full overflow-hidden rounded-full h-14 px-6 py-0 text-lg font-extrabold tracking-tight transition-colors ${!done ? 'opacity-70 cursor-not-allowed' : 'opacity-100 cursor-pointer'}`}
               style={{ backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.12)' }}
               disabled={!done}
-              onClick={() => { if (done) { router.push('/Demonstration'); } }}
+              onClick={() => { if (done) { try { track({ name: 'reviews_move_forward_click', params: { device: 'desktop' } }); } catch {}; router.push('/Demonstration'); } }}
             >
               <span
                 ref={barRef}

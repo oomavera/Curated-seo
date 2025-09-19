@@ -1,4 +1,12 @@
 export default function Head() {
+  return (
+    <>
+      {/* Local video preload removed in favor of hosted player */}
+    </>
+  );
+}
+
+export default function Head() {
 	return (
 		<>
 			<link rel="preload" href="/CleanVid2.mp4" as="video" type="video/mp4" />
