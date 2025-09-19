@@ -9,6 +9,8 @@ export default function DemonstrationPage() {
   const [countdown, setCountdown] = useState(20);
   const [done, setDone] = useState(false);
   const wistiaRef = useRef<HTMLElement | null>(null);
+  // Wrapper to render custom element without TS JSX intrinsic checks
+  const WistiaPlayer: any = 'wistia-player';
   const hasStartedRef = useRef(false);
   // 2-minute visual progress bar state (separate from CTA countdown)
   const [videoBarProgress, setVideoBarProgress] = useState(0); // 0..1
@@ -118,7 +120,7 @@ export default function DemonstrationPage() {
                     padding-top:177.78%;
                   }
                 `}</style>
-                <wistia-player ref={wistiaRef as React.MutableRefObject<HTMLElement | null>} media-id="jjlcb799vn" aspect="0.5625" />
+                <WistiaPlayer ref={wistiaRef as React.MutableRefObject<HTMLElement | null>} media-id="jjlcb799vn" aspect="0.5625" />
 				{/* 2-minute bottom progress bar */}
 				<div className="absolute left-0 right-0 bottom-0 h-1.5 bg-black/20">
 					<div className="h-full bg-brand" style={{ width: `${Math.round(videoBarProgress * 100)}%`, transition: 'width 120ms linear' }} />
