@@ -4,6 +4,7 @@ import "./globals.css";
 import LocalSchema from "../components/LocalSchema";
 import MetaPixel from "../components/MetaPixel";
 import { Analytics } from "@vercel/analytics/react";
+import Script from "next/script";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -82,10 +83,25 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const gaId = process.env.NEXT_PUBLIC_GA_ID || "G-KE5YL6M3Q5";
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${sora.variable} bg-snow min-h-screen`}>
         <a href="#main-content" className="skip-link">Skip to main content</a>
+        {/* GA4 */}
+        {gaId && (
+          <>
+            <Script src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`} strategy="afterInteractive" />
+            <Script id="ga4-init" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);} 
+                gtag('js', new Date());
+                gtag('config', '${gaId}');
+              `}
+            </Script>
+          </>
+        )}
         <LocalSchema />
         <MetaPixel />
         <Analytics />

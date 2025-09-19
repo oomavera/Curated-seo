@@ -12,7 +12,8 @@ export default function DemonstrationPage() {
   const [preloadMode, setPreloadMode] = useState<"auto" | "metadata">("auto");
   const [needsUserGesture, setNeedsUserGesture] = useState(false);
   const [showEnableSound, setShowEnableSound] = useState(false);
-  const [isBuffering, setIsBuffering] = useState(true);
+  const [isBuffering, setIsBuffering] = useState(true); // Show only before first playback
+  const hasStartedRef = useRef(false);
   // 2-minute visual progress bar state (separate from CTA countdown)
   const [videoBarProgress, setVideoBarProgress] = useState(0); // 0..1
   const barStartRef = useRef<number | null>(null);
@@ -164,26 +165,12 @@ export default function DemonstrationPage() {
             };
             v.addEventListener("canplay", handleCanPlay);
             // Start the 2-minute progress bar the first time the video actually starts playing
-            v.addEventListener("playing", () => { startVideoProgressBar(); setIsBuffering(false); }, { once: true });
-            // Buffering indicators
-            const onWaiting = () => setIsBuffering(true);
-            const onCanPlay = () => setIsBuffering(false);
-            const onStalled = () => setIsBuffering(true);
-            v.addEventListener("waiting", onWaiting);
-            v.addEventListener("canplay", onCanPlay);
-            v.addEventListener("stalled", onStalled);
+            v.addEventListener("playing", () => { startVideoProgressBar(); hasStartedRef.current = true; setIsBuffering(false); }, { once: true });
             v.load();
             setVideoError(null);
             // Reset visual bar when new source is set
             setVideoBarProgress(0);
             barStartedRef.current = false;
-            // Cleanup buffering listeners when source resolves or on next mount
-            const cleanup = () => {
-              v.removeEventListener("waiting", onWaiting);
-              v.removeEventListener("canplay", onCanPlay);
-              v.removeEventListener("stalled", onStalled);
-            };
-            v.addEventListener("ended", cleanup, { once: true });
             return;
           } else {
             console.log(`Video source not found: ${candidate.src} (${res.status})`);
@@ -261,7 +248,7 @@ export default function DemonstrationPage() {
 					onContextMenu={(e) => e.preventDefault()}
 				/>
                 {/* Loading / buffering overlay */}
-                {isBuffering && !videoError && (
+                {isBuffering && !videoError && !hasStartedRef.current && (
                   <div className="absolute inset-0 flex items-center justify-center bg-black/10">
                     <div className="w-10 h-10 rounded-full border-4 border-white/30 border-t-white animate-spin" aria-label="Loading video" />
                   </div>
