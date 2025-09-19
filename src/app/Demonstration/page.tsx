@@ -118,7 +118,7 @@ export default function DemonstrationPage() {
                     padding-top:177.78%;
                   }
                 `}</style>
-                <wistia-player ref={wistiaRef as React.MutableRefObject<any>} media-id="jjlcb799vn" aspect="0.5625" />
+                <wistia-player ref={wistiaRef as React.MutableRefObject<HTMLElement | null>} media-id="jjlcb799vn" aspect="0.5625" />
 				{/* 2-minute bottom progress bar */}
 				<div className="absolute left-0 right-0 bottom-0 h-1.5 bg-black/20">
 					<div className="h-full bg-brand" style={{ width: `${Math.round(videoBarProgress * 100)}%`, transition: 'width 120ms linear' }} />
