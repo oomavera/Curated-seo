@@ -124,6 +124,7 @@ export default function DemonstrationPage() {
         try {
           const res = await fetch(candidate.src, { method: "HEAD" });
           if (res.ok) {
+            console.log(`Video source found: ${candidate.src}`);
             const v = videoRef.current;
             if (!v) return;
             v.src = candidate.src;
@@ -133,9 +134,11 @@ export default function DemonstrationPage() {
               try { v.muted = true; v.volume = 1.0; } catch {}
               v.play()
                 .then(() => {
+                  console.log("Video started playing successfully");
                   setShowEnableSound(true);
                 })
-                .catch(() => {
+                .catch((error) => {
+                  console.log("Video autoplay failed:", error);
                   // If autoplay is blocked entirely, request a gesture
                   setNeedsUserGesture(true);
                   setShowEnableSound(true);
@@ -151,12 +154,14 @@ export default function DemonstrationPage() {
             setVideoBarProgress(0);
             barStartedRef.current = false;
             return;
+          } else {
+            console.log(`Video source not found: ${candidate.src} (${res.status})`);
           }
-        } catch {
-          // ignore and try next
+        } catch (error) {
+          console.log(`Error checking video source ${candidate.src}:`, error);
         }
       }
-      setVideoError("Video file not found. Please add CleanVid.mp4 or CleanVid.webm to /public.");
+      setVideoError("Video file not found. Please add CleanVid2.mp4 to /public.");
     };
     tryLoad();
   }, [posterSrc]);

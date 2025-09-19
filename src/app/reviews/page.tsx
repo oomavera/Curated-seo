@@ -21,7 +21,7 @@ const others = namedReviewBases.filter(n => !row2.includes(n) && !row3.includes(
 const firstRow = others.slice(0, 3);
 const remaining = others.slice(3);
 const orderedNames = [...firstRow, ...row2, ...row3, ...remaining];
-const namedReviews = orderedNames.map(base => `/Gallery/reviews2/${base}.webp`);
+const namedReviews = orderedNames.map(base => `/Gallery/reviews2/${base}.png`);
 const allReviews: { src: string }[] = namedReviews.map(src => ({ src }));
 
 export default function ReviewsPage() {
