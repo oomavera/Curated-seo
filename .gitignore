@@ -44,3 +44,10 @@ next-env.d.ts
 *:Zone.Identifier
 **/*.Zone.Identifier
 **/*.Identifier
+
+# Ignore local Google Cloud SDK
+google-cloud-sdk/
+
+# Ignore local Google Cloud SDK
+google-cloud-sdk/
+google-cloud-cli-linux-x86_64.tar.gz

@@ -108,18 +108,7 @@ const [shuffledReviewImages, setShuffledReviewImages] = useState<string[] | null
 		return () => io.disconnect();
 	}, [reviewsVisible]);
 
-	// Lazy-mount the wide video only when visible to avoid initial bandwidth
-	const [showVideo, setShowVideo] = useState(false);
-	const videoSectionRef = useRef<HTMLElement | null>(null);
-	useEffect(() => {
-		const el = videoSectionRef.current ?? document.getElementById('offer-video');
-		if (!el) return;
-		const io = new IntersectionObserver((entries, obs) => {
-			entries.forEach(e => { if (e.isIntersecting) { setShowVideo(true); obs.disconnect(); } });
-		}, { root: null, rootMargin: '200px 0px', threshold: 0.1 });
-		io.observe(el);
-		return () => io.disconnect();
-	}, []);
+    // Removed wide video window to improve performance
 
 	return (
 		<div id="main-content" className="min-h-screen w-full font-nhd text-midnight">
@@ -281,27 +270,7 @@ const [shuffledReviewImages, setShuffledReviewImages] = useState<string[] | null
 							</div>
 						</GlassCard>
 						</section>
-					{/* Wide Video Window - mobile only (hidden on md and up) */}
-			<section id="offer-video" ref={videoSectionRef as React.RefObject<HTMLElement>} className="py-4 sm:py-8 lg:hidden">
-						<div className="max-w-7xl mx-auto px-0">
-							<GlassCard className="relative overflow-hidden p-0 rounded-3xl" withShadow withEdgeGlow>
-								{showVideo && (
-									<video
-										src="/Wide2.mov"
-										playsInline
-										autoPlay
-										loop
-										muted
-										preload="metadata"
-										className="w-full h-auto block"
-										style={{ display: 'block' }}
-									/>
-								)}
-								<div className="pane-inner-frame" />
-								<div className="pane-glare" />
-							</GlassCard>
-						</div>
-					</section>
+                    {/* Wide video window removed */}
 					</div>
 					</section>
 

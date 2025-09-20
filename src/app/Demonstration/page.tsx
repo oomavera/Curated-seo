@@ -10,7 +10,6 @@ export default function DemonstrationPage() {
   const [countdown, setCountdown] = useState(20);
   const [done, setDone] = useState(false);
   const wistiaPlayerRef = useRef<WistiaVideo | null>(null);
-  const hasStartedRef = useRef(false);
   // 2-minute visual progress bar state (separate from CTA countdown)
   const [videoBarProgress, setVideoBarProgress] = useState(0); // 0..1
   const barStartRef = useRef<number | null>(null);
@@ -82,16 +81,21 @@ export default function DemonstrationPage() {
   // Wire up Wistia player API
   useEffect(() => {
     if (typeof window === 'undefined') return;
+    // Ensure player.js is available ASAP for events/control
+    const existing = Array.from(document.scripts).some(s => s.src.includes('fast.wistia.net/player.js'));
+    if (!existing) {
+      const s = document.createElement('script');
+      s.src = 'https://fast.wistia.net/player.js';
+      s.async = true;
+      document.head.appendChild(s);
+    }
     window._wq = window._wq || [];
     window._wq.push({
       id: 'jjlcb799vn',
       onReady: (video: WistiaVideo) => {
         wistiaPlayerRef.current = video;
         video.bind('play', () => {
-          if (!hasStartedRef.current) {
-            hasStartedRef.current = true;
-            startVideoProgressBar();
-          }
+          startVideoProgressBar();
         });
       }
     });
@@ -120,34 +124,17 @@ export default function DemonstrationPage() {
                 {/* Wistia iframe embed */}
                 <div className="wistia_responsive_padding" style={{ padding: '177.78% 0 0 0', position: 'relative' }}>
                   <div className="wistia_responsive_wrapper" style={{ height: '100%', left: 0, position: 'absolute', top: 0, width: '100%' }}>
-                    {/* Click-to-load facade */}
-                    {!hasStartedRef.current ? (
-                      <button
-                        aria-label="Play video"
-                        onClick={() => {
-                          hasStartedRef.current = true;
-                          // inject player script and replace facade with iframe
-                          const s = document.createElement('script');
-                          s.src = 'https://fast.wistia.net/player.js';
-                          s.async = true;
-                          document.head.appendChild(s);
-                          // Small delay to ensure _wq picks up
-                          setTimeout(() => {
-                            const container = document.getElementById('wistia-embed');
-                            if (!container) return;
-                            container.innerHTML = `<iframe src="https://fast.wistia.net/embed/iframe/jjlcb799vn?seo=true&autoplay=1" title="CleanVid2 Video" allow="autoplay; fullscreen" frameborder="0" scrolling="no" class="wistia_embed" name="wistia_embed" width="100%" height="100%"></iframe>`;
-                          }, 50);
-                        }}
-                        className="group absolute inset-0 flex items-center justify-center bg-black/5"
-                        style={{ backdropFilter: 'blur(2px)' }}
-                      >
-                        <span className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white/90 border border-black/10 text-midnight font-bold shadow-sm group-hover:bg-white transition">
-                          ▶ Play Video
-                        </span>
-                      </button>
-                    ) : (
-                      <div id="wistia-embed" style={{ width: '100%', height: '100%' }} />
-                    )}
+                    <iframe
+                      src="https://fast.wistia.net/embed/iframe/jjlcb799vn?seo=true&autoplay=1&muted=1&playsinline=1"
+                      title="CleanVid2 Video"
+                      allow="autoplay; fullscreen; picture-in-picture"
+                      frameBorder={0}
+                      scrolling="no"
+                      className="wistia_embed"
+                      name="wistia_embed"
+                      width="100%"
+                      height="100%"
+                    />
                   </div>
                 </div>
                 {/* Script injected on click to avoid competing with LCP */}

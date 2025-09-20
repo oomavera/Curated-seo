@@ -14,10 +14,10 @@ export default function ReviewsGridHome({ images }: Props) {
           <Image
             src={imageSrc}
             alt={`Customer review ${i + 1}`}
-            width={800}
-            height={800}
+            width={600}
+            height={600}
             sizes="(max-width: 640px) 48vw, (max-width: 1024px) 30vw, 22vw"
-            quality={85}
+            quality={70}
             className="w-full h-auto"
             loading="lazy"
             decoding="async"

@@ -18,23 +18,7 @@
   --foreground: #000000;
 }
 
-/* Self-hosted font (place files in public/fonts/) */
-@font-face {
-  font-family: 'Neue Haas Display';
-  src: url('/fonts/NeueHaasDisplay-Medium.woff2') format('woff2'),
-       url('/fonts/NeueHaasDisplay-Medium.woff') format('woff');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Neue Haas Display';
-  src: url('/fonts/NeueHaasDisplay-Light.woff2') format('woff2'),
-       url('/fonts/NeueHaasDisplay-Light.woff') format('woff');
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-}
+/* Self-hosted font declarations removed to prevent 404s; using Google fonts via next/font */
 
 /* Hero font utility */
 .font-hero {

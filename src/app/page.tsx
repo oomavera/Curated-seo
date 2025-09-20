@@ -3,14 +3,15 @@ import Image from "next/image";
 import { FaEnvelope, FaPhone } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
+import QuickEstimateForm from "../components/QuickEstimateForm";
+import LazyVideo from "../components/LazyVideo";
 import { usePrefersReducedMotion } from "../utils/usePrefersReducedMotion";
 import logo from "../../public/Logo2.png";
 import GlassCard from "../components/ui/GlassCard";
 import PastelBlob from "../components/ui/PastelBlob";
 import PillButton from "../components/ui/PillButton";
 import CircleIconButton from "../components/ui/CircleIconButton";
-const QuickEstimateForm = dynamic(() => import("../components/QuickEstimateForm"), { ssr: false });
-const ReviewsGridHome = dynamic(() => import("../components/ReviewsGridHome"), { ssr: false });
+const ReviewsGridHome = dynamic(() => import("../components/ReviewsGridHome"), { ssr: false, loading: () => <div style={{height: 320}} aria-hidden /> });
 // Defer Aurora to idle
 const DynamicAurora = dynamic(() => import("../components/ui/ParallaxAurora"), { ssr: false });
 
@@ -150,7 +151,7 @@ export default function Home() {
 
 						{/* Logos Section */}
 						<div className="flex flex-col justify-center items-center gap-3 mb-4 sm:mb-6 lg:mb-4">
-							<div className="flex items-center gap-4 sm:gap-6">
+                            <div className="flex items-center gap-4 sm:gap-6">
 								<Image 
 									src="/Gallery/logos/Google-Logo-PNG.png" 
 									alt="Google Reviews" 
@@ -278,24 +279,20 @@ export default function Home() {
 						</section>
 					</div>
 				</section>
-				{/* Wide Video Window (hidden on desktop) */}
-				<section className="py-4 sm:py-8 lg:hidden">
-					<div className="max-w-7xl mx-auto px-8">
-						<GlassCard className="relative overflow-hidden p-0 rounded-3xl" withShadow withEdgeGlow>
-							<video
-								src="/Wide2.mov"
-								playsInline
-								autoPlay
-								loop
-								muted
-								className="w-full h-auto block"
-								style={{ display: 'block' }}
-							/>
-							<div className="pane-inner-frame" />
-							<div className="pane-glare" />
-						</GlassCard>
-					</div>
-				</section>
+                {/* Wide Video Window (hidden on desktop) */}
+                <section className="py-4 sm:py-8 lg:hidden">
+                    <div className="max-w-7xl mx-auto px-8">
+                        <GlassCard className="relative overflow-hidden p-0 rounded-3xl" withShadow withEdgeGlow>
+                            <LazyVideo
+                                src="/CleanVid2.mp4"
+                                poster="/og.png"
+                                className="w-full h-auto block"
+                            />
+                            <div className="pane-inner-frame" />
+                            <div className="pane-glare" />
+                        </GlassCard>
+                    </div>
+                </section>
 			</div>
 
 			{/* BELOW (pure white) */}

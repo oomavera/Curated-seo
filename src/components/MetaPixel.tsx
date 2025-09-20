@@ -23,14 +23,14 @@ declare global {
 
 // Loads Meta Pixel once per app session using the official fbq bootstrap stub
 export default function MetaPixel({
-	pixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID || "1290791285375063",
+    pixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID || "1290791285375063",
 }: MetaPixelProps) {
 	useEffect(() => {
 		if (!pixelId) return;
 		if (typeof window === "undefined" || typeof document === "undefined") return;
-		// Defer initialization to after first user interaction to avoid competing with LCP
+        // Defer initialization until browser is idle to reduce TBT; fall back to first input/visibility
 		let initialized = false;
-		const init = () => {
+        const init = () => {
 			if (initialized) return; initialized = true;
 		// Create the fbq stub and inject fbevents.js if needed
 		const ensureFbq = (): FbqFunction => {
@@ -69,15 +69,20 @@ export default function MetaPixel({
 				fbq("track", "PageView", { event_id: pageViewEventId });
 			} catch {}
 		};
-		const onFirstInput = () => { init(); cleanup(); };
+        const onFirstInput = () => { init(); cleanup(); };
 		const cleanup = () => {
 			window.removeEventListener('pointerdown', onFirstInput);
 			window.removeEventListener('keydown', onFirstInput);
 			document.removeEventListener('visibilitychange', onVis);
 		};
 		const onVis = () => { if (document.visibilityState === 'visible') { init(); cleanup(); } };
-		window.addEventListener('pointerdown', onFirstInput, { once: true, passive: true });
-		window.addEventListener('keydown', onFirstInput, { once: true });
+        // Prefer idle callback
+        const w = window as Window & { requestIdleCallback?: (cb: () => void) => number };
+        if (w.requestIdleCallback) {
+            w.requestIdleCallback(() => init());
+        }
+        window.addEventListener('pointerdown', onFirstInput, { once: true, passive: true });
+        window.addEventListener('keydown', onFirstInput, { once: true });
 		document.addEventListener('visibilitychange', onVis);
 		return cleanup;
 	}, [pixelId]);
