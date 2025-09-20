@@ -121,19 +121,10 @@ export default function LeadForm({ quote, onCancel, isSubmitting }: LeadFormProp
     setErrors({});
   };
 
-  // Remove database logic from handleBookNow
+  // Book Now now routes to internal schedule page (no Cal.com)
   const handleBookNow = () => {
-    // Only redirect to calendar, do not submit to Supabase again
     if (typeof window !== 'undefined') {
-      // Look for the hidden Cal.com trigger button and click it
-      const calTrigger = document.getElementById('cal-trigger-button');
-      if (calTrigger) {
-        calTrigger.click();
-      } else {
-        // Fallback to external calendar if embed fails
-        const calendarUrl = `https://curatedcleanings.cal.com/firstclean`;
-        window.open(calendarUrl, '_blank');
-      }
+      window.location.assign('/schedule');
     }
   };
 

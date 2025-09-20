@@ -28,7 +28,10 @@ export default function MetaPixel({
 	useEffect(() => {
 		if (!pixelId) return;
 		if (typeof window === "undefined" || typeof document === "undefined") return;
-
+		// Defer initialization to after first user interaction to avoid competing with LCP
+		let initialized = false;
+		const init = () => {
+			if (initialized) return; initialized = true;
 		// Create the fbq stub and inject fbevents.js if needed
 		const ensureFbq = (): FbqFunction => {
 			const w = window as Window & { fbq?: FbqFunction | FbqStub; _fbq?: FbqFunction | FbqStub };
@@ -58,13 +61,25 @@ export default function MetaPixel({
 			return w.fbq as FbqFunction;
 		};
 
-		const fbq = ensureFbq();
-		// Queue init + PageView (these will flush when fbevents.js finishes loading)
-		try {
-			const pageViewEventId = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
-			fbq("init", String(pixelId));
-			fbq("track", "PageView", { event_id: pageViewEventId });
-		} catch {}
+			const fbq = ensureFbq();
+			// Queue init + PageView (these will flush when fbevents.js finishes loading)
+			try {
+				const pageViewEventId = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+				fbq("init", String(pixelId));
+				fbq("track", "PageView", { event_id: pageViewEventId });
+			} catch {}
+		};
+		const onFirstInput = () => { init(); cleanup(); };
+		const cleanup = () => {
+			window.removeEventListener('pointerdown', onFirstInput);
+			window.removeEventListener('keydown', onFirstInput);
+			document.removeEventListener('visibilitychange', onVis);
+		};
+		const onVis = () => { if (document.visibilityState === 'visible') { init(); cleanup(); } };
+		window.addEventListener('pointerdown', onFirstInput, { once: true, passive: true });
+		window.addEventListener('keydown', onFirstInput, { once: true });
+		document.addEventListener('visibilitychange', onVis);
+		return cleanup;
 	}, [pixelId]);
 
 	return null;

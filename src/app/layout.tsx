@@ -86,6 +86,26 @@ export default function RootLayout({
   const gaId = process.env.NEXT_PUBLIC_GA_ID || "G-KE5YL6M3Q5";
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Early connections */}
+        <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+        <link rel="preconnect" href="https://www.google-analytics.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+        <link rel="dns-prefetch" href="https://stats.g.doubleclick.net" />
+        <link rel="preconnect" href="https://connect.facebook.net" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://connect.facebook.net" />
+        <link rel="dns-prefetch" href="https://vitals.vercel-insights.com" />
+        <link rel="preconnect" href="https://fast.wistia.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://fast.wistia.com" />
+        <link rel="preconnect" href="https://fast.wistia.net" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://fast.wistia.net" />
+        {/* LCP image preload */}
+        <link rel="preload" as="image" href="/Logo2.png" />
+        {/* Self-hosted fonts preload */}
+        <link rel="preload" as="font" href="/fonts/NeueHaasDisplay-Medium.woff2" type="font/woff2" crossOrigin="anonymous" />
+        <link rel="preload" as="font" href="/fonts/NeueHaasDisplay-Light.woff2" type="font/woff2" crossOrigin="anonymous" />
+      </head>
       <body className={`${inter.variable} ${sora.variable} bg-snow min-h-screen`}>
         <a href="#main-content" className="skip-link">Skip to main content</a>
         {/* GA4 */}

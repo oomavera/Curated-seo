@@ -9,7 +9,8 @@ import GlassCard from "../components/ui/GlassCard";
 import PastelBlob from "../components/ui/PastelBlob";
 import PillButton from "../components/ui/PillButton";
 import CircleIconButton from "../components/ui/CircleIconButton";
-import QuickEstimateForm from "../components/QuickEstimateForm";
+const QuickEstimateForm = dynamic(() => import("../components/QuickEstimateForm"), { ssr: false });
+const ReviewsGridHome = dynamic(() => import("../components/ReviewsGridHome"), { ssr: false });
 // Defer Aurora to idle
 const DynamicAurora = dynamic(() => import("../components/ui/ParallaxAurora"), { ssr: false });
 
@@ -32,49 +33,8 @@ export default function Home() {
 		if (typeof window === 'undefined') return;
 		const w = window as Window & { Cal?: unknown; requestIdleCallback?: (cb: () => void) => number };
 		if (typeof w.Cal !== 'undefined') return;
-		const load = () => {
-			const script = document.createElement('script');
-			script.innerHTML = `
-				(function (C, A, L) { 
-					let p = function (a, ar) { a.q.push(ar); }; 
-					let d = C.document; 
-					C.Cal = C.Cal || function () { 
-						let cal = C.Cal; 
-						let ar = arguments; 
-						if (!cal.loaded) { 
-							cal.ns = {}; 
-							cal.q = cal.q || []; 
-							d.head.appendChild(d.createElement("script")).src = A; 
-							cal.loaded = true; 
-						} 
-						if (ar[0] === L) { 
-							const api = function () { p(api, arguments); }; 
-							const namespace = ar[1]; 
-							api.q = api.q || []; 
-							if(typeof namespace === "string"){
-								cal.ns[namespace] = cal.ns[namespace] || api;
-								p(cal.ns[namespace], ar);
-								p(cal, ["initNamespace", namespace]);
-							} else {
-								p(cal, ar);
-							} 
-							return;
-						} 
-						p(cal, ar); 
-					}; 
-				})(window, "https://app.cal.com/embed/embed.js", "init");
-				
-				Cal("init", "firstclean", {origin:"https://app.cal.com"});
-				Cal.ns.firstclean("ui", {"theme":"light","hideEventTypeDetails":false,"layout":"month_view"});
-			`;
-			document.head.appendChild(script);
-		};
-		if (w.requestIdleCallback) {
-			w.requestIdleCallback(load);
-		} else {
-			setTimeout(load, 1);
-		}
-	}, []);
+    // removed Cal.com
+  }, []);
 
 	// Idle-mount ParallaxAurora
 	const [showAurora, setShowAurora] = useState(false);
@@ -239,8 +199,9 @@ export default function Home() {
 														width={450}
 														height={420}
 														quality={60}
-														sizes="(max-width: 768px) 90vw, 450px"
-														loading="eager"
+                                                    sizes="(max-width: 768px) 90vw, 450px"
+                                                    loading="lazy"
+                                                    decoding="async"
 														style={{ objectFit: 'cover', width: '100%', height: '100%' }}
 														onError={(e) => {
 															const img = e.currentTarget as HTMLImageElement;
@@ -292,8 +253,9 @@ export default function Home() {
 													width={220}
 													height={240}
 													quality={60}
-													sizes="220px"
-													loading="eager"
+                                                    sizes="220px"
+                                                    loading="lazy"
+                                                    decoding="async"
 													style={{ objectFit: 'cover', width: '100%', height: '100%' }}
 													onError={(e) => {
 														const img = e.currentTarget as HTMLImageElement;
@@ -343,28 +305,8 @@ export default function Home() {
 				{/* Customer Reviews Grid Section */}
 				<section id="reviews" className="py-4 sm:py-8 lg:py-4 relative z-10">
 					<div className="max-w-7xl mx-auto px-4">
-						{/* Reviews Image Grid - 2x2 on mobile, 4x4 on desktop */}
-						<div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-							{reviewImages.map((imageSrc, i) => (
-								<div key={i} className="relative py-2">
-									<Image 
-										src={imageSrc} 
-										alt={`Customer review ${i + 1}`} 
-										width={800}
-										height={800}
-										sizes="(max-width: 640px) 48vw, (max-width: 1024px) 30vw, 22vw"
-										quality={95}
-										className="w-full h-auto"
-										style={{ 
-											filter: 'none',
-											mixBlendMode: 'normal',
-											opacity: 1,
-											backdropFilter: 'none'
-										}}
-									/>
-								</div>
-							))}
-						</div>
+                        {/* Reviews Image Grid - dynamically hydrated to reduce main-thread work */}
+                        <ReviewsGridHome images={reviewImages} />
 						
 					</div>
 				</section>
@@ -538,17 +480,7 @@ export default function Home() {
 				</footer>
 			</div>
 
-			{/* Hidden Cal.com trigger button */}
-			<button
-				id="cal-trigger-button"
-				data-cal-link="curatedcleanings/firstclean"
-				data-cal-namespace="firstclean"
-				data-cal-config='{"layout":"month_view","theme":"light"}'
-				style={{ display: 'none' }}
-				aria-hidden="true"
-			>
-				Hidden Cal Trigger
-			</button>
+            {/* Cal.com removed */}
 
 		</div>
 	);

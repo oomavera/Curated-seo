@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { QuoteInput } from "../../types/quote";
 import { computeQuote, validateQuoteInput } from "../../lib/quote";
 import { CONFIG } from "../../lib/config";
@@ -10,7 +10,8 @@ import NumberField from "../../components/QuoteForm/NumberField";
 import AddonsField from "../../components/QuoteForm/AddonsField";
 import EstimateBar from "../../components/QuoteForm/EstimateBar";
 import LeadForm from "../../components/LeadModal/LeadForm";
-import HouseVisualization from "../../components/HouseVisualization";
+import dynamic from "next/dynamic";
+const HouseVisualization = dynamic(() => import("../../components/HouseVisualization"), { ssr: false });
 
 export default function EstimatePage() {
   const [quoteInput, setQuoteInput] = useState<QuoteInput>({
@@ -24,6 +25,8 @@ export default function EstimatePage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
+  const [showVisualization, setShowVisualization] = useState(false);
+  const visRef = useRef<HTMLDivElement | null>(null);
 
   // Compute quote from input
   const quote = useMemo(() => computeQuote(quoteInput), [quoteInput]);
@@ -31,46 +34,24 @@ export default function EstimatePage() {
   // Validate quote input
   const validation = useMemo(() => validateQuoteInput(quoteInput), [quoteInput]);
 
-    // Initialize Cal.com calendar widget
+  // Removed Cal.com
+
+  // Defer 3D visualization: render only when near viewport
   useEffect(() => {
-    if (typeof window !== 'undefined' && !(window as Window & { Cal?: unknown }).Cal) {
-      // Create script element with Cal.com initialization
-      const script = document.createElement('script');
-      script.innerHTML = `
-        (function (C, A, L) { 
-          let p = function (a, ar) { a.q.push(ar); }; 
-          let d = C.document; 
-          C.Cal = C.Cal || function () { 
-            let cal = C.Cal; 
-            let ar = arguments; 
-            if (!cal.loaded) { 
-              cal.ns = {}; 
-              cal.q = cal.q || []; 
-              d.head.appendChild(d.createElement("script")).src = A; 
-              cal.loaded = true; 
-            } 
-            if (ar[0] === L) { 
-              const api = function () { p(api, arguments); }; 
-              const namespace = ar[1]; 
-              api.q = api.q || []; 
-              if(typeof namespace === "string"){
-                cal.ns[namespace] = cal.ns[namespace] || api;
-                p(cal.ns[namespace], ar);
-                p(cal, ["initNamespace", namespace]);
-              } else {
-                p(cal, ar);
-              } 
-              return;
-            } 
-            p(cal, ar); 
-          }; 
-        })(window, "https://app.cal.com/embed/embed.js", "init");
-        
-        Cal("init", "walkthrough", {origin:"https://app.cal.com"});
-        Cal.ns.walkthrough("ui", {"theme":"dark","hideEventTypeDetails":false,"layout":"month_view"});
-      `;
-      document.head.appendChild(script);
-    }
+    const el = visRef.current;
+    if (!el) return;
+    let didSet = false;
+    const io = new IntersectionObserver((entries, obs) => {
+      entries.forEach(e => {
+        if (e.isIntersecting && !didSet) {
+          didSet = true;
+          setShowVisualization(true);
+          obs.disconnect();
+        }
+      });
+    }, { root: null, rootMargin: '200px 0px', threshold: 0.01 });
+    io.observe(el);
+    return () => io.disconnect();
   }, []);
 
   const handleQuoteInputChange = <K extends keyof QuoteInput>(field: K, value: QuoteInput[K]) => {
@@ -120,8 +101,12 @@ export default function EstimatePage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Column - 3D Visualization */}
           <div className="order-2 lg:order-1">
-            <div className="sticky top-8">
-              <HouseVisualization quoteInput={quoteInput} />
+            <div className="sticky top-8" ref={visRef}>
+              {showVisualization ? (
+                <HouseVisualization quoteInput={quoteInput} />
+              ) : (
+                <div style={{ width: '100%', height: 420 }} className="rounded-xl bg-snow border border-slopes/30" />
+              )}
             </div>
           </div>
 
@@ -194,17 +179,7 @@ export default function EstimatePage() {
         </div>
       </div>
 
-      {/* Hidden Cal.com trigger button */}
-      <button
-        id="cal-trigger-button"
-        data-cal-link="curatedcleanings/walkthrough"
-        data-cal-namespace="walkthrough"
-        data-cal-config='{"layout":"month_view","theme":"dark"}'
-        style={{ display: 'none' }}
-        aria-hidden="true"
-      >
-        Hidden Cal Trigger
-      </button>
+      {/* Cal.com removed */}
 
       {/* Lead Capture Modal */}
       {showLeadModal && (

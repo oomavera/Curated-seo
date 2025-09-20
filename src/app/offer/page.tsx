@@ -27,54 +27,7 @@ const reviewImagesMobile = Array.from({ length: 22 }, (_, i) => `/Gallery/review
 
 export default function OfferPage() {
 
-	// Initialize Cal.com calendar widget (defer to idle)
-	useEffect(() => {
-		if (typeof window === 'undefined') return;
-		const w = window as Window & { Cal?: unknown; requestIdleCallback?: (cb: () => void) => number };
-		if (typeof w.Cal !== 'undefined') return;
-		const load = () => {
-			const script = document.createElement('script');
-			script.innerHTML = `
-				(function (C, A, L) { 
-					let p = function (a, ar) { a.q.push(ar); }; 
-					let d = C.document; 
-					C.Cal = C.Cal || function () { 
-						let cal = C.Cal; 
-						let ar = arguments; 
-						if (!cal.loaded) { 
-							cal.ns = {}; 
-							cal.q = cal.q || []; 
-							d.head.appendChild(d.createElement("script")).src = A; 
-							cal.loaded = true; 
-						} 
-						if (ar[0] === L) { 
-							const api = function () { p(api, arguments); }; 
-							const namespace = ar[1]; 
-							api.q = api.q || []; 
-							if(typeof namespace === "string"){
-								cal.ns[namespace] = cal.ns[namespace] || api;
-								p(cal.ns[namespace], ar);
-								p(cal, ["initNamespace", namespace]);
-							} else {
-								p(cal, ar);
-							} 
-							return;
-						} 
-						p(cal, ar); 
-					}; 
-				})(window, "https://app.cal.com/embed/embed.js", "init");
-				
-				Cal("init", "firstclean", {origin:"https://app.cal.com"});
-				Cal.ns.firstclean("ui", {"theme":"light","hideEventTypeDetails":false,"layout":"month_view"});
-			`;
-			document.head.appendChild(script);
-		};
-		if (w.requestIdleCallback) {
-			w.requestIdleCallback(load);
-		} else {
-			setTimeout(load, 1);
-		}
-	}, []);
+	// Removed Cal.com
 
 	// Idle-mount ParallaxAurora
 	const [showAurora, setShowAurora] = useState(false);
@@ -92,28 +45,7 @@ export default function OfferPage() {
 
 	const prefersReducedMotion = usePrefersReducedMotion();
 
-	// Countdown to offer end (October 1, 2025)
-	const [timeLeft, setTimeLeft] = useState<{ d: number; h: number; m: number; s: number }>({ d: 0, h: 0, m: 0, s: 0 });
-	useEffect(() => {
-		const target = new Date('2025-10-01T00:00:00');
-		const update = () => {
-			const now = new Date();
-			const diffMs = target.getTime() - now.getTime();
-			if (diffMs <= 0) {
-				setTimeLeft({ d: 0, h: 0, m: 0, s: 0 });
-				return;
-			}
-			const totalSeconds = Math.floor(diffMs / 1000);
-			const days = Math.floor(totalSeconds / 86400);
-			const hours = Math.floor((totalSeconds % 86400) / 3600);
-			const minutes = Math.floor((totalSeconds % 3600) / 60);
-			const seconds = totalSeconds % 60;
-			setTimeLeft({ d: days, h: hours, m: minutes, s: seconds });
-		};
-		update();
-		const id = setInterval(update, 1000);
-		return () => clearInterval(id);
-	}, []);
+	
 
 	// TESTIMONIALS SECTION - Using CSS animations for better performance
 
@@ -214,32 +146,10 @@ const [shuffledReviewImages, setShuffledReviewImages] = useState<string[] | null
 					{/* Hero Text */}
 				<div className="relative z-20 text-center mb-3 sm:mb-6 lg:mb-4 no-blend">
 						<h1 className="font-hero text-2xl xs:text-3xl md:text-4xl xl:text-5xl mb-1 leading-tight text-midnight">
-							<span className="font-extrabold">&quot;The ladies are fierce and thorough in the way they clean and sanitize our home!&quot;</span> <span className="font-medium">~ Cristina Barreto</span>
+							 Seminole County Homeowners: Get your FREE cleaning Voucher now!
 						</h1>
-						<div className="font-hero-sub text-sm xs:text-base md:text-lg text-mountain">
-							Promo end&apos;s in :
-							<div className="mt-1 sm:mt-2 flex items-center justify-center gap-1.5 sm:gap-2 tabular-nums font-nhd">
-								<div className="flex items-center justify-center gap-2">
-									<div className="rounded-2xl px-2.5 sm:px-3.5 py-1.5 bg-black/5 backdrop-blur-md border border-black/10 shadow-sm">
-										<div className="text-xl sm:text-2xl font-extrabold text-midnight leading-none tracking-tight" style={{ minWidth: '2.5ch', textAlign: 'center' }}>{String(timeLeft.d).padStart(2, '0')}</div>
-										<div className="text-[9px] sm:text-[10px] text-mountain -mt-0.5 text-center">days</div>
-									</div>
-									<div className="rounded-2xl px-2.5 sm:px-3.5 py-1.5 bg-black/5 backdrop-blur-md border border-black/10 shadow-sm">
-										<div className="text-xl sm:text-2xl font-extrabold text-midnight leading-none tracking-tight" style={{ minWidth: '2.5ch', textAlign: 'center' }}>{String(timeLeft.h).padStart(2, '0')}</div>
-										<div className="text-[9px] sm:text[10px] text-mountain -mt-0.5 text-center">hrs</div>
-									</div>
-									<div className="rounded-2xl px-2.5 sm:px-3.5 py-1.5 bg-black/5 backdrop-blur-md border border-black/10 shadow-sm">
-										<div className="text-xl sm:text-2xl font-extrabold text-midnight leading-none tracking-tight" style={{ minWidth: '2.5ch', textAlign: 'center' }}>{String(timeLeft.m).padStart(2, '0')}</div>
-										<div className="text-[9px] sm:text-[10px] text-mountain -mt-0.5 text-center">min</div>
-									</div>
-									<div className="rounded-2xl px-2.5 sm:px-3.5 py-1.5 bg-black/5 backdrop-blur-md border border-black/10 shadow-sm">
-										<div className="text-xl sm:text-2xl font-extrabold text-midnight leading-none tracking-tight" style={{ minWidth: '2.5ch', textAlign: 'center' }}>{String(timeLeft.s).padStart(2, '0')}</div>
-										<div className="text-[9px] sm:text-[10px] text-mountain -mt-0.5 text-center">sec</div>
-									</div>
-								</div>
-							</div>
-						</div>
 					</div>
+
 
 					{/* Logos Section */}
 				<div className="flex flex-col justify-center items-center gap-2 mb-4 sm:mb-6 lg:mb-4">
@@ -293,8 +203,9 @@ const [shuffledReviewImages, setShuffledReviewImages] = useState<string[] | null
 													height={420}
 													quality={60}
 													sizes="(max-width: 768px) 90vw, 450px"
-													priority={i === 0}
-													fetchPriority={i === 0 ? 'high' : 'auto'}
+															priority={false}
+															loading="lazy"
+															decoding="async"
 													style={{ objectFit: 'cover', width: '100%', height: '100%' }}
 														onError={(e) => {
 															const img = e.currentTarget as HTMLImageElement;
@@ -320,7 +231,7 @@ const [shuffledReviewImages, setShuffledReviewImages] = useState<string[] | null
 						<div className="flex-1 max-w-lg mx-auto md:mx-0 relative mt-0">
 							<PastelBlob className="w-[520px] h-[420px]" style={{ left: "-10%", top: "-10%" }} />
 							<GlassCard className="p-5 sm:p-6 min-h-[420px]">
-									<QuickEstimateForm title="Claim Your Free Voucher" submitLabel="YES! CLAIM MY SPOT" showEmail={true} openCalendarOnSuccess={false} />
+								<QuickEstimateForm title="Claim Your Free Voucher" submitLabel="Get Free Cleaning Voucher" showEmail={true} openCalendarOnSuccess={false} />
 							</GlassCard>
 						</div>
 					</div>
@@ -347,8 +258,9 @@ const [shuffledReviewImages, setShuffledReviewImages] = useState<string[] | null
 												height={240}
 												quality={60}
 												sizes="220px"
-												priority={i === 0}
-												fetchPriority={i === 0 ? 'high' : 'auto'}
+															priority={false}
+															loading="lazy"
+															decoding="async"
 												style={{ objectFit: 'cover', width: '100%', height: '100%' }}
 													onError={(e) => {
 														const img = e.currentTarget as HTMLImageElement;
@@ -574,17 +486,7 @@ const [shuffledReviewImages, setShuffledReviewImages] = useState<string[] | null
 					</footer>
 				</div>
 
-				{/* Hidden Cal.com trigger button */}
-				<button
-					id="cal-trigger-button"
-					data-cal-link="curatedcleanings/firstclean"
-					data-cal-namespace="firstclean"
-					data-cal-config='{"layout":"month_view","theme":"light"}'
-					style={{ display: 'none' }}
-					aria-hidden="true"
-				>
-					Hidden Cal Trigger
-				</button>
+					{/* Cal.com removed */}
 
 		</div>
 	);

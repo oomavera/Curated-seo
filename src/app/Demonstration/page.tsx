@@ -2,15 +2,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { track } from "../../lib/ga4";
-import Script from "next/script";
+
+// _wq type is declared globally in src/types/wistia.d.ts
 
 export default function DemonstrationPage() {
   const router = useRouter();
   const [countdown, setCountdown] = useState(20);
   const [done, setDone] = useState(false);
-  const wistiaRef = useRef<HTMLElement | null>(null);
-  // Wrapper to render custom element without TS JSX intrinsic checks
-  const WistiaPlayer = 'wistia-player' as unknown as React.ElementType;
+  const wistiaPlayerRef = useRef<WistiaVideo | null>(null);
   const hasStartedRef = useRef(false);
   // 2-minute visual progress bar state (separate from CTA countdown)
   const [videoBarProgress, setVideoBarProgress] = useState(0); // 0..1
@@ -20,8 +19,8 @@ export default function DemonstrationPage() {
   // Removed desktop reviews wall per request
 
   const stopVideo = () => {
-    const el = wistiaRef.current as unknown as { pause?: () => void } | null;
-    try { el?.pause?.(); } catch {}
+    const player = wistiaPlayerRef.current;
+    try { player?.pause?.(); } catch {}
   };
 
   const startVideoProgressBar = () => {
@@ -80,13 +79,22 @@ export default function DemonstrationPage() {
     };
   }, [done]);
 
-  // Start progress when hosted player fires play
+  // Wire up Wistia player API
   useEffect(() => {
-    const el = wistiaRef.current as unknown as HTMLElement | null;
-    if (!el) return;
-    const onPlay = () => { if (!hasStartedRef.current) { hasStartedRef.current = true; startVideoProgressBar(); } };
-    el.addEventListener('play', onPlay as EventListener);
-    return () => { el.removeEventListener('play', onPlay as EventListener); };
+    if (typeof window === 'undefined') return;
+    window._wq = window._wq || [];
+    window._wq.push({
+      id: 'jjlcb799vn',
+      onReady: (video: WistiaVideo) => {
+        wistiaPlayerRef.current = video;
+        video.bind('play', () => {
+          if (!hasStartedRef.current) {
+            hasStartedRef.current = true;
+            startVideoProgressBar();
+          }
+        });
+      }
+    });
   }, []);
 
   // No visibility resume logic needed for hosted player
@@ -109,18 +117,40 @@ export default function DemonstrationPage() {
 		  <div
 			className="mx-auto w-full bg-snow border border-black/10 rounded-2xl shadow-sm overflow-hidden relative h-[calc(100vh-11rem)] md:h-[calc(100vh-11rem)]"
 		  >
-                {/* Wistia hosted player */}
-                <Script src="https://fast.wistia.com/player.js" strategy="afterInteractive" />
-                <Script src="https://fast.wistia.com/embed/jjlcb799vn.js" strategy="afterInteractive" type="module" />
-                <style jsx global>{`
-                  wistia-player[media-id='jjlcb799vn']:not(:defined) {
-                    background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/jjlcb799vn/swatch');
-                    display: block;
-                    filter: blur(5px);
-                    padding-top:177.78%;
-                  }
-                `}</style>
-                <WistiaPlayer ref={wistiaRef as React.MutableRefObject<HTMLElement | null>} media-id="jjlcb799vn" aspect="0.5625" />
+                {/* Wistia iframe embed */}
+                <div className="wistia_responsive_padding" style={{ padding: '177.78% 0 0 0', position: 'relative' }}>
+                  <div className="wistia_responsive_wrapper" style={{ height: '100%', left: 0, position: 'absolute', top: 0, width: '100%' }}>
+                    {/* Click-to-load facade */}
+                    {!hasStartedRef.current ? (
+                      <button
+                        aria-label="Play video"
+                        onClick={() => {
+                          hasStartedRef.current = true;
+                          // inject player script and replace facade with iframe
+                          const s = document.createElement('script');
+                          s.src = 'https://fast.wistia.net/player.js';
+                          s.async = true;
+                          document.head.appendChild(s);
+                          // Small delay to ensure _wq picks up
+                          setTimeout(() => {
+                            const container = document.getElementById('wistia-embed');
+                            if (!container) return;
+                            container.innerHTML = `<iframe src="https://fast.wistia.net/embed/iframe/jjlcb799vn?seo=true&autoplay=1" title="CleanVid2 Video" allow="autoplay; fullscreen" frameborder="0" scrolling="no" class="wistia_embed" name="wistia_embed" width="100%" height="100%"></iframe>`;
+                          }, 50);
+                        }}
+                        className="group absolute inset-0 flex items-center justify-center bg-black/5"
+                        style={{ backdropFilter: 'blur(2px)' }}
+                      >
+                        <span className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white/90 border border-black/10 text-midnight font-bold shadow-sm group-hover:bg-white transition">
+                          ▶ Play Video
+                        </span>
+                      </button>
+                    ) : (
+                      <div id="wistia-embed" style={{ width: '100%', height: '100%' }} />
+                    )}
+                  </div>
+                </div>
+                {/* Script injected on click to avoid competing with LCP */}
 				{/* 2-minute bottom progress bar */}
 				<div className="absolute left-0 right-0 bottom-0 h-1.5 bg-black/20">
 					<div className="h-full bg-brand" style={{ width: `${Math.round(videoBarProgress * 100)}%`, transition: 'width 120ms linear' }} />
