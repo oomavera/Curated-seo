@@ -102,13 +102,12 @@ export default function RootLayout({
           rel="preload"
           as="image"
           href="/Logo2.png"
-          imagesrcset="/Logo2.png 128w, /Logo2.png 192w, /Logo2.png 256w, /Logo2.png 384w"
-          imagesizes="(max-width: 640px) 128px, 192px"
-          fetchpriority="high"
+          imageSrcSet="/Logo2.png 128w, /Logo2.png 192w, /Logo2.png 256w, /Logo2.png 384w"
+          imageSizes="(max-width: 640px) 128px, 192px"
+          fetchPriority="high"
         />
         {/* Minimal critical CSS to avoid render-blocking and speed first paint */}
         <style
-          // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={{ __html: `
             html,body{background:#FFFFFF;color:#000;}
             body{min-height:100vh;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
