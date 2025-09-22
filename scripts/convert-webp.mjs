@@ -31,6 +31,16 @@ async function convertFile(srcPath, dstPath) {
   }
 }
 
+async function convertFileAvif(srcPath, dstPath) {
+  try {
+    await sharp(srcPath).rotate().avif({ quality: 50, chromaSubsampling: '4:2:0' }).toFile(dstPath);
+    const rel = path.relative(root, dstPath);
+    console.log(`Converted (AVIF) → ${rel}`);
+  } catch (err) {
+    console.warn(`WARN: Failed converting (AVIF) ${srcPath} → ${dstPath}: ${err?.message || err}`);
+  }
+}
+
 async function convertDir(dir) {
   const relDir = path.relative(root, dir);
   if (!fs.existsSync(dir)) {
@@ -45,17 +55,20 @@ async function convertDir(dir) {
     if (!stat || !stat.isFile()) continue;
     const ext = path.extname(entry);
     const base = path.basename(entry, ext);
-    const dst = path.join(dir, `${base}.webp`);
+    const dstWebp = path.join(dir, `${base}.webp`);
+    const dstAvif = path.join(dir, `${base}.avif`);
     if (!validSrcExt.has(ext)) {
       // Already webp or unsupported; skip
       continue;
     }
-    if (fs.existsSync(dst)) {
-      // Skip if up-to-date
-      const dstStat = await fs.promises.stat(dst).catch(() => null);
-      if (dstStat && dstStat.mtimeMs >= stat.mtimeMs) continue;
+    // Convert to WebP if needed
+    if (!(fs.existsSync(dstWebp) && (await fs.promises.stat(dstWebp)).mtimeMs >= stat.mtimeMs)) {
+      jobs.push(convertFile(fp, dstWebp));
     }
-    jobs.push(convertFile(fp, dst));
+    // Convert to AVIF if needed
+    if (!(fs.existsSync(dstAvif) && (await fs.promises.stat(dstAvif)).mtimeMs >= stat.mtimeMs)) {
+      jobs.push(convertFileAvif(fp, dstAvif));
+    }
   }
   await Promise.all(jobs);
 }

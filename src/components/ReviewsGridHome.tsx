@@ -27,6 +27,14 @@ export default function ReviewsGridHome({ images }: Props) {
               opacity: 1,
               backdropFilter: 'none'
             }}
+            onError={(e) => {
+              const img = e.currentTarget as HTMLImageElement;
+              if (img.src.endsWith('.avif')) {
+                img.src = img.src.replace('.avif', '.webp');
+              } else if (img.src.endsWith('.webp')) {
+                img.src = img.src.replace('.webp', '.jpg');
+              }
+            }}
           />
         </div>
       ))}

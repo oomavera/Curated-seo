@@ -145,10 +145,10 @@ export default function CityPageLayout({
             </a>
           </div>
           <div className="hidden sm:flex items-center">
-            <Image src={logo} alt="Curated Cleanings Logo" width={160} height={64} priority placeholder="blur" />
+            <Image src={logo} alt="Curated Cleanings Logo" width={160} height={64} priority fetchPriority="high" sizes="160px" placeholder="blur" />
           </div>
           <div className="flex-1 flex justify-center sm:hidden">
-            <Image src={logo} alt="Curated Cleanings Logo" width={240} height={96} className="h-24 w-auto max-w-[80vw]" />
+            <Image src={logo} alt="Curated Cleanings Logo" width={240} height={96} priority fetchPriority="high" sizes="240px" className="h-24 w-auto max-w-[80vw]" />
           </div>
           <div className="flex flex-1 justify-end items-center sm:hidden">
             <a 
@@ -386,7 +386,17 @@ export default function CityPageLayout({
                       alt={`Gallery photo ${i+1}`} 
                       width={400}
                       height={380}
+                      sizes="(max-width: 640px) 220px, 400px"
+                      decoding="async"
                       style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                      onError={(e) => {
+                        const img = e.currentTarget as HTMLImageElement;
+                        if (img.src.endsWith('.avif')) {
+                          img.src = img.src.replace('.avif', '.webp');
+                        } else if (img.src.endsWith('.webp')) {
+                          img.src = img.src.replace('.webp', '.jpg');
+                        }
+                      }}
                     />
                   </div>
                 ))}

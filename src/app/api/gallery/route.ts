@@ -6,7 +6,8 @@ export const dynamic = 'force-dynamic';
 
 const GALLERY_ROOT = path.join(process.cwd(), 'public', 'Gallery');
 const ALLOWED_ALBUMS = new Set(['cleans', 'team']);
-const EXT_PRIORITY = ['.webp', '.jpg', '.jpeg', '.png'];
+// Prefer AVIF first, then WebP, then legacy
+const EXT_PRIORITY = ['.avif', '.webp', '.jpg', '.jpeg', '.png'];
 
 function isMetadataFile(name: string): boolean {
 	const lower = name.toLowerCase();

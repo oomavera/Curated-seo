@@ -94,8 +94,31 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://www.google-analytics.com" />
         <link rel="dns-prefetch" href="https://stats.g.doubleclick.net" />
         <link rel="dns-prefetch" href="https://vitals.vercel-insights.com" />
-        {/* Preload LCP logo if it appears above the fold */}
-        <link rel="preload" as="image" href="/Logo2.png" />
+        {/* Fonts (next/font handles much of this, but preconnect helps initial paint) */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* Preload LCP logo with responsive hints for faster discovery */}
+        <link
+          rel="preload"
+          as="image"
+          href="/Logo2.png"
+          imagesrcset="/Logo2.png 128w, /Logo2.png 192w, /Logo2.png 256w, /Logo2.png 384w"
+          imagesizes="(max-width: 640px) 128px, 192px"
+          fetchpriority="high"
+        />
+        {/* Minimal critical CSS to avoid render-blocking and speed first paint */}
+        <style
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: `
+            html,body{background:#FFFFFF;color:#000;}
+            body{min-height:100vh;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+            header{contain:paint}
+            img{content-visibility:auto}
+          `}}
+        />
+        {/* Preconnect to CDN/origin for faster image fetches */}
+        <link rel="preconnect" href="https://curatedcleanings.com" />
+        <link rel="dns-prefetch" href="https://curatedcleanings.com" />
       </head>
       <body className={`${inter.variable} ${sora.variable} bg-snow min-h-screen`}>
         <a href="#main-content" className="skip-link">Skip to main content</a>

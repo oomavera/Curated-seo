@@ -115,10 +115,10 @@ export default function Home() {
 					{/* Header */}
 					<header className="w-full max-w-7xl mx-auto px-4 sm:px-8 py-3 sm:py-6">
 						{/* Mobile header (Apple-like) */}
-						<div className="flex items-center justify-between sm:hidden">
+					<div className="flex items-center justify-between sm:hidden">
 							{/* Left: logo */}
 							<div className="flex items-center">
-								<Image src={logo} alt="Curated Cleanings" width={128} height={32} style={{ height: '26px', width: 'auto', objectFit: 'contain', opacity: 0.95 }} />
+							<Image src={logo} alt="Curated Cleanings" width={128} height={32} priority fetchPriority="high" sizes="128px" decoding="async" style={{ height: '26px', width: 'auto', objectFit: 'contain', opacity: 0.95 }} />
 							</div>
 							<div className="flex-1" />
 							{/* Right: call pill */}
@@ -128,7 +128,7 @@ export default function Home() {
 						{/* Desktop header */}
 						<div className="hidden sm:flex items-center justify-between">
 							<div className="flex justify-start items-center">
-								<Image src={logo} alt="Curated Cleanings" width={192} height={48} style={{ height: '38px', width: 'auto', objectFit: 'contain', opacity: 0.95 }} />
+								<Image src={logo} alt="Curated Cleanings" width={192} height={48} priority fetchPriority="high" sizes="192px" decoding="async" style={{ height: '38px', width: 'auto', objectFit: 'contain', opacity: 0.95 }} />
 							</div>
 							<div className="flex-1" />
 							<div className="flex items-center justify-end">
@@ -194,25 +194,27 @@ export default function Home() {
 										>
 											{[...galleryImages, ...galleryImages].map((src, i) => (
 												<div key={i} className="relative min-w-[450px] max-w-md rounded-2xl overflow-hidden shadow-lg h-full flex items-center justify-center border border-white/10 bg-transparent">
-													<Image 
-														src={src} 
-														alt={`Gallery photo ${(i % galleryImages.length) + 1}`} 
-														width={450}
-														height={420}
-														quality={60}
-                                                    sizes="(max-width: 768px) 90vw, 450px"
-                                                    loading="lazy"
-                                                    decoding="async"
-														style={{ objectFit: 'cover', width: '100%', height: '100%' }}
-														onError={(e) => {
-															const img = e.currentTarget as HTMLImageElement;
-															if (img.src.endsWith('.webp')) {
-																img.src = img.src.replace('.webp', '.jpg');
-															} else {
-																img.style.display = 'none';
-															}
-														}}
-													/>
+                                            <Image 
+                                                src={src} 
+                                                alt={`Gallery photo ${(i % galleryImages.length) + 1}`} 
+                                                width={450}
+                                                height={420}
+                                                quality={60}
+                                                sizes="(max-width: 768px) 90vw, 450px"
+                                                loading="lazy"
+                                                decoding="async"
+                                                style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                                                onError={(e) => {
+                                                    const img = e.currentTarget as HTMLImageElement;
+                                                    if (img.src.endsWith('.avif')) {
+                                                        img.src = img.src.replace('.avif', '.webp');
+                                                    } else if (img.src.endsWith('.webp')) {
+                                                        img.src = img.src.replace('.webp', '.jpg');
+                                                    } else {
+                                                        img.style.display = 'none';
+                                                    }
+                                                }}
+                                            />
 												</div>
 											))}
 										</div>
@@ -248,25 +250,27 @@ export default function Home() {
 									>
 										{[...mobileSubset, ...mobileSubset].map((src, i) => (
 											<div key={i} className="relative min-w-[220px] max-w-sm rounded-3xl overflow-hidden shadow-lg h-60 flex items-center justify-center border border-white/10 bg-transparent">
-												<Image 
-													src={src} 
-													alt={`Gallery photo ${(i % mobileSubset.length) + 1}`} 
-													width={220}
-													height={240}
-													quality={60}
+                                                <Image 
+                                                    src={src} 
+                                                    alt={`Gallery photo ${(i % mobileSubset.length) + 1}`} 
+                                                    width={220}
+                                                    height={240}
+                                                    quality={60}
                                                     sizes="220px"
                                                     loading="lazy"
                                                     decoding="async"
-													style={{ objectFit: 'cover', width: '100%', height: '100%' }}
-													onError={(e) => {
-														const img = e.currentTarget as HTMLImageElement;
-														if (img.src.endsWith('.webp')) {
-															img.src = img.src.replace('.webp', '.jpg');
-														} else {
-															img.style.display = 'none';
-														}
-													}}
-												/>
+                                                    style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                                                    onError={(e) => {
+                                                        const img = e.currentTarget as HTMLImageElement;
+                                                        if (img.src.endsWith('.avif')) {
+                                                            img.src = img.src.replace('.avif', '.webp');
+                                                        } else if (img.src.endsWith('.webp')) {
+                                                            img.src = img.src.replace('.webp', '.jpg');
+                                                        } else {
+                                                            img.style.display = 'none';
+                                                        }
+                                                    }}
+                                                />
 											</div>
 										))}
 									</div>

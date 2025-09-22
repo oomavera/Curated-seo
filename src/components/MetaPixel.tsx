@@ -69,18 +69,17 @@ export default function MetaPixel({
 				fbq("track", "PageView", { event_id: pageViewEventId });
 			} catch {}
 		};
-        const onFirstInput = () => { init(); cleanup(); };
-		const cleanup = () => {
+        const cleanup = () => {
 			window.removeEventListener('pointerdown', onFirstInput);
 			window.removeEventListener('keydown', onFirstInput);
 			document.removeEventListener('visibilitychange', onVis);
 		};
+		const onFirstInput = () => { init(); cleanup(); };
 		const onVis = () => { if (document.visibilityState === 'visible') { init(); cleanup(); } };
-        // Prefer idle callback
-        const w = window as Window & { requestIdleCallback?: (cb: () => void) => number };
-        if (w.requestIdleCallback) {
-            w.requestIdleCallback(() => init());
-        }
+        // Initialize immediately for better tracking reliability
+        init();
+        
+        // Also set up fallback triggers for user interaction
         window.addEventListener('pointerdown', onFirstInput, { once: true, passive: true });
         window.addEventListener('keydown', onFirstInput, { once: true });
 		document.addEventListener('visibilitychange', onVis);

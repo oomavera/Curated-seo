@@ -30,17 +30,39 @@ export default function SchedulePage() {
 	// Fire Meta Pixel Lead event on /schedule load
 	useEffect(() => {
 		if (typeof window === 'undefined') return;
-		const w = window as Window & { fbq?: (...args: unknown[]) => void };
-		try {
-			const eventId = `schedule-lead-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
-			w.fbq?.('track', 'Lead', {
-				event_id: eventId,
-				content_name: 'Schedule Page Load',
-				event_source: 'schedule_page'
-			});
-		} catch {}
-    // GA4 funnel step: arrived schedule page
-    try { track({ name: 'schedule_page_view' }); } catch {}
+		
+		const fireLeadEvent = () => {
+			const w = window as Window & { fbq?: (...args: unknown[]) => void };
+			if (w.fbq && typeof w.fbq === 'function') {
+				try {
+					const eventId = `schedule-lead-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+					w.fbq('track', 'Lead', {
+						event_id: eventId,
+						content_name: 'Schedule Page Load',
+						event_source: 'schedule_page'
+					});
+					console.log('Meta Pixel Lead event fired for /schedule page');
+				} catch (error) {
+					console.error('Error firing Meta Pixel Lead event:', error);
+				}
+			}
+		};
+
+		// Try immediately, then retry if needed
+		fireLeadEvent();
+		
+		// Retry after a short delay if fbq wasn't ready
+		const retryTimer = setTimeout(() => {
+			const w = window as Window & { fbq?: (...args: unknown[]) => void };
+			if (w.fbq && typeof w.fbq === 'function') {
+				fireLeadEvent();
+			}
+		}, 500);
+
+		// GA4 funnel step: arrived schedule page
+		try { track({ name: 'schedule_page_view' }); } catch {}
+		
+		return () => clearTimeout(retryTimer);
 	}, []);
 
 
