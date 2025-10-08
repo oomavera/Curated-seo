@@ -5,12 +5,16 @@ import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import QuickEstimateForm from "../components/QuickEstimateForm";
 import LazyVideo from "../components/LazyVideo";
-import { usePrefersReducedMotion } from "../utils/usePrefersReducedMotion";
 import logo from "../../public/Logo2.png";
 import GlassCard from "../components/ui/GlassCard";
 import PastelBlob from "../components/ui/PastelBlob";
 import PillButton from "../components/ui/PillButton";
 import CircleIconButton from "../components/ui/CircleIconButton";
+// Swiper - dynamically imported for performance
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay, EffectFade } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/effect-fade';
 const ReviewsGridHome = dynamic(() => import("../components/ReviewsGridHome"), { ssr: false, loading: () => <div style={{height: 320}} aria-hidden /> });
 // Defer Aurora to idle
 const DynamicAurora = dynamic(() => import("../components/ui/ParallaxAurora"), { ssr: false });
@@ -26,6 +30,22 @@ const reviewImages = [
     'Latrell.webp', 'lauren.webp', 'Madeline.webp', 'Marlaren.webp', 'Martiza.webp',
     'Meghan.webp', 'Nathan.webp', 'Nikolas.webp', 'Rachel.webp', 'Trey.webp'
 ].map(name => `/Gallery/reviews2/${name}`);
+
+// Photo gallery images for hero slideshow
+const galleryImages = [
+	'/Gallery/top10/IMG_1378.webp',
+	'/Gallery/top10/IMG_2360.webp',
+	'/Gallery/top10/IMG_2479.webp',
+	'/Gallery/top10/IMG_2647.webp',
+	'/Gallery/top10/IMG_2727.webp',
+	'/Gallery/top10/IMG_2780.webp',
+	'/Gallery/top10/IMG_3035.webp',
+	'/Gallery/top10/IMG_3091.webp',
+	'/Gallery/top10/IMG_7136.webp',
+	'/Gallery/top10/IMG_7143.webp',
+	'/Gallery/top10/IMG_7663.webp',
+	'/Gallery/top10/IMG_7667.webp',
+];
 
 export default function Home() {
 
@@ -50,60 +70,18 @@ export default function Home() {
 		}
 	}, []);
 
-
-	const prefersReducedMotion = usePrefersReducedMotion();
-
-	// TESTIMONIALS SECTION - Using CSS animations for better performance
-
-	// Removed unused mobile detection code
-
-	// Dynamically load gallery images and spread team images evenly through cleans
-	const [galleryImages, setGalleryImages] = useState<string[]>([]);
+	// Preload first gallery image for LCP optimization
 	useEffect(() => {
-		let cancelled = false;
-		const load = async () => {
-			try {
-				const [cleansRes, teamRes] = await Promise.all([
-					fetch('/api/gallery?album=cleans', { cache: 'no-store' }),
-					fetch('/api/gallery?album=team', { cache: 'no-store' })
-				]);
-				const cleansJson = await cleansRes.json().catch(() => ({ images: [] }));
-				const teamJson = await teamRes.json().catch(() => ({ images: [] }));
-				const cleanImages: string[] = Array.isArray(cleansJson?.images) ? cleansJson.images : [];
-				const teamImages: string[] = Array.isArray(teamJson?.images) ? teamJson.images : [];
-
-				const distributed: string[] = [];
-				let ti = 0, ci = 0;
-				const total = teamImages.length + cleanImages.length;
-				for (let i = 0; i < total; i++) {
-					const placeTeam = Math.floor((i + 1) * teamImages.length / total) > Math.floor(i * teamImages.length / total);
-					if (placeTeam && ti < teamImages.length) {
-						distributed.push(teamImages[ti++]);
-					} else if (ci < cleanImages.length) {
-						distributed.push(cleanImages[ci++]);
-					} else if (ti < teamImages.length) {
-						distributed.push(teamImages[ti++]);
-					}
-				}
-				if (!cancelled) setGalleryImages(Array.from(new Set(distributed)));
-			} catch {
-				// Ignore errors; leave gallery empty
-			}
+		const link = document.createElement('link');
+		link.rel = 'preload';
+		link.as = 'image';
+		link.href = galleryImages[0];
+		document.head.appendChild(link);
+		return () => {
+			document.head.removeChild(link);
 		};
-		load();
-		return () => { cancelled = true };
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
-	// Smooth CSS-based gallery animation - no JavaScript intervals or state updates needed
-
-	// Stabilize gallery track widths to prevent CLS
-	const gapPx = 16; // tailwind gap-4
-	const desktopSlideWidth = 450;
-	const mobileSlideWidth = 220;
-	const desktopSlidesCount = galleryImages.length * 2;
-	const mobileSubset = galleryImages; // show all images on mobile too
-	const mobileSlidesCount = mobileSubset.length * 2;
-	const mobileTrackWidthPx = mobileSlidesCount > 0 ? (mobileSlidesCount * mobileSlideWidth + (mobileSlidesCount - 1) * gapPx) : 0;
-	const desktopTrackWidthPx = desktopSlidesCount > 0 ? (desktopSlidesCount * desktopSlideWidth + (desktopSlidesCount - 1) * gapPx) : 0;
 
 	return (
 		<div id="main-content" className="min-h-screen w-full font-nhd text-midnight">
@@ -177,111 +155,50 @@ export default function Home() {
 							{/* Partner badge removed for compactness */}
 						</div>
 
-						{/* Main Sections - Desktop: Left Photo Gallery, Right Form | Mobile: Form Center */}
-						<div className="flex flex-row gap-8 mb-8 max-md:flex-col justify-center items-start">
-							{/* Left Section - Photo Gallery (Desktop only) */}
-							<div className="hidden md:flex flex-1 max-w-2xl">
-								<GlassCard className="relative w-full h-[500px] overflow-hidden p-0 pane-glass" withShadow withEdgeGlow>
-									<div className="relative w-full h-full">
-										<div 
-											className="gallery-slider flex h-full items-center gap-4 absolute"
-											style={{
-												width: `${desktopTrackWidthPx}px`,
-												animation: prefersReducedMotion || galleryImages.length === 0 ? 'none' : `slideGallery ${galleryImages.length * 2.5}s linear infinite`,
-												transform: 'translate3d(0, 0, 0)',
-												willChange: 'transform'
-											}}
-										>
-											{[...galleryImages, ...galleryImages].map((src, i) => (
-												<div key={i} className="relative min-w-[450px] max-w-md rounded-2xl overflow-hidden shadow-lg h-full flex items-center justify-center border border-white/10 bg-transparent">
-                                            <Image 
-                                                src={src} 
-                                                alt={`Gallery photo ${(i % galleryImages.length) + 1}`} 
-                                                width={450}
-                                                height={420}
-                                                quality={60}
-                                                sizes="(max-width: 768px) 90vw, 450px"
-                                                loading="lazy"
-                                                decoding="async"
-                                                style={{ objectFit: 'cover', width: '100%', height: '100%' }}
-                                                onError={(e) => {
-                                                    const img = e.currentTarget as HTMLImageElement;
-                                                    if (img.src.endsWith('.avif')) {
-                                                        img.src = img.src.replace('.avif', '.webp');
-                                                    } else if (img.src.endsWith('.webp')) {
-                                                        img.src = img.src.replace('.webp', '.jpg');
-                                                    } else {
-                                                        img.style.display = 'none';
-                                                    }
-                                                }}
-                                            />
-												</div>
-											))}
-										</div>
-										<div className="noise-overlay" />
-										<div className="pane-inner-frame" />
-										<div className="pane-glare" />
-										<div className="pane-bottom-highlight" />
-									</div>
-								</GlassCard>
-							</div>
-
-							{/* Right Section - Lead Form wrapped in glass */}
-							<div className="flex-1 max-w-lg mx-auto md:mx-0 relative">
-								<PastelBlob className="w-[520px] h-[420px]" style={{ left: "-10%", top: "-10%" }} />
-								<GlassCard className="p-6 sm:p-8 min-h-[420px]">
-									<QuickEstimateForm />
-								</GlassCard>
+					{/* Main Sections */}
+					<div className="flex flex-col md:flex-row gap-6 mb-6 justify-center items-center md:items-start">
+						{/* Photo Gallery - Desktop: Left, Mobile: Below form */}
+						<div className="order-2 md:order-1 w-full md:w-[420px]">
+							<div className="aspect-square overflow-hidden rounded-2xl shadow-lg relative bg-white">
+								<Swiper
+									modules={[Autoplay, EffectFade]}
+									effect="fade"
+									autoplay={{
+										delay: 800,
+										disableOnInteraction: false,
+									}}
+									loop={true}
+									speed={600}
+									className="w-full h-full"
+									aria-label="Photo gallery showcasing our professional cleaning services"
+								>
+									{galleryImages.map((img, index) => (
+										<SwiperSlide key={index}>
+											<Image
+												src={img}
+												alt={`Professional cleaning service result ${index + 1}`}
+												width={420}
+												height={420}
+												quality={75}
+												priority={index === 0}
+												className="w-full h-full object-cover"
+												sizes="(max-width: 768px) 100vw, 420px"
+											/>
+										</SwiperSlide>
+									))}
+								</Swiper>
 							</div>
 						</div>
 
-						{/* Mobile Photo Gallery Section */}
-						<section className="py-2 flex flex-col items-center bg-transparent md:hidden">
-							<GlassCard className="relative w-full max-w-6xl h-60 overflow-hidden p-0 pane-glass" withShadow withEdgeGlow>
-								<div className="relative w-full h-full">
-									<div 
-										className="gallery-slider flex h-full items-center gap-4 absolute"
-										style={{
-											width: `${mobileTrackWidthPx}px`,
-											animation: prefersReducedMotion || mobileSubset.length === 0 ? 'none' : `slideGalleryMobile ${mobileSubset.length * 1.75}s linear infinite`,
-											transform: 'translate3d(0, 0, 0)',
-											willChange: 'transform'
-										}}
-									>
-										{[...mobileSubset, ...mobileSubset].map((src, i) => (
-											<div key={i} className="relative min-w-[220px] max-w-sm rounded-3xl overflow-hidden shadow-lg h-60 flex items-center justify-center border border-white/10 bg-transparent">
-                                                <Image 
-                                                    src={src} 
-                                                    alt={`Gallery photo ${(i % mobileSubset.length) + 1}`} 
-                                                    width={220}
-                                                    height={240}
-                                                    quality={60}
-                                                    sizes="220px"
-                                                    loading="lazy"
-                                                    decoding="async"
-                                                    style={{ objectFit: 'cover', width: '100%', height: '100%' }}
-                                                    onError={(e) => {
-                                                        const img = e.currentTarget as HTMLImageElement;
-                                                        if (img.src.endsWith('.avif')) {
-                                                            img.src = img.src.replace('.avif', '.webp');
-                                                        } else if (img.src.endsWith('.webp')) {
-                                                            img.src = img.src.replace('.webp', '.jpg');
-                                                        } else {
-                                                            img.style.display = 'none';
-                                                        }
-                                                    }}
-                                                />
-											</div>
-										))}
-									</div>
-									<div className="noise-overlay" />
-									<div className="pane-inner-frame" />
-									<div className="pane-glare" />
-									<div className="pane-bottom-highlight" />
-								</div>
+						{/* Lead Form - Desktop: Right, Mobile: Above photo */}
+						<div className="order-1 md:order-2 w-full md:flex-1 max-w-lg relative mt-0">
+							<PastelBlob className="w-[520px] h-[420px]" style={{ left: "-10%", top: "-10%" }} />
+							<GlassCard className="p-5 sm:p-6 min-h-[420px]">
+								<QuickEstimateForm />
 							</GlassCard>
-						</section>
+						</div>
 					</div>
+				</div>
 				</section>
                 {/* Wide Video Window (hidden on desktop) */}
                 <section className="py-4 sm:py-8 lg:hidden">

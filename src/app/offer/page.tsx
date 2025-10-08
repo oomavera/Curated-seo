@@ -2,7 +2,6 @@
 import Image from "next/image";
 import { useEffect, useState, useRef } from "react";
 import dynamic from "next/dynamic";
-import { usePrefersReducedMotion } from "../../utils/usePrefersReducedMotion";
 import logo from "../../../public/Logo2.png";
 import GlassCard from "../../components/ui/GlassCard";
 import PastelBlob from "../../components/ui/PastelBlob";
@@ -70,10 +69,8 @@ export default function OfferPage() {
 		return () => {
 			document.head.removeChild(link);
 		};
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
-
-
-	const prefersReducedMotion = usePrefersReducedMotion();
 
 	
 

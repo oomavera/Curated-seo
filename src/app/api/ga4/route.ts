@@ -4,8 +4,10 @@ const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_ID || process.env.GA4_MEASU
 const GA_API_SECRET = process.env.GA4_API_SECRET;
 
 export async function POST(req: NextRequest) {
+  // Gracefully fail if server-side tracking isn't configured
+  // Client-side tracking via gtag.js will still work
   if (!GA_MEASUREMENT_ID || !GA_API_SECRET) {
-    return NextResponse.json({ ok: false, error: "GA4 env not configured" }, { status: 500 });
+    return NextResponse.json({ ok: false, error: "GA4 server-side tracking not configured" }, { status: 200 });
   }
 
   try {
