@@ -56,9 +56,17 @@ export default function ScrollPopupForm({ triggerElement = "#reviews", callout =
     };
 
     window.addEventListener("scroll", throttledScroll, { passive: true });
-    
+
+    // Listen for manual trigger event from buttons
+    const handleManualOpen = () => {
+      setShowPopup(true);
+      setHasTriggered(true);
+    };
+    window.addEventListener("open-lead-popup", handleManualOpen);
+
     return () => {
       window.removeEventListener("scroll", throttledScroll);
+      window.removeEventListener("open-lead-popup", handleManualOpen);
     };
   }, [triggerElement, hasTriggered]);
 

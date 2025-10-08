@@ -274,23 +274,6 @@ a {
 }
 
 /* Smooth Gallery Animations - Hardware Accelerated */
-@keyframes slideGallery {
-  0% {
-    transform: translate3d(0, 0, 0);
-  }
-  100% {
-    transform: translate3d(-50%, 0, 0);
-  }
-}
-
-@keyframes slideGalleryMobile {
-  0% {
-    transform: translate3d(0, 0, 0);
-  }
-  100% {
-    transform: translate3d(-50%, 0, 0);
-  }
-}
 
 
 @keyframes slideReviews {
@@ -502,3 +485,5 @@ a {
 	radial-gradient(120% 80% at 20% -10%, rgba(255,255,255,0.25), transparent 60%);
 	mix-blend-mode: screen; opacity: .9; }
 .pane-bottom-line { position: absolute; left: 12px; right: 12px; bottom: 12px; height: 1px; background: rgba(255,255,255,0.55); border-radius: 1px; opacity: .6; }
+
+/* Photo Gallery CSS removed - now using React state-based cycling */
