@@ -25,7 +25,6 @@ const nextConfig: NextConfig = withBundleAnalyzer({
     imageSizes: [16, 32, 48, 64, 96, 128, 160, 200, 256, 384],
   },
   experimental: {
-    optimizeCss: true,
     optimizePackageImports: [
       'react-icons',
       'framer-motion'
