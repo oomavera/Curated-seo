@@ -32,6 +32,26 @@ export default function ReviewsPage() {
   const [done, setDone] = useState(false);
   const router = useRouter();
 
+  // Helper function to check if current time is between 7am-7pm EST
+  const checkBusinessHours = () => {
+    const now = new Date();
+    // Convert to EST/EDT (America/New_York timezone)
+    const estTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+    const hour = estTime.getHours();
+    return hour >= 7 && hour < 19; // 7am to 7pm EST
+  };
+
+  // Time-based message state - initialize with correct value
+  const [isBusinessHours, setIsBusinessHours] = useState(() => checkBusinessHours());
+
+  // Re-check business hours every minute
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsBusinessHours(checkBusinessHours());
+    }, 60000); // Check every minute
+    return () => clearInterval(interval);
+  }, []);
+
   useEffect(() => {
     if (done) return;
     if (countdown <= 0) {
@@ -75,7 +95,10 @@ export default function ReviewsPage() {
 			<section className="pt-6 sm:pt-10">
 				<div className="max-w-7xl mx-auto px-4">
 					<h1 className="font-hero font-black text-2xl sm:text-3xl md:text-4xl leading-tight text-center text-midnight">
-						Here&apos;s how we transformed the lives of people just like you
+						{isBusinessHours
+							? "We are calling you now from 407-470-1780"
+							: "Here's how we transformed the lives of people just like you"
+						}
 					</h1>
 				</div>
 			</section>
@@ -124,7 +147,7 @@ export default function ReviewsPage() {
                 className={`relative w-full overflow-hidden rounded-full h-12 sm:h-14 px-4 py-0 text-[17px] sm:text-lg font-extrabold tracking-tight transition-colors ${!done ? 'opacity-70 cursor-not-allowed' : 'opacity-100 cursor-pointer'}`}
                 style={{ backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.12)' }}
                 disabled={!done}
-                onClick={() => { if (done) { try { track({ name: 'reviews_move_forward_click', params: { device: 'mobile' } }); } catch {}; router.push('/Demonstration'); } }}
+                onClick={() => { if (done) { try { track({ name: 'reviews_move_forward_click', params: { device: 'mobile' } }); } catch {}; router.push('/schedule'); } }}
               >
                 <span
                   ref={barRef}

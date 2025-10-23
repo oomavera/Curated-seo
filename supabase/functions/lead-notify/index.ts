@@ -28,6 +28,7 @@ interface LeadRecord {
   email_address?: string;
   created_at?: string;
   quote_payload?: unknown;
+  page?: string;
 }
 
 // Redact PII for logging (mask phone and email)
@@ -93,13 +94,19 @@ function formatLeadMessage(record: LeadRecord): string {
   const name = record.full_name || record.name || 'Unknown';
   const phone = record.phone_number || record.phone || 'Unknown';
   const email = record.email || record.email_address || 'Unknown';
+  const page = record.page || 'Unknown';
   const phoneDisplay = phone !== 'Unknown' ? phone : 'Unknown';
   const dialLink = phone !== 'Unknown' ? `tel:${phone.replace(/\D/g, '')}` : '#';
+
+  // Format page name with capitalization
+  const pageTitle = page === 'home' ? 'Home' : page === 'offer' ? 'Offer' : page === 'offer2' ? 'Offer2' : page;
+
   return `📣 *New Estimate Lead*
 
 👤 *Name:* ${name}
 📞 *Phone:* ${phoneDisplay}
 📧 *Email:* ${email}
+📄 *Page:* ${pageTitle}
 🗂 *Table:* public.leads
 📅 *Time:* ${new Date(timestamp).toLocaleString('en-US', { timeZone: 'America/New_York' })}
 

@@ -12,9 +12,10 @@ interface QuickEstimateFormProps {
 	metaEventName?: string;
 	showEmail?: boolean;
 	openCalendarOnSuccess?: boolean;
+	page?: string; // Add page identifier (e.g., "home" or "offer")
 }
 
-export default function QuickEstimateForm({ onSubmitSuccess, title = "Quick Free Estimate", submitLabel = "Get Quick Estimate", trackMetaLead = false, metaEventName = "Lead", showEmail = true }: QuickEstimateFormProps) {
+export default function QuickEstimateForm({ onSubmitSuccess, title = "Quick Free Estimate", submitLabel = "Get Quick Estimate", trackMetaLead = false, metaEventName = "Lead", showEmail = true, page }: QuickEstimateFormProps) {
 	const [formData, setFormData] = useState({
 		name: "",
 		phone: "",
@@ -50,6 +51,7 @@ export default function QuickEstimateForm({ onSubmitSuccess, title = "Quick Free
 				body: JSON.stringify({
 					...formData,
 					source: 'Landing Page',
+					page, // Add page identifier
 					eventId,
 					externalId,
 					suppressMeta: true,
@@ -77,9 +79,9 @@ export default function QuickEstimateForm({ onSubmitSuccess, title = "Quick Free
 					});
 				} catch {}
 			}
-			// Redirect to /reviews after successful submission
+			// Redirect to /Demonstration after successful submission
 			if (typeof window !== 'undefined') {
-				window.location.assign('/reviews');
+				window.location.assign('/Demonstration');
 				return;
 			}
 			onSubmitSuccess?.();

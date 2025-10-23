@@ -206,7 +206,7 @@ const [shuffledReviewImages, setShuffledReviewImages] = useState<string[] | null
 						<div className="order-1 md:order-2 w-full md:flex-1 max-w-lg relative mt-0">
 							<PastelBlob className="w-[520px] h-[420px]" style={{ left: "-10%", top: "-10%" }} />
 							<GlassCard className="p-5 sm:p-6 min-h-[420px]">
-								<QuickEstimateForm title="Claim Your Free Voucher" submitLabel="Get Free Cleaning Voucher" showEmail={true} openCalendarOnSuccess={false} />
+								<QuickEstimateForm title="Claim Your Free Voucher" submitLabel="Get Free Cleaning Voucher" showEmail={true} openCalendarOnSuccess={false} page="offer" />
 							</GlassCard>
 						</div>
 					</div>
@@ -215,7 +215,7 @@ const [shuffledReviewImages, setShuffledReviewImages] = useState<string[] | null
 					</section>
 
 					{/* Scroll-triggered Lead Form Popup */}
-					<ScrollPopupForm triggerElement="#reviews" callout="Wait! Get your FREE cleaning voucher!" buttonClassName="bg-black text-white" />
+					<ScrollPopupForm triggerElement="#reviews" callout="Wait! Get your FREE cleaning voucher!" buttonClassName="bg-black text-white" page="offer" />
 			</div>
 
 			{/* BELOW: Pure white from reviews to footer */}

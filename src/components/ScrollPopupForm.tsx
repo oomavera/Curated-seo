@@ -11,9 +11,11 @@ interface ScrollPopupFormProps {
   trackMetaLead?: boolean;
   metaEventName?: string;
   buttonClassName?: string;
+  page?: string; // Add page identifier (e.g., "home" or "offer")
+  submitLabel?: string; // Custom submit button text
 }
 
-export default function ScrollPopupForm({ triggerElement = "#reviews", callout = "Wait! Get your FREE cleaning voucher!", trackMetaLead = false, metaEventName = "Lead", buttonClassName = "" }: ScrollPopupFormProps) {
+export default function ScrollPopupForm({ triggerElement = "#reviews", callout = "Wait! Get your FREE cleaning voucher!", trackMetaLead = false, metaEventName = "Lead", buttonClassName = "", page, submitLabel = "Get Free Voucher" }: ScrollPopupFormProps) {
   const [showPopup, setShowPopup] = useState(false);
   const [hasTriggered, setHasTriggered] = useState(false);
   const [formData, setFormData] = useState({
@@ -99,6 +101,7 @@ export default function ScrollPopupForm({ triggerElement = "#reviews", callout =
       const payload = {
         ...formData,
         source: 'Popup Lead Form',
+        page, // Add page identifier
         eventId,
         externalId,
         suppressMeta: true,
@@ -257,7 +260,7 @@ export default function ScrollPopupForm({ triggerElement = "#reviews", callout =
                         Submitting...
                       </span>
                     ) : (
-                      "Get Free Voucher"
+                      submitLabel
                     )}
                   </PillButton>
                 </form>

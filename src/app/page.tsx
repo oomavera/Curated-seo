@@ -122,7 +122,7 @@ export default function Home() {
 								Trusted House Cleaning in Seminole County
 							</h1>
 							<div className="font-hero-sub text-base xs:text-lg md:text-xl text-mountain">
-								Book your first clean, get your second 50% off!
+								Lake Mary, Oviedo, Sanford, Longwood, Winter Springs and nearby cities.
 							</div>
 						</div>
 
@@ -193,7 +193,7 @@ export default function Home() {
 						<div className="order-1 md:order-2 w-full md:flex-1 max-w-lg relative mt-0">
 							<PastelBlob className="w-[520px] h-[420px]" style={{ left: "-10%", top: "-10%" }} />
 							<GlassCard className="p-5 sm:p-6 min-h-[420px]">
-								<QuickEstimateForm />
+								<QuickEstimateForm page="home" />
 							</GlassCard>
 						</div>
 					</div>
@@ -218,7 +218,7 @@ export default function Home() {
 			{/* BELOW (pure white) */}
 			<div className="bg-white text-midnight">
 				{/* Scroll-triggered Lead Form Popup */}
-				<ScrollPopupForm triggerElement="#reviews" callout="Wait! Get Your 50% Off House Cleaning" />
+				<ScrollPopupForm triggerElement="#reviews" callout="Get a quick estimate" page="home" submitLabel="Get Quick Estimate" />
 				{/* Customer Reviews Grid Section */}
 				<section id="reviews" className="py-4 sm:py-8 lg:py-4 relative z-10">
 					<div className="max-w-7xl mx-auto px-4">

@@ -15,7 +15,27 @@ export default function DemonstrationPage() {
   const barStartRef = useRef<number | null>(null);
   const barRafRef = useRef<number | null>(null);
   const barStartedRef = useRef(false);
+
+  // Helper function to check if current time is between 7am-7pm EST
+  const checkBusinessHours = () => {
+    const now = new Date();
+    // Convert to EST/EDT (America/New_York timezone)
+    const estTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+    const hour = estTime.getHours();
+    return hour >= 7 && hour < 19; // 7am to 7pm EST
+  };
+
+  // Time-based message state - initialize with correct value
+  const [isBusinessHours, setIsBusinessHours] = useState(() => checkBusinessHours());
   // Removed desktop reviews wall per request
+
+  // Re-check business hours every minute
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsBusinessHours(checkBusinessHours());
+    }, 60000); // Check every minute
+    return () => clearInterval(interval);
+  }, []);
 
   const stopVideo = () => {
     const player = wistiaPlayerRef.current;
@@ -151,8 +171,16 @@ export default function DemonstrationPage() {
       <div className="fixed inset-x-0 bottom-0 z-40 md:hidden">
         <div className="px-3 pb-3">
           <div className="bg-white rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.15)] border border-black/5 ring-1 ring-black/5">
-            <div className="px-5 pt-4 text-center text-midnight text-[15px] leading-snug font-nhd font-medium">
-              <span className="font-extrabold">Watch This</span> <span className="italic">Quick Video Of A</span> <span className="font-extrabold">Home Like Your&apos;s</span> <span className="font-extrabold">Being Cleaned</span>
+            <div className="px-5 pt-4 text-center text-midnight text-[18px] leading-snug font-nhd font-medium">
+              {isBusinessHours ? (
+                <>
+                  <span className="italic">We&apos;ll call in</span> <span className="font-extrabold">60 seconds</span><br /><span className="italic">to confirm your</span> <span className="font-extrabold">free voucher</span><br /><span className="italic">from</span> <span className="font-extrabold">407-470-1780</span>
+                </>
+              ) : (
+                <>
+                  <span className="font-extrabold">Watch This</span> <span className="italic">Quick Video Of A</span> <span className="font-extrabold">Home Like Your&apos;s</span> <span className="font-extrabold">Being Cleaned</span>
+                </>
+              )}
             </div>
             <div className="p-4 pt-3">
               <button
@@ -164,7 +192,7 @@ export default function DemonstrationPage() {
                   if (done) {
                     try { track({ name: 'demo_move_forward_click', params: { device: 'mobile' } }); } catch {}
                     stopVideo();
-                    router.push("/schedule");
+                    router.push("/reviews");
                   }
                 }}
               >
@@ -194,8 +222,16 @@ export default function DemonstrationPage() {
       <div className="hidden md:block fixed inset-x-0 bottom-0 z-40">
         <div className="px-6 pb-6">
           <div className="max-w-4xl mx-auto bg-white rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.15)] border border-black/5 ring-1 ring-black/5">
-            <div className="px-6 pt-4 text-center text-midnight text-[15px] leading-snug font-nhd font-medium">
-              <span className="font-extrabold">Watch This</span> <span className="italic">Quick Video Of A</span> <span className="font-extrabold">Home Like Your&apos;s</span> <span className="font-extrabold">Being Cleaned</span>
+            <div className="px-6 pt-4 text-center text-midnight text-[18px] leading-snug font-nhd font-medium">
+              {isBusinessHours ? (
+                <>
+                  <span className="italic">We&apos;ll call in</span> <span className="font-extrabold">60 seconds</span><br /><span className="italic">to confirm your</span> <span className="font-extrabold">free voucher</span><br /><span className="italic">from</span> <span className="font-extrabold">407-470-1780</span>
+                </>
+              ) : (
+                <>
+                  <span className="font-extrabold">Watch This</span> <span className="italic">Quick Video Of A</span> <span className="font-extrabold">Home Like Your&apos;s</span> <span className="font-extrabold">Being Cleaned</span>
+                </>
+              )}
             </div>
             <div className="p-4 pt-3">
               <button
@@ -203,7 +239,7 @@ export default function DemonstrationPage() {
                 className={`relative w-full overflow-hidden rounded-full h-14 px-6 py-0 text-lg font-extrabold tracking-tight transition-colors ${!done ? "opacity-70 cursor-not-allowed" : "opacity-100 cursor-pointer"}`}
                 style={{ backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.12)' }}
                 disabled={!done}
-                onClick={() => { if (done) { try { track({ name: 'demo_move_forward_click', params: { device: 'desktop' } }); } catch {}; stopVideo(); router.push('/schedule'); } }}
+                onClick={() => { if (done) { try { track({ name: 'demo_move_forward_click', params: { device: 'desktop' } }); } catch {}; stopVideo(); router.push('/reviews'); } }}
               >
                 <span
                   ref={barRef}

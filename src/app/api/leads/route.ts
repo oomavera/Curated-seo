@@ -6,7 +6,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     console.log('API received payload:', body);
-    const { name, phone, email, eventId, externalId } = body as { name?: string; phone?: string; email?: string; eventId?: string; externalId?: string };
+    const { name, phone, email, eventId, externalId, page } = body as { name?: string; phone?: string; email?: string; eventId?: string; externalId?: string; page?: string };
 
     // Validate required fields
     if (!name || !phone) {
@@ -52,6 +52,8 @@ export async function POST(request: NextRequest) {
         const cleanedPhone = phone.replace(/\D/g, '').slice(-10) || 'user';
         return `noemail+${cleanedPhone}-${Date.now()}@curatedcleanings.com`;
       })(),
+      // Include page in initial insert so webhook gets it immediately
+      ...(page ? { page } : {}),
     };
     // Do not include quote_payload unless your DB has that column. Keep leads insert minimal so regular /offer works.
 
@@ -72,13 +74,21 @@ export async function POST(request: NextRequest) {
       const extendedPayload: Record<string, unknown> = {};
       const hasService = typeof body.service === 'string' || body.quote;
       if (hasService) extendedPayload.service = service;
+      // Add page field if provided
+      if (page) extendedPayload.page = page;
+
+      console.log('Extended payload to update:', extendedPayload);
+
       if (Object.keys(extendedPayload).length > 0) {
         try {
-          await supabase
+          const updateResult = await supabase
             .from('leads')
             .update(extendedPayload)
             .eq('id', data?.id as string);
-        } catch {}
+          console.log('Update result:', updateResult);
+        } catch (err) {
+          console.log('Extended fields update skipped (column may not exist):', err);
+        }
       }
     }
 
