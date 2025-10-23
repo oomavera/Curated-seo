@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
 
 I just saw your online request.
 
-Curious what are you are looking for; a deep clean, or consistent standard cleanings?`;
+Would you prefer a Deep cleaning? or consistent standard cleanings?`;
 
     console.log('Sending personalized SMS:', message);
 
