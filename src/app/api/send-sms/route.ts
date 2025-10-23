@@ -1,14 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
+  let fullName = '';
+  let phoneNumber = '';
+  let firstName = 'there';
+
   try {
     // Get name and phone from request body if provided
     const body = await request.json().catch(() => ({}));
-    const fullName = body.name || '';
-    const phoneNumber = body.phone || '';
+    fullName = body.name || '';
+    phoneNumber = body.phone || '';
 
     // Extract first name (everything before the first space)
-    const firstName = fullName.trim().split(' ')[0] || 'there';
+    firstName = fullName.trim().split(' ')[0] || 'there';
     console.log(`Full name: "${fullName}" -> First name: "${firstName}"`);
     console.log(`Customer phone: "${phoneNumber}"`);
 
