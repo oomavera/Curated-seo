@@ -100,6 +100,41 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // ============================================
+    // TEMPORARY TEST CODE - REMOVE AFTER TESTING
+    // ============================================
+    // Trigger SMS notification for leads from home, /offer, or /offer2 pages
+    if (page && ['home', 'offer', 'offer2'].includes(page)) {
+      console.log(`📱 Lead from ${page} (${name}, ${phone}) - triggering SMS notification`);
+
+      // Fire SMS in background with customer name and phone
+      // Don't wait for response and don't let SMS failures affect lead submission
+      fetch(`${request.nextUrl.origin}/api/send-sms`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, phone }),
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          console.log(`✅ SMS notification sent successfully for ${name}`);
+        } else if (data.skipped) {
+          console.log(`⏰ SMS skipped for ${name}: ${data.message}`);
+        } else {
+          console.error(`⚠️ SMS notification failed for ${name}:`, data.error);
+        }
+      })
+      .catch(err => {
+        console.error(`❌ SMS trigger error for ${name} (${phone}):`, err.message || err);
+        // Lead is still saved even if SMS fails
+      });
+    }
+    // ============================================
+    // END TEMPORARY TEST CODE
+    // ============================================
+
     // Fire Meta Conversions API unless suppressed (best-effort)
     try {
       if (body?.suppressMeta === true) {
