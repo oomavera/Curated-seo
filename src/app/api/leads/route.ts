@@ -142,19 +142,40 @@ export async function POST(request: NextRequest) {
             console.log(`📝 QStash Message ID: ${response.messageId}`);
 
             // Store the message ID in the database so we can cancel it later
-            try {
-              const updateResult = await supabase
-                .from('leads')
-                .update({ qstash_message_id: response.messageId })
-                .eq('id', data?.id as string);
+            if (!data?.id) {
+              console.error(`⚠️ No lead ID available to save message ID!`);
+            } else {
+              console.log(`💾 Saving message ID ${response.messageId} to lead ${data.id}...`);
 
-              if (updateResult.error) {
-                console.error(`⚠️ Failed to save message ID to database:`, updateResult.error);
-              } else {
-                console.log(`✅ Message ID saved to database for lead ${data?.id}`);
+              try {
+                const updateResult = await supabase
+                  .from('leads')
+                  .update({ qstash_message_id: response.messageId })
+                  .eq('id', data.id);
+
+                console.log(`📊 Update result:`, JSON.stringify(updateResult, null, 2));
+
+                if (updateResult.error) {
+                  console.error(`❌ Database error saving message ID:`, updateResult.error);
+                } else {
+                  console.log(`✅ Message ID saved successfully to lead ${data.id}`);
+
+                  // Verify it was saved
+                  const { data: verifyData, error: verifyError } = await supabase
+                    .from('leads')
+                    .select('qstash_message_id')
+                    .eq('id', data.id)
+                    .single();
+
+                  if (verifyError) {
+                    console.error(`⚠️ Could not verify save:`, verifyError);
+                  } else {
+                    console.log(`✅ VERIFIED: Message ID in database = ${verifyData.qstash_message_id}`);
+                  }
+                }
+              } catch (dbErr) {
+                console.error(`❌ Exception saving message ID to database:`, dbErr);
               }
-            } catch (dbErr) {
-              console.error(`⚠️ Failed to save message ID to database:`, dbErr);
             }
           } catch (err) {
             console.error(`❌ QStash scheduling error for ${name}:`, err);
