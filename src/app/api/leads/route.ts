@@ -122,41 +122,46 @@ export async function POST(request: NextRequest) {
         console.log(`📱 [TEST MODE] Lead from ${page} (${name}, ${phone}) - scheduling SMS via QStash (60 sec delay)`);
 
         // Schedule SMS via QStash with 60-second delay (FOR TESTING)
-        // Don't wait for response and don't let SMS failures affect lead submission
-        try {
-          const qstashToken = process.env.QSTASH_TOKEN;
-          if (qstashToken) {
+        // Fire in background and don't let SMS failures affect lead submission
+        const qstashToken = process.env.QSTASH_TOKEN;
+        if (qstashToken) {
+          try {
             const qstash = new Client({ token: qstashToken });
             const smsUrl = `${request.nextUrl.origin}/api/send-sms`;
 
+            console.log(`📤 Calling QStash API with URL: ${smsUrl}`);
+
             // TEMPORARY: 60 seconds for testing (change back to 240 after testing)
-            qstash.publishJSON({
+            const response = await qstash.publishJSON({
               url: smsUrl,
               body: { name, phone },
               delay: 60, // TEMPORARY: 60 seconds for testing (normally 240 = 4 minutes)
-            }).then(async (response) => {
-              console.log(`✅ [TEST MODE] SMS scheduled via QStash for ${name} (will send in 60 seconds)`);
-              console.log(`📝 QStash Message ID: ${response.messageId}`);
-
-              // Store the message ID in the database so we can cancel it later
-              try {
-                await supabase
-                  .from('leads')
-                  .update({ qstash_message_id: response.messageId })
-                  .eq('id', data?.id as string);
-                console.log(`✅ Message ID saved to database for lead ${data?.id}`);
-              } catch (dbErr) {
-                console.error(`⚠️ Failed to save message ID to database:`, dbErr);
-              }
-            }).catch(err => {
-              console.error(`❌ QStash scheduling error for ${name}:`, err.message || err);
             });
-          } else {
-            console.warn('⚠️ QSTASH_TOKEN not configured - SMS not scheduled');
+
+            console.log(`✅ [TEST MODE] SMS scheduled via QStash for ${name} (will send in 60 seconds)`);
+            console.log(`📝 QStash Message ID: ${response.messageId}`);
+
+            // Store the message ID in the database so we can cancel it later
+            try {
+              const updateResult = await supabase
+                .from('leads')
+                .update({ qstash_message_id: response.messageId })
+                .eq('id', data?.id as string);
+
+              if (updateResult.error) {
+                console.error(`⚠️ Failed to save message ID to database:`, updateResult.error);
+              } else {
+                console.log(`✅ Message ID saved to database for lead ${data?.id}`);
+              }
+            } catch (dbErr) {
+              console.error(`⚠️ Failed to save message ID to database:`, dbErr);
+            }
+          } catch (err) {
+            console.error(`❌ QStash scheduling error for ${name}:`, err);
+            console.error(`Error details:`, JSON.stringify(err, null, 2));
           }
-        } catch (err) {
-          console.error(`❌ QStash error for ${name}:`, err);
-          // Lead is still saved even if QStash fails
+        } else {
+          console.warn('⚠️ QSTASH_TOKEN not configured - SMS not scheduled');
         }
       } else {
         console.log(`⏰ Lead from ${page} outside SMS window - SMS not scheduled`);
