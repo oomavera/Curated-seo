@@ -119,9 +119,9 @@ export async function POST(request: NextRequest) {
       const isInWindow = true; // TEMPORARY: Always allow SMS for testing
 
       if (isInWindow) {
-        console.log(`📱 [TEST MODE] Lead from ${page} (${name}, ${phone}) - scheduling SMS via QStash (15 sec delay)`);
+        console.log(`📱 [TEST MODE] Lead from ${page} (${name}, ${phone}) - scheduling SMS via QStash (60 sec delay)`);
 
-        // Schedule SMS via QStash with 15-second delay (FOR TESTING)
+        // Schedule SMS via QStash with 60-second delay (FOR TESTING)
         // Don't wait for response and don't let SMS failures affect lead submission
         try {
           const qstashToken = process.env.QSTASH_TOKEN;
@@ -129,13 +129,13 @@ export async function POST(request: NextRequest) {
             const qstash = new Client({ token: qstashToken });
             const smsUrl = `${request.nextUrl.origin}/api/send-sms`;
 
-            // TEMPORARY: 15 seconds for testing (change back to 240 after testing)
+            // TEMPORARY: 60 seconds for testing (change back to 240 after testing)
             qstash.publishJSON({
               url: smsUrl,
               body: { name, phone },
-              delay: 15, // TEMPORARY: 15 seconds for testing (normally 240 = 4 minutes)
+              delay: 60, // TEMPORARY: 60 seconds for testing (normally 240 = 4 minutes)
             }).then(() => {
-              console.log(`✅ [TEST MODE] SMS scheduled via QStash for ${name} (will send in 15 seconds)`);
+              console.log(`✅ [TEST MODE] SMS scheduled via QStash for ${name} (will send in 60 seconds)`);
             }).catch(err => {
               console.error(`❌ QStash scheduling error for ${name}:`, err.message || err);
             });
