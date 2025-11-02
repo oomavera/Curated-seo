@@ -103,16 +103,24 @@ export async function POST(request: NextRequest) {
 
     // Schedule SMS notification for leads from home, /offer, or /offer2 pages
     if (page && ['home', 'offer', 'offer2'].includes(page)) {
-      // Check if current time is within SMS time window (7 PM - 7 AM EST)
-      const now = new Date();
-      const estTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
-      const hours = estTime.getHours();
-      const isInWindow = hours >= 19 || hours < 7;
+      // ============================================
+      // TEMPORARY TEST MODE - REMOVE AFTER TESTING
+      // Time window check disabled - SMS will fire at ANY time
+      // Delay reduced to 15 seconds for testing
+      // ============================================
+
+      // ORIGINAL CODE (commented out for testing):
+      // const now = new Date();
+      // const estTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+      // const hours = estTime.getHours();
+      // const isInWindow = hours >= 19 || hours < 7;
+
+      const isInWindow = true; // TEMPORARY: Always allow SMS for testing
 
       if (isInWindow) {
-        console.log(`📱 Lead from ${page} (${name}, ${phone}) - scheduling SMS via QStash (4 min delay)`);
+        console.log(`📱 [TEST MODE] Lead from ${page} (${name}, ${phone}) - scheduling SMS via QStash (15 sec delay)`);
 
-        // Schedule SMS via QStash with 4-minute delay
+        // Schedule SMS via QStash with 15-second delay (FOR TESTING)
         // Don't wait for response and don't let SMS failures affect lead submission
         try {
           const qstashToken = process.env.QSTASH_TOKEN;
@@ -120,13 +128,13 @@ export async function POST(request: NextRequest) {
             const qstash = new Client({ token: qstashToken });
             const smsUrl = `${request.nextUrl.origin}/api/send-sms`;
 
-            // Schedule message with 4-minute delay (240 seconds)
+            // TEMPORARY: 15 seconds for testing (change back to 240 after testing)
             qstash.publishJSON({
               url: smsUrl,
               body: { name, phone },
-              delay: 240, // 4 minutes in seconds
+              delay: 15, // TEMPORARY: 15 seconds for testing (normally 240 = 4 minutes)
             }).then(() => {
-              console.log(`✅ SMS scheduled via QStash for ${name} (will send in 4 minutes)`);
+              console.log(`✅ [TEST MODE] SMS scheduled via QStash for ${name} (will send in 15 seconds)`);
             }).catch(err => {
               console.error(`❌ QStash scheduling error for ${name}:`, err.message || err);
             });
@@ -138,7 +146,7 @@ export async function POST(request: NextRequest) {
           // Lead is still saved even if QStash fails
         }
       } else {
-        console.log(`⏰ Lead from ${page} outside SMS window (${hours}:00 EST) - SMS not scheduled`);
+        console.log(`⏰ Lead from ${page} outside SMS window - SMS not scheduled`);
       }
     }
 
