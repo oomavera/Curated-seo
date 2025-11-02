@@ -66,11 +66,12 @@ async function cancelSMSForLead(leadId: string) {
       status: 200
     };
 
-  } catch (qstashError: any) {
+  } catch (qstashError) {
     console.error('❌ QStash cancellation error:', qstashError);
 
     // If message was already delivered or doesn't exist, that's okay
-    if (qstashError.status === 404 || qstashError.message?.includes('not found')) {
+    const error = qstashError as { status?: number; message?: string };
+    if (error.status === 404 || error.message?.includes('not found')) {
       console.log('ℹ️ Message was already sent or no longer exists');
 
       // Clear the message ID anyway
