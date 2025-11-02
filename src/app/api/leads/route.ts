@@ -107,6 +107,7 @@ export async function POST(request: NextRequest) {
       // TEMPORARY TEST MODE - REMOVE AFTER TESTING
       // Time window check disabled - SMS will fire at ANY time
       // Delay reduced to 15 seconds for testing
+      // Force rebuild v2
       // ============================================
 
       // ORIGINAL CODE (commented out for testing):
