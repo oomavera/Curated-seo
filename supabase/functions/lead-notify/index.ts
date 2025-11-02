@@ -8,6 +8,13 @@ interface TelegramPayload {
   chat_id: string;
   text: string;
   parse_mode?: string;
+  reply_markup?: {
+    inline_keyboard: Array<Array<{
+      text: string;
+      url?: string;
+      callback_data?: string;
+    }>>;
+  };
 }
 
 interface SupabaseWebhookPayload {
@@ -95,11 +102,16 @@ function formatLeadMessage(record: LeadRecord): string {
   const phone = record.phone_number || record.phone || 'Unknown';
   const email = record.email || record.email_address || 'Unknown';
   const page = record.page || 'Unknown';
+  const leadId = record.id || 'Unknown';
   const phoneDisplay = phone !== 'Unknown' ? phone : 'Unknown';
   const dialLink = phone !== 'Unknown' ? `tel:${phone.replace(/\D/g, '')}` : '#';
 
   // Format page name with capitalization
   const pageTitle = page === 'home' ? 'Home' : page === 'offer' ? 'Offer' : page === 'offer2' ? 'Offer2' : page;
+
+  // Check if this lead will receive SMS (based on page)
+  const willReceiveSMS = ['home', 'offer', 'offer2'].includes(page);
+  const smsNote = willReceiveSMS ? '\n📱 *SMS:* Scheduled in 60 seconds' : '';
 
   return `📣 *New Estimate Lead*
 
@@ -107,19 +119,41 @@ function formatLeadMessage(record: LeadRecord): string {
 📞 *Phone:* ${phoneDisplay}
 📧 *Email:* ${email}
 📄 *Page:* ${pageTitle}
+🆔 *Lead ID:* ${leadId}
 🗂 *Table:* public.leads
-📅 *Time:* ${new Date(timestamp).toLocaleString('en-US', { timeZone: 'America/New_York' })}
+📅 *Time:* ${new Date(timestamp).toLocaleString('en-US', { timeZone: 'America/New_York' })}${smsNote}
 
 ⏱ *Call in <60s* → ${dialLink}`;
 }
 
 // Send message to Telegram
-async function sendTelegramMessage(botToken: string, chatId: string, message: string): Promise<Response> {
+async function sendTelegramMessage(botToken: string, chatId: string, message: string, record?: LeadRecord): Promise<Response> {
   const payload: TelegramPayload = {
     chat_id: chatId,
     text: message,
     parse_mode: 'Markdown'
   };
+
+  // Add "Cancel SMS" button if this lead will receive SMS
+  const page = record?.page || '';
+  const leadId = record?.id || '';
+  const willReceiveSMS = ['home', 'offer', 'offer2'].includes(page);
+
+  if (willReceiveSMS && leadId) {
+    // Get the production domain from environment variable
+    const productionDomain = Deno.env.get('PRODUCTION_DOMAIN') || 'https://curatedcleanings.com';
+
+    payload.reply_markup = {
+      inline_keyboard: [
+        [
+          {
+            text: '🚫 Cancel SMS',
+            url: `${productionDomain}/api/cancel-sms?leadId=${leadId}&action=cancel`
+          }
+        ]
+      ]
+    };
+  }
 
   const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
     method: 'POST',
@@ -181,12 +215,12 @@ Deno.serve(async (req: Request) => {
 
     // Format message for Telegram
     const message = formatLeadMessage(record);
-    
+
     // Log the message being sent (redacted)
     console.log(`Sending Telegram message: ${redactPII(message)}`);
 
-    // Send to Telegram
-    const telegramResponse = await sendTelegramMessage(botToken, chatId, message);
+    // Send to Telegram (pass record for cancel button)
+    const telegramResponse = await sendTelegramMessage(botToken, chatId, message, record);
     
     // Check response
     if (!telegramResponse.ok) {

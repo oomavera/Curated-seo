@@ -134,8 +134,20 @@ export async function POST(request: NextRequest) {
               url: smsUrl,
               body: { name, phone },
               delay: 60, // TEMPORARY: 60 seconds for testing (normally 240 = 4 minutes)
-            }).then(() => {
+            }).then(async (response) => {
               console.log(`✅ [TEST MODE] SMS scheduled via QStash for ${name} (will send in 60 seconds)`);
+              console.log(`📝 QStash Message ID: ${response.messageId}`);
+
+              // Store the message ID in the database so we can cancel it later
+              try {
+                await supabase
+                  .from('leads')
+                  .update({ qstash_message_id: response.messageId })
+                  .eq('id', data?.id as string);
+                console.log(`✅ Message ID saved to database for lead ${data?.id}`);
+              } catch (dbErr) {
+                console.error(`⚠️ Failed to save message ID to database:`, dbErr);
+              }
             }).catch(err => {
               console.error(`❌ QStash scheduling error for ${name}:`, err.message || err);
             });
