@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { sendMetaLeadEvent } from '@/lib/meta';
+import { Client } from '@upstash/qstash';
 
 export async function POST(request: NextRequest) {
   try {
@@ -100,40 +101,46 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // ============================================
-    // TEMPORARY TEST CODE - REMOVE AFTER TESTING
-    // ============================================
-    // Trigger SMS notification for leads from home, /offer, or /offer2 pages
+    // Schedule SMS notification for leads from home, /offer, or /offer2 pages
     if (page && ['home', 'offer', 'offer2'].includes(page)) {
-      console.log(`📱 Lead from ${page} (${name}, ${phone}) - triggering SMS notification`);
+      // Check if current time is within SMS time window (7 PM - 7 AM EST)
+      const now = new Date();
+      const estTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+      const hours = estTime.getHours();
+      const isInWindow = hours >= 19 || hours < 7;
 
-      // Fire SMS in background with customer name and phone
-      // Don't wait for response and don't let SMS failures affect lead submission
-      fetch(`${request.nextUrl.origin}/api/send-sms`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, phone }),
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          console.log(`✅ SMS notification sent successfully for ${name}`);
-        } else if (data.skipped) {
-          console.log(`⏰ SMS skipped for ${name}: ${data.message}`);
-        } else {
-          console.error(`⚠️ SMS notification failed for ${name}:`, data.error);
+      if (isInWindow) {
+        console.log(`📱 Lead from ${page} (${name}, ${phone}) - scheduling SMS via QStash (4 min delay)`);
+
+        // Schedule SMS via QStash with 4-minute delay
+        // Don't wait for response and don't let SMS failures affect lead submission
+        try {
+          const qstashToken = process.env.QSTASH_TOKEN;
+          if (qstashToken) {
+            const qstash = new Client({ token: qstashToken });
+            const smsUrl = `${request.nextUrl.origin}/api/send-sms`;
+
+            // Schedule message with 4-minute delay (240 seconds)
+            qstash.publishJSON({
+              url: smsUrl,
+              body: { name, phone },
+              delay: 240, // 4 minutes in seconds
+            }).then(() => {
+              console.log(`✅ SMS scheduled via QStash for ${name} (will send in 4 minutes)`);
+            }).catch(err => {
+              console.error(`❌ QStash scheduling error for ${name}:`, err.message || err);
+            });
+          } else {
+            console.warn('⚠️ QSTASH_TOKEN not configured - SMS not scheduled');
+          }
+        } catch (err) {
+          console.error(`❌ QStash error for ${name}:`, err);
+          // Lead is still saved even if QStash fails
         }
-      })
-      .catch(err => {
-        console.error(`❌ SMS trigger error for ${name} (${phone}):`, err.message || err);
-        // Lead is still saved even if SMS fails
-      });
+      } else {
+        console.log(`⏰ Lead from ${page} outside SMS window (${hours}:00 EST) - SMS not scheduled`);
+      }
     }
-    // ============================================
-    // END TEMPORARY TEST CODE
-    // ============================================
 
     // Fire Meta Conversions API unless suppressed (best-effort)
     try {

@@ -16,47 +16,6 @@ export async function POST(request: NextRequest) {
     console.log(`Full name: "${fullName}" -> First name: "${firstName}"`);
     console.log(`Customer phone: "${phoneNumber}"`);
 
-    // ============================================
-    // TEMPORARY TEST CODE - REMOVE AFTER TESTING
-    // ============================================
-
-    // Check if current time is between 9:48 AM and 9:51 AM EST
-    const now = new Date();
-    const estTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
-    const hours = estTime.getHours();
-    const minutes = estTime.getMinutes();
-
-    // Time window: 7:00 PM (19:00) to 7:00 AM (07:00) EST
-    // This means: 7:00 PM, 8:00 PM... 11:59 PM, 12:00 AM... 6:59 AM
-    const isInWindow = hours >= 19 || hours < 7;
-
-    console.log(`Current EST time: ${hours}:${minutes.toString().padStart(2, '0')}`);
-    console.log(`Time window: 7:00 PM - 7:00 AM EST (evening/night)`);
-    console.log(`Current hour: ${hours}, In window: ${isInWindow}`);
-
-    if (!isInWindow) {
-      console.log('⏰ Outside time window - SMS not sent (must be between 7 PM - 7 AM EST)');
-      return NextResponse.json(
-        {
-          skipped: true,
-          message: 'Outside time window (7:00 PM - 7:00 AM EST only)',
-          currentTime: `${hours}:${minutes.toString().padStart(2, '0')} EST`
-        },
-        { status: 200 }
-      );
-    }
-
-    console.log('⏰ Within time window - will send SMS in 4 minutes');
-
-    // Add 4-minute delay before sending SMS
-    console.log('⏳ Waiting 4 minutes before sending SMS...');
-    await new Promise(resolve => setTimeout(resolve, 4 * 60 * 1000)); // 4 minutes = 240,000ms
-    console.log('✓ 4 minute delay complete - sending SMS now');
-
-    // ============================================
-    // END TEMPORARY TEST CODE
-    // ============================================
-
     const apiKey = process.env.OPENPHONE_API_KEY;
 
     if (!apiKey) {
