@@ -32,6 +32,7 @@ export default function ReviewsPage() {
   const [done, setDone] = useState(false);
   const router = useRouter();
   const [activeReviewIndices, setActiveReviewIndices] = useState<number[]>([]);
+  const [spotlightEnabled, setSpotlightEnabled] = useState(false);
   const reviewRefs = useRef<(HTMLDivElement | null)[]>([]);
   const rowGroupsRef = useRef<number[][]>([]);
   const totalReviews = allReviews.length;
@@ -63,6 +64,10 @@ export default function ReviewsPage() {
 
   const updateActiveRow = useCallback(
     (forceTop = false) => {
+      if (!spotlightEnabled) {
+        if (forceTop) setActiveReviewIndices([]);
+        return;
+      }
       const groups = rowGroupsRef.current;
       if (!groups.length) {
         setActiveReviewIndices([]);
@@ -102,7 +107,7 @@ export default function ReviewsPage() {
         isSameIndices(prev, next) ? prev : next
       );
     },
-    []
+    [spotlightEnabled]
   );
 
   // Helper function to check if current time is between 7am-7pm EST
@@ -137,6 +142,34 @@ export default function ReviewsPage() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(min-width: 768px)");
+    setSpotlightEnabled(mq.matches);
+
+    const handleChange = (event: MediaQueryListEvent) => {
+      setSpotlightEnabled(event.matches);
+    };
+
+    if (typeof mq.addEventListener === "function") {
+      mq.addEventListener("change", handleChange);
+    } else {
+      mq.addListener(handleChange);
+    }
+
+    return () => {
+      if (typeof mq.removeEventListener === "function") {
+        mq.removeEventListener("change", handleChange);
+      } else {
+        mq.removeListener(handleChange);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!spotlightEnabled) {
+      setActiveReviewIndices([]);
+      return;
+    }
     let ticking = false;
 
     const handleScroll = () => {
@@ -153,10 +186,15 @@ export default function ReviewsPage() {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [updateActiveRow]);
+  }, [spotlightEnabled, updateActiveRow]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    computeRowGroups();
+    if (!spotlightEnabled) {
+      setActiveReviewIndices([]);
+      return;
+    }
 
     const initRaf = window.requestAnimationFrame(() => {
       computeRowGroups();
@@ -181,7 +219,7 @@ export default function ReviewsPage() {
       if (initRaf) window.cancelAnimationFrame(initRaf);
       if (resizeRaf !== null) window.cancelAnimationFrame(resizeRaf);
     };
-  }, [computeRowGroups, updateActiveRow]);
+  }, [spotlightEnabled, computeRowGroups, updateActiveRow]);
 
   const totalSeconds = 10;
   const progress = done ? 100 : Math.min(100, ((totalSeconds - countdown) / totalSeconds) * 100);
@@ -237,11 +275,11 @@ export default function ReviewsPage() {
                     reviewRefs.current[i] = el;
                   }}
                   className="relative flex justify-center w-full overflow-visible review-card-wrapper"
-                  style={{ zIndex: 200 + (activeReviewIndices.includes(i) ? 1000 : i) }}
+                  style={{ zIndex: 200 + (spotlightEnabled && activeReviewIndices.includes(i) ? 1000 : i) }}
                 >
                   <div
                     className={`transition-transform transition-opacity duration-[400ms] ease-out will-change-transform review-card-inner ${
-                      activeReviewIndices.includes(i)
+                      spotlightEnabled && activeReviewIndices.includes(i)
                         ? "scale-[1.32] sm:scale-[1.35] opacity-100 drop-shadow-[0_35px_90px_rgba(15,23,42,0.28)]"
                         : "scale-100 opacity-[0.92]"
                     }`}
@@ -252,9 +290,9 @@ export default function ReviewsPage() {
                       width={640}
                       height={853}
 									sizes="(min-width:1536px) 16vw, (min-width:1280px) 20vw, (min-width:1024px) 22vw, (min-width:768px) 24vw, (min-width:640px) 33vw, 50vw"
-                      quality={88}
+                      quality={82}
                       className="w-full h-auto object-contain"
-                      priority={i < 6}
+                      priority={spotlightEnabled ? i < 4 : i < 2}
                     />
                   </div>
                 </div>
