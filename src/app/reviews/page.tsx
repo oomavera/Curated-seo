@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 // Removed unused UI imports for a cleaner page
 import PinnedCountdownDesktop from "../../components/PinnedCountdownDesktop";
@@ -33,6 +33,73 @@ export default function ReviewsPage() {
   const router = useRouter();
   const [activeReviewIndices, setActiveReviewIndices] = useState<number[]>([]);
   const reviewRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const rowGroupsRef = useRef<number[][]>([]);
+
+  const isSameIndices = (a: number[], b: number[]) =>
+    a.length === b.length && a.every((val, idx) => val === b[idx]);
+
+  const computeRowGroups = useCallback(() => {
+    const nodes = reviewRefs.current;
+    const map = new Map<number, number[]>();
+    nodes.forEach((node, idx) => {
+      if (!node) return;
+      const top = Math.round(node.offsetTop);
+      const entry = map.get(top);
+      if (entry) {
+        entry.push(idx);
+      } else {
+        map.set(top, [idx]);
+      }
+    });
+    const sorted = Array.from(map.entries())
+      .sort((a, b) => a[0] - b[0])
+      .map(([, indices]) => indices.sort((a, b) => a - b));
+    rowGroupsRef.current = sorted;
+  }, []);
+
+  const updateActiveRow = useCallback(
+    (forceTop = false) => {
+      const groups = rowGroupsRef.current;
+      if (!groups.length) {
+        setActiveReviewIndices([]);
+        return;
+      }
+
+      if (forceTop || (typeof window !== "undefined" && window.scrollY <= 16)) {
+        const topGroup = groups[0].slice();
+        setActiveReviewIndices(prev =>
+          isSameIndices(prev, topGroup) ? prev : topGroup
+        );
+        return;
+      }
+
+      const focusLine = 120;
+      const tolerance = 80;
+      let bestGroup = groups[0];
+      let bestDistance = Number.POSITIVE_INFINITY;
+
+      groups.forEach(indices => {
+        const node = reviewRefs.current[indices[0]];
+        if (!node) return;
+        const rect = node.getBoundingClientRect();
+        const { top, bottom } = rect;
+        if (bottom < -tolerance || top > window.innerHeight + tolerance) {
+          return;
+        }
+        const distance = Math.abs(top - focusLine);
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          bestGroup = indices;
+        }
+      });
+
+      const next = bestGroup.slice();
+      setActiveReviewIndices(prev =>
+        isSameIndices(prev, next) ? prev : next
+      );
+    },
+    []
+  );
 
   // Helper function to check if current time is between 7am-7pm EST
   const checkBusinessHours = () => {
@@ -68,61 +135,49 @@ export default function ReviewsPage() {
     if (typeof window === "undefined") return;
     let ticking = false;
 
-    const updateActiveCards = () => {
-      ticking = false;
-      const focusLine = 120;
-      let closestTopValue = Infinity;
-      let closestIndex: number | null = null;
-      const candidateTops: Array<{ index: number; top: number }> = [];
-
-      reviewRefs.current.forEach((node, idx) => {
-        if (!node) return;
-        const rect = node.getBoundingClientRect();
-        const { top, bottom } = rect;
-        if (bottom < -40 || top > window.innerHeight + 40) return;
-        candidateTops.push({ index: idx, top });
-        const distance = Math.abs(top - focusLine);
-        if (distance < Math.abs(closestTopValue - focusLine)) {
-          closestTopValue = top;
-          closestIndex = idx;
-        }
-      });
-
-      if (closestIndex === null) {
-        setActiveReviewIndices([]);
-        return;
-      }
-
-      const groupingTolerance = 60;
-      const active = candidateTops
-        .filter(({ top }) => Math.abs(top - closestTopValue) <= groupingTolerance)
-        .map(({ index }) => index)
-        .sort((a, b) => a - b);
-
-      setActiveReviewIndices(prev => {
-        if (prev.length === active.length && prev.every((val, i) => val === active[i])) {
-          return prev;
-        }
-        return active;
-      });
-    };
-
-    const requestUpdate = () => {
+    const handleScroll = () => {
       if (!ticking) {
         ticking = true;
-        window.requestAnimationFrame(updateActiveCards);
+        window.requestAnimationFrame(() => {
+          ticking = false;
+          updateActiveRow();
+        });
       }
     };
 
-    window.addEventListener("scroll", requestUpdate, { passive: true });
-    window.addEventListener("resize", requestUpdate);
-    updateActiveCards();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [updateActiveRow]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const initRaf = window.requestAnimationFrame(() => {
+      computeRowGroups();
+      updateActiveRow(true);
+    });
+
+    let resizeRaf: number | null = null;
+    const handleResize = () => {
+      if (resizeRaf !== null) {
+        window.cancelAnimationFrame(resizeRaf);
+      }
+      resizeRaf = window.requestAnimationFrame(() => {
+        computeRowGroups();
+        updateActiveRow();
+      });
+    };
+
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      window.removeEventListener("scroll", requestUpdate);
-      window.removeEventListener("resize", requestUpdate);
+      window.removeEventListener("resize", handleResize);
+      if (initRaf) window.cancelAnimationFrame(initRaf);
+      if (resizeRaf !== null) window.cancelAnimationFrame(resizeRaf);
     };
-  }, []);
+  }, [computeRowGroups, updateActiveRow]);
 
   const totalSeconds = 10;
   const progress = done ? 100 : Math.min(100, ((totalSeconds - countdown) / totalSeconds) * 100);
