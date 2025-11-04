@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 // Removed unused UI imports for a cleaner page
 import PinnedCountdownDesktop from "../../components/PinnedCountdownDesktop";
@@ -27,88 +27,40 @@ const orderedNames = [...firstRow, ...row2, ...row3, ...remaining];
 const namedReviews = orderedNames.map(base => `/Gallery/reviews2/${base}.webp`);
 const allReviews: { src: string }[] = namedReviews.map(src => ({ src }));
 
+const columnCountFromWidth = (width: number): number => {
+  if (width >= 1536) return 6;
+  if (width >= 1280) return 5;
+  if (width >= 1024) return 4;
+  if (width >= 768) return 4;
+  if (width >= 640) return 3;
+  return 2;
+};
+
+const arraysMatch = (a: number[], b: number[]) =>
+  a.length === b.length && a.every((val, idx) => val === b[idx]);
+
 export default function ReviewsPage() {
   const [countdown, setCountdown] = useState(10);
   const [done, setDone] = useState(false);
   const router = useRouter();
   const [activeReviewIndices, setActiveReviewIndices] = useState<number[]>([]);
-  const [spotlightEnabled, setSpotlightEnabled] = useState(false);
+  const [columnCount, setColumnCount] = useState<number>(2);
+  const spotlightEnabled = columnCount >= 3;
   const reviewRefs = useRef<(HTMLDivElement | null)[]>([]);
   const rowGroupsRef = useRef<number[][]>([]);
+  const observerRef = useRef<IntersectionObserver | null>(null);
   const totalReviews = allReviews.length;
-  const getColumnCount = useCallback(() => {
-    if (typeof window === "undefined") return 2;
-    if (window.matchMedia("(min-width: 1536px)").matches) return 6;
-    if (window.matchMedia("(min-width: 1280px)").matches) return 5;
-    if (window.matchMedia("(min-width: 1024px)").matches) return 4;
-    if (window.matchMedia("(min-width: 768px)").matches) return 4;
-    if (window.matchMedia("(min-width: 640px)").matches) return 3;
-    return 2;
-  }, []);
-
-  const isSameIndices = (a: number[], b: number[]) =>
-    a.length === b.length && a.every((val, idx) => val === b[idx]);
-
-  const computeRowGroups = useCallback(() => {
-    const cols = getColumnCount();
+  const rowGroups = useMemo(() => {
     const groups: number[][] = [];
-    for (let i = 0; i < totalReviews; i += cols) {
+    for (let i = 0; i < totalReviews; i += columnCount) {
       const row: number[] = [];
-      for (let j = 0; j < cols && i + j < totalReviews; j += 1) {
+      for (let j = 0; j < columnCount && i + j < totalReviews; j += 1) {
         row.push(i + j);
       }
       groups.push(row);
     }
-    rowGroupsRef.current = groups;
-  }, [getColumnCount, totalReviews]);
-
-  const updateActiveRow = useCallback(
-    (forceTop = false) => {
-      if (!spotlightEnabled) {
-        if (forceTop) setActiveReviewIndices([]);
-        return;
-      }
-      const groups = rowGroupsRef.current;
-      if (!groups.length) {
-        setActiveReviewIndices([]);
-        return;
-      }
-
-      if (forceTop || (typeof window !== "undefined" && window.scrollY <= 16)) {
-        const topGroup = groups[0].slice();
-        setActiveReviewIndices(prev =>
-          isSameIndices(prev, topGroup) ? prev : topGroup
-        );
-        return;
-      }
-
-      const focusLine = 120;
-      const tolerance = 80;
-      let bestGroup = groups[0];
-      let bestDistance = Number.POSITIVE_INFINITY;
-
-      groups.forEach(indices => {
-        const node = reviewRefs.current[indices[0]];
-        if (!node) return;
-        const rect = node.getBoundingClientRect();
-        const { top, bottom } = rect;
-        if (bottom < -tolerance || top > window.innerHeight + tolerance) {
-          return;
-        }
-        const distance = Math.abs(top - focusLine);
-        if (distance < bestDistance) {
-          bestDistance = distance;
-          bestGroup = indices;
-        }
-      });
-
-      const next = bestGroup.slice();
-      setActiveReviewIndices(prev =>
-        isSameIndices(prev, next) ? prev : next
-      );
-    },
-    [spotlightEnabled]
-  );
+    return groups;
+  }, [columnCount, totalReviews]);
 
   // Helper function to check if current time is between 7am-7pm EST
   const checkBusinessHours = () => {
@@ -166,60 +118,85 @@ export default function ReviewsPage() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (!spotlightEnabled) {
-      setActiveReviewIndices([]);
-      return;
-    }
-    let ticking = false;
-
-    const handleScroll = () => {
-      if (!ticking) {
-        ticking = true;
-        window.requestAnimationFrame(() => {
-          ticking = false;
-          updateActiveRow();
-        });
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [spotlightEnabled, updateActiveRow]);
+    const updateColumns = () => setColumnCount(columnCountFromWidth(window.innerWidth));
+    updateColumns();
+    window.addEventListener("resize", updateColumns);
+    return () => window.removeEventListener("resize", updateColumns);
+  }, []);
 
   useEffect(() => {
+    rowGroupsRef.current = rowGroups;
+  }, [rowGroups]);
+
+  useEffect(() => {
+    if (!spotlightEnabled) {
+      setActiveReviewIndices([]);
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+        observerRef.current = null;
+      }
+      return;
+    }
+
     if (typeof window === "undefined") return;
-    computeRowGroups();
+
+    const observer = new IntersectionObserver(
+      entries => {
+        let bestRowIndex: number | null = null;
+        let bestScore = -Infinity;
+
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          const target = entry.target as HTMLElement;
+          const rowAttr = target.dataset.rowIndex;
+          if (rowAttr == null) return;
+
+          const row = Number(rowAttr);
+          const ratio = entry.intersectionRatio;
+          const offset = entry.boundingClientRect.top / Math.max(window.innerHeight, 1);
+          const score = ratio - offset * 0.4; // prioritize nearer to top while considering visibility
+
+          if (score > bestScore) {
+            bestScore = score;
+            bestRowIndex = row;
+          }
+        });
+
+        if (bestRowIndex != null) {
+          const indices = rowGroupsRef.current[bestRowIndex] ?? [];
+          setActiveReviewIndices(prev =>
+            arraysMatch(prev, indices) ? prev : indices.slice()
+          );
+        }
+      },
+      {
+        rootMargin: "-12% 0px -48% 0px",
+        threshold: [0.25, 0.4, 0.6, 0.8],
+      }
+    );
+
+    observerRef.current = observer;
+    rowGroupsRef.current.forEach((indices, rowIdx) => {
+      const node = reviewRefs.current[indices[0]];
+      if (node) observer.observe(node);
+    });
+
+    return () => {
+      observer.disconnect();
+      observerRef.current = null;
+    };
+  }, [spotlightEnabled, rowGroups]);
+
+  useEffect(() => {
     if (!spotlightEnabled) {
       setActiveReviewIndices([]);
       return;
     }
-
-    const initRaf = window.requestAnimationFrame(() => {
-      computeRowGroups();
-      updateActiveRow(true);
-    });
-
-    let resizeRaf: number | null = null;
-    const handleResize = () => {
-      if (resizeRaf !== null) {
-        window.cancelAnimationFrame(resizeRaf);
-      }
-      resizeRaf = window.requestAnimationFrame(() => {
-        computeRowGroups();
-        updateActiveRow();
-      });
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      if (initRaf) window.cancelAnimationFrame(initRaf);
-      if (resizeRaf !== null) window.cancelAnimationFrame(resizeRaf);
-    };
-  }, [spotlightEnabled, computeRowGroups, updateActiveRow]);
+    const firstRow = rowGroups[0] ?? [];
+    setActiveReviewIndices(prev =>
+      arraysMatch(prev, firstRow) ? prev : firstRow.slice()
+    );
+  }, [spotlightEnabled, rowGroups]);
 
   const totalSeconds = 10;
   const progress = done ? 100 : Math.min(100, ((totalSeconds - countdown) / totalSeconds) * 100);
@@ -268,35 +245,39 @@ export default function ReviewsPage() {
 				<div className="w-full px-2 sm:px-4">
 					{/* Unified wall of reviews */}
 					<div className="reviews-grid grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-y-0 gap-x-2 sm:gap-x-3 sm:gap-y-0 md:gap-x-4 md:gap-y-0 lg:gap-x-6 lg:gap-y-0">
-              {allReviews.map((item, i) => (
-                <div
-                  key={i}
-                  ref={(el) => {
-                    reviewRefs.current[i] = el;
-                  }}
-                  className="relative flex justify-center w-full overflow-visible review-card-wrapper"
-                  style={{ zIndex: 200 + (spotlightEnabled && activeReviewIndices.includes(i) ? 1000 : i) }}
-                >
+              {allReviews.map((item, i) => {
+                const rowIndex = Math.floor(i / columnCount);
+                return (
                   <div
-                    className={`transition-transform transition-opacity duration-[400ms] ease-out will-change-transform review-card-inner ${
-                      spotlightEnabled && activeReviewIndices.includes(i)
-                        ? "scale-[1.32] sm:scale-[1.35] opacity-100 drop-shadow-[0_35px_90px_rgba(15,23,42,0.28)]"
-                        : "scale-100 opacity-[0.92]"
-                    }`}
+                    key={i}
+                    ref={(el) => {
+                      reviewRefs.current[i] = el;
+                    }}
+                    data-row-index={rowIndex}
+                    className="relative flex justify-center w-full overflow-visible review-card-wrapper"
+                    style={{ zIndex: 200 + (spotlightEnabled && activeReviewIndices.includes(i) ? 1000 : i) }}
                   >
-                    <Image
-                      src={item.src}
-                      alt={`Customer review ${i + 1}`}
-                      width={640}
-                      height={853}
-									sizes="(min-width:1536px) 16vw, (min-width:1280px) 20vw, (min-width:1024px) 22vw, (min-width:768px) 24vw, (min-width:640px) 33vw, 50vw"
-                      quality={82}
-                      className="w-full h-auto object-contain"
-                      priority={spotlightEnabled ? i < 4 : i < 2}
-                    />
+                    <div
+                      className={`transition-transform transition-opacity duration-[400ms] ease-out will-change-transform review-card-inner ${
+                        spotlightEnabled && activeReviewIndices.includes(i)
+                          ? "scale-[1.32] sm:scale-[1.35] opacity-100 drop-shadow-[0_35px_90px_rgba(15,23,42,0.28)]"
+                          : "scale-100 opacity-[0.92]"
+                      }`}
+                    >
+                      <Image
+                        src={item.src}
+                        alt={`Customer review ${i + 1}`}
+                        width={640}
+                        height={853}
+                        sizes="(min-width:1536px) 16vw, (min-width:1280px) 20vw, (min-width:1024px) 22vw, (min-width:768px) 24vw, (min-width:640px) 33vw, 50vw"
+                        quality={82}
+                        className="w-full h-auto object-contain"
+                        priority={spotlightEnabled ? i < 4 : i < 2}
+                      />
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
 					</div>
 				</div>
 			</section>
