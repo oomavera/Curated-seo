@@ -105,10 +105,10 @@ export default function SchedulePage() {
                             ONE LAST STEP!
                         </h1>
                         <div className="text-xl xs:text-2xl md:text-3xl xl:text-4xl font-light text-solid-black space-y-2">
-                            <p><span className="font-extrabold underline">Text Angelica</span> what time you can take a phone call to schedule at</p>
+                            <p><span className="font-extrabold underline">Text Elias</span> what time you can take a phone call to schedule at</p>
                             <p className="font-black text-4xl xs:text-5xl md:text-6xl">
                                 <a
-                                    href={smsHref("Hi Angelica! I can take a call at [time] to schedule my clean.")}
+                                    href={smsHref("Hi Elias! I can take a call at [time] to schedule my clean.")}
                                     className="text-solid-black hover:opacity-90 focus:outline-none focus:ring-4 ring-white/60 ring-offset-2 ring-offset-white/40"
                                     aria-label="Text 407-470-1780"
                                 >
@@ -119,7 +119,7 @@ export default function SchedulePage() {
                         </div>
                         <div className="mt-8 flex items-center justify-center gap-3">
 						<a
-                                href={smsHref("Hi Angelica! I can take a call at [time] to schedule my clean.")}
+                                href={smsHref("Hi Elias! I can take a call at [time] to schedule my clean.")}
 							className="relative inline-flex items-center justify-center gap-3 px-10 sm:px-14 py-5 sm:py-6 rounded-full text-2xl sm:text-3xl font-black w-full max-w-xl glow-pulse
                                 bg-white/60 text-midnight border border-white/70 backdrop-blur-2xl overflow-hidden
                                 shadow-[0_20px_60px_rgba(2,6,23,0.18),0_6px_14px_rgba(2,6,23,0.14)] hover:shadow-[0_28px_80px_rgba(2,6,23,0.28),0_12px_24px_rgba(2,6,23,0.18)]
@@ -219,5 +219,3 @@ function GreviewsStack() {
         </div>
     );
 }
-
-

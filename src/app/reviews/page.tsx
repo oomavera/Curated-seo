@@ -106,15 +106,15 @@ export default function ReviewsPage() {
 			<section className="py-0 lg:py-4 min-h-screen flex items-start lg:items-stretch">
 				<div className="w-full px-2 sm:px-4">
 					{/* Unified wall of reviews */}
-					<div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 md:gap-4 lg:gap-6">
+					<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-y-3 gap-x-2 sm:gap-x-3 sm:gap-y-4 md:gap-x-4 md:gap-y-5 lg:gap-6">
               {allReviews.map((item, i) => (
-                <div key={i} className="relative overflow-hidden rounded-2xl bg-white" style={{ aspectRatio: '3 / 4' }}>
+                <div key={i} className="relative overflow-hidden rounded-2xl bg-white w-full" style={{ aspectRatio: '3 / 4' }}>
                   <Image
                     src={item.src}
                     alt={`Customer review ${i + 1}`}
                     width={640}
                     height={853}
-								sizes="(min-width:1536px) 16vw, (min-width:1024px) 18vw, (min-width:768px) 20vw, 33vw"
+								sizes="(min-width:1536px) 16vw, (min-width:1280px) 20vw, (min-width:1024px) 22vw, (min-width:768px) 24vw, (min-width:640px) 33vw, 50vw"
                     quality={88}
                     className="w-full h-full object-contain"
                     style={{ filter: 'none', mixBlendMode: 'normal', opacity: 1 }}
