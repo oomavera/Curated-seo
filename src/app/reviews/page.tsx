@@ -176,7 +176,7 @@ export default function ReviewsPage() {
     );
 
     observerRef.current = observer;
-    rowGroupsRef.current.forEach((indices, rowIdx) => {
+    rowGroupsRef.current.forEach((indices) => {
       const node = reviewRefs.current[indices[0]];
       if (node) observer.observe(node);
     });
