@@ -29,10 +29,10 @@ async function checkOpenPhoneMessages() {
     console.log('✅ OpenPhone API is working\n');
     console.log('Recent messages:', JSON.stringify(data, null, 2));
 
-    // Filter for messages containing "Angelica with Curated Cleanings"
+    // Filter for messages containing "Elias with Curated Cleanings"
     if (data.data && Array.isArray(data.data)) {
       const automatedMessages = data.data.filter(msg =>
-        msg.content && msg.content.includes('Angelica with Curated Cleanings')
+        msg.content && msg.content.includes('Elias with Curated Cleanings')
       );
 
       console.log(`\n📊 Found ${automatedMessages.length} automated SMS messages sent`);

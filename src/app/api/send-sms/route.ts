@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     console.log(`Formatted phone: ${formattedPhone}`);
 
     // Build personalized message
-    const message = `Hey ${firstName} this is Angelica with Curated Cleanings.
+    const message = `Hey ${firstName} this is Elias with Curated Cleanings.
 
 I just saw your online request.
 
