@@ -46,6 +46,7 @@ export default function ReviewsPage() {
   const [activeReviewIndices, setActiveReviewIndices] = useState<number[]>([]);
   const [columnCount, setColumnCount] = useState<number>(2);
   const [spotlightEnabled, setSpotlightEnabled] = useState(false);
+  const [mobileHighlightEnabled, setMobileHighlightEnabled] = useState(false);
   const reviewRefs = useRef<(HTMLDivElement | null)[]>([]);
   const rowGroupsRef = useRef<number[][]>([]);
   const totalReviews = allReviews.length;
@@ -63,26 +64,64 @@ export default function ReviewsPage() {
 
   const updateActiveRow = useCallback(
     (forceTop = false) => {
-      if (!spotlightEnabled) {
+      const highlightActive = spotlightEnabled || mobileHighlightEnabled;
+      const groups = rowGroupsRef.current;
+
+      if (!highlightActive) {
         if (forceTop) setActiveReviewIndices([]);
         return;
       }
 
-      const groups = rowGroupsRef.current;
       if (!groups.length) {
         setActiveReviewIndices([]);
         return;
       }
 
-      if (forceTop || (typeof window !== "undefined" && window.scrollY <= 16)) {
-        const topRow = groups[0] ?? [];
+      const pickRow = (indices: number[]) => {
         setActiveReviewIndices(prev =>
-          arraysMatch(prev, topRow) ? prev : topRow.slice()
+          arraysMatch(prev, indices) ? prev : indices.slice()
         );
+      };
+
+      if (typeof window === "undefined") {
+        pickRow(groups[0] ?? []);
         return;
       }
 
-      if (typeof window === "undefined") return;
+      if (forceTop || window.scrollY <= 16) {
+        pickRow(groups[0] ?? []);
+        return;
+      }
+
+      if (mobileHighlightEnabled && !spotlightEnabled) {
+        const viewportHeight = window.innerHeight || 0;
+        let bestIndices = groups[0] ?? [];
+        let bestVisible = -1;
+        let bestTop = Number.POSITIVE_INFINITY;
+
+        groups.forEach(indices => {
+          const node = reviewRefs.current[indices[0]];
+          if (!node) return;
+          const rect = node.getBoundingClientRect();
+          const visibleTop = Math.max(rect.top, 0);
+          const visibleBottom = Math.min(rect.bottom, viewportHeight);
+          const visibleHeight = visibleBottom - visibleTop;
+          if (visibleHeight <= 0) return;
+
+          const adjustedTop = visibleTop;
+          if (
+            visibleHeight > bestVisible + 12 ||
+            (visibleHeight > bestVisible - 12 && adjustedTop < bestTop)
+          ) {
+            bestVisible = visibleHeight;
+            bestTop = adjustedTop;
+            bestIndices = indices;
+          }
+        });
+
+        pickRow(bestIndices);
+        return;
+      }
 
       const focusLine = Math.max(80, window.innerHeight * 0.18);
       let bestIndices = groups[0] ?? [];
@@ -102,11 +141,9 @@ export default function ReviewsPage() {
         }
       });
 
-      setActiveReviewIndices(prev =>
-        arraysMatch(prev, bestIndices) ? prev : bestIndices.slice()
-      );
+      pickRow(bestIndices);
     },
-    [spotlightEnabled]
+    [spotlightEnabled, mobileHighlightEnabled]
   );
 
   // Helper function to check if current time is between 7am-7pm EST
@@ -165,10 +202,14 @@ export default function ReviewsPage() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const updateColumns = () => setColumnCount(columnCountFromWidth(window.innerWidth));
-    updateColumns();
-    window.addEventListener("resize", updateColumns);
-    return () => window.removeEventListener("resize", updateColumns);
+    const updateDimensions = () => {
+      const width = window.innerWidth;
+      setColumnCount(columnCountFromWidth(width));
+      setMobileHighlightEnabled(width < 768);
+    };
+    updateDimensions();
+    window.addEventListener("resize", updateDimensions);
+    return () => window.removeEventListener("resize", updateDimensions);
   }, []);
 
   useEffect(() => {
@@ -177,7 +218,8 @@ export default function ReviewsPage() {
   }, [rowGroups, updateActiveRow]);
 
   useEffect(() => {
-    if (!spotlightEnabled) {
+    const highlightActive = spotlightEnabled || mobileHighlightEnabled;
+    if (!highlightActive) {
       setActiveReviewIndices([]);
       return;
     }
@@ -207,7 +249,7 @@ export default function ReviewsPage() {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleResize);
     };
-  }, [spotlightEnabled, updateActiveRow]);
+  }, [spotlightEnabled, mobileHighlightEnabled, updateActiveRow]);
 
   const totalSeconds = 10;
   const progress = done ? 100 : Math.min(100, ((totalSeconds - countdown) / totalSeconds) * 100);
@@ -258,6 +300,14 @@ export default function ReviewsPage() {
 					<div className="reviews-grid grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-y-0 gap-x-2 sm:gap-x-3 sm:gap-y-0 md:gap-x-4 md:gap-y-0 lg:gap-x-6 lg:gap-y-0">
               {allReviews.map((item, i) => {
                 const rowIndex = Math.floor(i / columnCount);
+                const isHighlighted = activeReviewIndices.includes(i);
+                const highlightEnabled = (spotlightEnabled || mobileHighlightEnabled) && isHighlighted;
+                const highlightedClasses = mobileHighlightEnabled && !spotlightEnabled
+                  ? "scale-[1.18] opacity-100 drop-shadow-[0_26px_65px_rgba(15,23,42,0.24)]"
+                  : "scale-[1.32] sm:scale-[1.35] opacity-100 drop-shadow-[0_35px_90px_rgba(15,23,42,0.28)]";
+                const baseClasses = mobileHighlightEnabled && !spotlightEnabled
+                  ? "scale-[0.96] opacity-[0.88]"
+                  : "scale-100 opacity-[0.92]";
                 return (
                   <div
                     key={i}
@@ -266,13 +316,11 @@ export default function ReviewsPage() {
                     }}
                     data-row-index={rowIndex}
                     className="relative flex justify-center w-full overflow-visible review-card-wrapper"
-                    style={{ zIndex: 200 + (spotlightEnabled && activeReviewIndices.includes(i) ? 1000 : i) }}
+                    style={{ zIndex: 200 + (highlightEnabled ? 1000 : i) }}
                   >
                     <div
                       className={`transition-transform transition-opacity duration-[400ms] ease-out will-change-transform review-card-inner ${
-                        spotlightEnabled && activeReviewIndices.includes(i)
-                          ? "scale-[1.32] sm:scale-[1.35] opacity-100 drop-shadow-[0_35px_90px_rgba(15,23,42,0.28)]"
-                          : "scale-100 opacity-[0.92]"
+                        highlightEnabled ? highlightedClasses : baseClasses
                       }`}
                     >
                       <Image
@@ -283,7 +331,7 @@ export default function ReviewsPage() {
                         sizes="(min-width:1536px) 16vw, (min-width:1280px) 20vw, (min-width:1024px) 22vw, (min-width:768px) 24vw, (min-width:640px) 33vw, 50vw"
                         quality={82}
                         className="w-full h-auto object-contain"
-                        priority={spotlightEnabled ? i < 4 : i < 2}
+                        priority={(spotlightEnabled || mobileHighlightEnabled) ? i < 4 : i < 2}
                       />
                     </div>
                   </div>
