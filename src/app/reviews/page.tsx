@@ -34,28 +34,32 @@ export default function ReviewsPage() {
   const [activeReviewIndices, setActiveReviewIndices] = useState<number[]>([]);
   const reviewRefs = useRef<(HTMLDivElement | null)[]>([]);
   const rowGroupsRef = useRef<number[][]>([]);
+  const totalReviews = allReviews.length;
+  const getColumnCount = useCallback(() => {
+    if (typeof window === "undefined") return 2;
+    if (window.matchMedia("(min-width: 1536px)").matches) return 6;
+    if (window.matchMedia("(min-width: 1280px)").matches) return 5;
+    if (window.matchMedia("(min-width: 1024px)").matches) return 4;
+    if (window.matchMedia("(min-width: 768px)").matches) return 4;
+    if (window.matchMedia("(min-width: 640px)").matches) return 3;
+    return 2;
+  }, []);
 
   const isSameIndices = (a: number[], b: number[]) =>
     a.length === b.length && a.every((val, idx) => val === b[idx]);
 
   const computeRowGroups = useCallback(() => {
-    const nodes = reviewRefs.current;
-    const map = new Map<number, number[]>();
-    nodes.forEach((node, idx) => {
-      if (!node) return;
-      const top = Math.round(node.offsetTop);
-      const entry = map.get(top);
-      if (entry) {
-        entry.push(idx);
-      } else {
-        map.set(top, [idx]);
+    const cols = getColumnCount();
+    const groups: number[][] = [];
+    for (let i = 0; i < totalReviews; i += cols) {
+      const row: number[] = [];
+      for (let j = 0; j < cols && i + j < totalReviews; j += 1) {
+        row.push(i + j);
       }
-    });
-    const sorted = Array.from(map.entries())
-      .sort((a, b) => a[0] - b[0])
-      .map(([, indices]) => indices.sort((a, b) => a - b));
-    rowGroupsRef.current = sorted;
-  }, []);
+      groups.push(row);
+    }
+    rowGroupsRef.current = groups;
+  }, [getColumnCount, totalReviews]);
 
   const updateActiveRow = useCallback(
     (forceTop = false) => {
