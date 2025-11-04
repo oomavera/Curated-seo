@@ -31,6 +31,8 @@ export default function ReviewsPage() {
   const [countdown, setCountdown] = useState(10);
   const [done, setDone] = useState(false);
   const router = useRouter();
+  const [activeReviewIndices, setActiveReviewIndices] = useState<number[]>([]);
+  const reviewRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   // Helper function to check if current time is between 7am-7pm EST
   const checkBusinessHours = () => {
@@ -62,6 +64,66 @@ export default function ReviewsPage() {
     return () => clearTimeout(id);
   }, [countdown, done]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    let ticking = false;
+
+    const updateActiveCards = () => {
+      ticking = false;
+      const focusLine = 120;
+      let closestTopValue = Infinity;
+      let closestIndex: number | null = null;
+      const candidateTops: Array<{ index: number; top: number }> = [];
+
+      reviewRefs.current.forEach((node, idx) => {
+        if (!node) return;
+        const rect = node.getBoundingClientRect();
+        const { top, bottom } = rect;
+        if (bottom < -40 || top > window.innerHeight + 40) return;
+        candidateTops.push({ index: idx, top });
+        const distance = Math.abs(top - focusLine);
+        if (distance < Math.abs(closestTopValue - focusLine)) {
+          closestTopValue = top;
+          closestIndex = idx;
+        }
+      });
+
+      if (closestIndex === null) {
+        setActiveReviewIndices([]);
+        return;
+      }
+
+      const groupingTolerance = 60;
+      const active = candidateTops
+        .filter(({ top }) => Math.abs(top - closestTopValue) <= groupingTolerance)
+        .map(({ index }) => index)
+        .sort((a, b) => a - b);
+
+      setActiveReviewIndices(prev => {
+        if (prev.length === active.length && prev.every((val, i) => val === active[i])) {
+          return prev;
+        }
+        return active;
+      });
+    };
+
+    const requestUpdate = () => {
+      if (!ticking) {
+        ticking = true;
+        window.requestAnimationFrame(updateActiveCards);
+      }
+    };
+
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate);
+    updateActiveCards();
+
+    return () => {
+      window.removeEventListener("scroll", requestUpdate);
+      window.removeEventListener("resize", requestUpdate);
+    };
+  }, []);
+
   const totalSeconds = 10;
   const progress = done ? 100 : Math.min(100, ((totalSeconds - countdown) / totalSeconds) * 100);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
@@ -87,6 +149,8 @@ export default function ReviewsPage() {
     return () => { running = false; window.removeEventListener('resize', calc); };
   }, [done]);
 
+  reviewRefs.current = reviewRefs.current.slice(0, allReviews.length);
+
   return (
     <div className="min-h-screen bg-white font-nhd text-midnight">
       {/* Main Content */}
@@ -94,7 +158,7 @@ export default function ReviewsPage() {
 			{/* Hero copy at top (visible on all breakpoints) */}
 			<section className="pt-6 sm:pt-10">
 				<div className="max-w-7xl mx-auto px-4">
-					<h1 className="font-hero font-black text-2xl sm:text-3xl md:text-4xl leading-tight text-center text-midnight">
+					<h1 className="hidden sm:block font-hero font-black text-2xl sm:text-3xl md:text-4xl leading-tight text-center text-midnight">
 						{isBusinessHours
 							? "We are calling you now from 407-470-1780"
 							: "Here's how we transformed the lives of people just like you"
@@ -106,24 +170,42 @@ export default function ReviewsPage() {
 			<section className="py-0 lg:py-4 min-h-screen flex items-start lg:items-stretch">
 				<div className="w-full px-2 sm:px-4">
 					{/* Unified wall of reviews */}
-					<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-y-3 gap-x-2 sm:gap-x-3 sm:gap-y-4 md:gap-x-4 md:gap-y-5 lg:gap-6">
+					<div className="reviews-grid grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-y-0 gap-x-2 sm:gap-x-3 sm:gap-y-0 md:gap-x-4 md:gap-y-0 lg:gap-x-6 lg:gap-y-0">
               {allReviews.map((item, i) => (
-                <div key={i} className="relative overflow-hidden rounded-2xl bg-white w-full" style={{ aspectRatio: '3 / 4' }}>
-                  <Image
-                    src={item.src}
-                    alt={`Customer review ${i + 1}`}
-                    width={640}
-                    height={853}
-								sizes="(min-width:1536px) 16vw, (min-width:1280px) 20vw, (min-width:1024px) 22vw, (min-width:768px) 24vw, (min-width:640px) 33vw, 50vw"
-                    quality={88}
-                    className="w-full h-full object-contain"
-                    style={{ filter: 'none', mixBlendMode: 'normal', opacity: 1 }}
-                  />
+                <div
+                  key={i}
+                  ref={(el) => {
+                    reviewRefs.current[i] = el;
+                  }}
+                  className="relative flex justify-center w-full overflow-visible review-card-wrapper"
+                  style={{ zIndex: 200 + (activeReviewIndices.includes(i) ? 1000 : i) }}
+                >
+                  <div
+                    className={`transition-transform transition-opacity duration-[400ms] ease-out will-change-transform review-card-inner ${
+                      activeReviewIndices.includes(i)
+                        ? "scale-[1.32] sm:scale-[1.35] opacity-100 drop-shadow-[0_35px_90px_rgba(15,23,42,0.28)]"
+                        : "scale-100 opacity-[0.92]"
+                    }`}
+                  >
+                    <Image
+                      src={item.src}
+                      alt={`Customer review ${i + 1}`}
+                      width={640}
+                      height={853}
+									sizes="(min-width:1536px) 16vw, (min-width:1280px) 20vw, (min-width:1024px) 22vw, (min-width:768px) 24vw, (min-width:640px) 33vw, 50vw"
+                      quality={88}
+                      className="w-full h-auto object-contain"
+                      priority={i < 6}
+                    />
+                  </div>
                 </div>
               ))}
 					</div>
 				</div>
 			</section>
+
+      {/* Extra scroll buffer so final rows can reach highlight position */}
+      <div aria-hidden className="h-[50vh] sm:h-[40vh] lg:h-[30vh]" />
 
         {/* Removed testimonials, CTA, and footer per request */}
       </div>
@@ -132,6 +214,51 @@ export default function ReviewsPage() {
         @keyframes scrollReviews {
           0% { transform: translateX(0); }
           100% { transform: translateX(-50%); }
+        }
+        .reviews-grid > * {
+          position: relative;
+          margin-top: 0;
+        }
+        .review-card-wrapper {
+          transition: opacity 0.35s ease;
+        }
+        .review-card-inner {
+          transform-origin: center;
+        }
+        .reviews-grid > :nth-child(n + 3) {
+          margin-top: -7rem;
+        }
+        @media (min-width: 640px) {
+          .reviews-grid > :nth-child(-n + 3) {
+            margin-top: 0;
+          }
+          .reviews-grid > :nth-child(n + 4) {
+            margin-top: -8rem;
+          }
+        }
+        @media (min-width: 768px) {
+          .reviews-grid > :nth-child(-n + 4) {
+            margin-top: 0;
+          }
+          .reviews-grid > :nth-child(n + 5) {
+            margin-top: -9rem;
+          }
+        }
+        @media (min-width: 1024px) {
+          .reviews-grid > :nth-child(-n + 4) {
+            margin-top: 0;
+          }
+          .reviews-grid > :nth-child(n + 5) {
+            margin-top: -10rem;
+          }
+        }
+        @media (min-width: 1280px) {
+          .reviews-grid > :nth-child(-n + 5) {
+            margin-top: 0;
+          }
+          .reviews-grid > :nth-child(n + 6) {
+            margin-top: -11rem;
+          }
         }
       `}</style>
       {/* Mobile pinned bottom countdown card */}
