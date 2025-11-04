@@ -48,7 +48,6 @@ export default function ReviewsPage() {
   const [spotlightEnabled, setSpotlightEnabled] = useState(false);
   const reviewRefs = useRef<(HTMLDivElement | null)[]>([]);
   const rowGroupsRef = useRef<number[][]>([]);
-  const rowPositionsRef = useRef<number[]>([]);
   const totalReviews = allReviews.length;
   const rowGroups = useMemo(() => {
     const groups: number[][] = [];
@@ -62,16 +61,53 @@ export default function ReviewsPage() {
     return groups;
   }, [columnCount, totalReviews]);
 
-  const recomputeRowPositions = useCallback(() => {
-    if (typeof window === "undefined") return;
-    const positions = rowGroups.map(indices => {
-      const node = reviewRefs.current[indices[0]];
-      if (!node) return Number.POSITIVE_INFINITY;
-      const rect = node.getBoundingClientRect();
-      return rect.top + window.scrollY;
-    });
-    rowPositionsRef.current = positions;
-  }, [rowGroups]);
+  const updateActiveRow = useCallback(
+    (forceTop = false) => {
+      if (!spotlightEnabled) {
+        if (forceTop) setActiveReviewIndices([]);
+        return;
+      }
+
+      const groups = rowGroupsRef.current;
+      if (!groups.length) {
+        setActiveReviewIndices([]);
+        return;
+      }
+
+      if (forceTop || (typeof window !== "undefined" && window.scrollY <= 16)) {
+        const topRow = groups[0] ?? [];
+        setActiveReviewIndices(prev =>
+          arraysMatch(prev, topRow) ? prev : topRow.slice()
+        );
+        return;
+      }
+
+      if (typeof window === "undefined") return;
+
+      const focusLine = Math.max(80, window.innerHeight * 0.18);
+      let bestIndices = groups[0] ?? [];
+      let bestDistance = Number.POSITIVE_INFINITY;
+
+      groups.forEach(indices => {
+        const node = reviewRefs.current[indices[0]];
+        if (!node) return;
+        const rect = node.getBoundingClientRect();
+        const { top, bottom } = rect;
+        if (bottom < focusLine - 160) return;
+        if (top > window.innerHeight) return;
+        const distance = Math.abs(top - focusLine);
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          bestIndices = indices;
+        }
+      });
+
+      setActiveReviewIndices(prev =>
+        arraysMatch(prev, bestIndices) ? prev : bestIndices.slice()
+      );
+    },
+    [spotlightEnabled]
+  );
 
   // Helper function to check if current time is between 7am-7pm EST
   const checkBusinessHours = () => {
@@ -137,8 +173,8 @@ export default function ReviewsPage() {
 
   useEffect(() => {
     rowGroupsRef.current = rowGroups;
-    recomputeRowPositions();
-  }, [rowGroups, recomputeRowPositions]);
+    updateActiveRow(true);
+  }, [rowGroups, updateActiveRow]);
 
   useEffect(() => {
     if (!spotlightEnabled) {
@@ -146,50 +182,24 @@ export default function ReviewsPage() {
       return;
     }
 
+    updateActiveRow(true);
+
     if (typeof window === "undefined") return;
 
-    recomputeRowPositions();
-
-    const focusOffset = Math.max(80, window.innerHeight * 0.18);
     let ticking = false;
-
-    const updateActiveFromScroll = () => {
-      const positions = rowPositionsRef.current;
-      if (!positions.length) return;
-      const focusY = window.scrollY + focusOffset;
-
-      let rowIndex = 0;
-      for (let i = 0; i < positions.length; i += 1) {
-        const currentTop = positions[i] - 40;
-        const nextTop = positions[i + 1] !== undefined ? positions[i + 1] - 40 : Number.POSITIVE_INFINITY;
-        if (focusY >= currentTop && focusY < nextTop) {
-          rowIndex = i;
-          break;
-        }
-      }
-
-      const indices = rowGroupsRef.current[rowIndex] ?? [];
-      setActiveReviewIndices(prev =>
-        arraysMatch(prev, indices) ? prev : indices.slice()
-      );
-    };
-
     const handleScroll = () => {
-      if (!ticking) {
-        ticking = true;
-        window.requestAnimationFrame(() => {
-          ticking = false;
-          updateActiveFromScroll();
-        });
-      }
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(() => {
+        ticking = false;
+        updateActiveRow();
+      });
     };
 
     const handleResize = () => {
-      recomputeRowPositions();
-      updateActiveFromScroll();
+      updateActiveRow(true);
     };
 
-    updateActiveFromScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     window.addEventListener("resize", handleResize);
 
@@ -197,18 +207,7 @@ export default function ReviewsPage() {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleResize);
     };
-  }, [spotlightEnabled, recomputeRowPositions]);
-
-  useEffect(() => {
-    if (!spotlightEnabled) {
-      setActiveReviewIndices([]);
-      return;
-    }
-    const firstRow = rowGroups[0] ?? [];
-    setActiveReviewIndices(prev =>
-      arraysMatch(prev, firstRow) ? prev : firstRow.slice()
-    );
-  }, [spotlightEnabled, rowGroups]);
+  }, [spotlightEnabled, updateActiveRow]);
 
   const totalSeconds = 10;
   const progress = done ? 100 : Math.min(100, ((totalSeconds - countdown) / totalSeconds) * 100);
