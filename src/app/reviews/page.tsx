@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 // Removed unused UI imports for a cleaner page
 import PinnedCountdownDesktop from "../../components/PinnedCountdownDesktop";
@@ -48,7 +48,7 @@ export default function ReviewsPage() {
   const [spotlightEnabled, setSpotlightEnabled] = useState(false);
   const reviewRefs = useRef<(HTMLDivElement | null)[]>([]);
   const rowGroupsRef = useRef<number[][]>([]);
-  const observerRef = useRef<IntersectionObserver | null>(null);
+  const rowPositionsRef = useRef<number[]>([]);
   const totalReviews = allReviews.length;
   const rowGroups = useMemo(() => {
     const groups: number[][] = [];
@@ -61,6 +61,17 @@ export default function ReviewsPage() {
     }
     return groups;
   }, [columnCount, totalReviews]);
+
+  const recomputeRowPositions = useCallback(() => {
+    if (typeof window === "undefined") return;
+    const positions = rowGroups.map(indices => {
+      const node = reviewRefs.current[indices[0]];
+      if (!node) return Number.POSITIVE_INFINITY;
+      const rect = node.getBoundingClientRect();
+      return rect.top + window.scrollY;
+    });
+    rowPositionsRef.current = positions;
+  }, [rowGroups]);
 
   // Helper function to check if current time is between 7am-7pm EST
   const checkBusinessHours = () => {
@@ -126,66 +137,67 @@ export default function ReviewsPage() {
 
   useEffect(() => {
     rowGroupsRef.current = rowGroups;
-  }, [rowGroups]);
+    recomputeRowPositions();
+  }, [rowGroups, recomputeRowPositions]);
 
   useEffect(() => {
     if (!spotlightEnabled) {
       setActiveReviewIndices([]);
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-        observerRef.current = null;
-      }
       return;
     }
 
     if (typeof window === "undefined") return;
 
-    const observer = new IntersectionObserver(
-      entries => {
-        let bestRowIndex: number | null = null;
-        let bestScore = -Infinity;
+    recomputeRowPositions();
 
-        entries.forEach(entry => {
-          if (!entry.isIntersecting) return;
-          const target = entry.target as HTMLElement;
-          const rowAttr = target.dataset.rowIndex;
-          if (rowAttr == null) return;
+    const focusOffset = Math.max(80, window.innerHeight * 0.18);
+    let ticking = false;
 
-          const row = Number(rowAttr);
-          const ratio = entry.intersectionRatio;
-          const offset = entry.boundingClientRect.top / Math.max(window.innerHeight, 1);
-          const score = ratio - offset * 0.4; // prioritize nearer to top while considering visibility
+    const updateActiveFromScroll = () => {
+      const positions = rowPositionsRef.current;
+      if (!positions.length) return;
+      const focusY = window.scrollY + focusOffset;
 
-          if (score > bestScore) {
-            bestScore = score;
-            bestRowIndex = row;
-          }
-        });
-
-        if (bestRowIndex != null) {
-          const indices = rowGroupsRef.current[bestRowIndex] ?? [];
-          setActiveReviewIndices(prev =>
-            arraysMatch(prev, indices) ? prev : indices.slice()
-          );
+      let rowIndex = 0;
+      for (let i = 0; i < positions.length; i += 1) {
+        const currentTop = positions[i] - 40;
+        const nextTop = positions[i + 1] !== undefined ? positions[i + 1] - 40 : Number.POSITIVE_INFINITY;
+        if (focusY >= currentTop && focusY < nextTop) {
+          rowIndex = i;
+          break;
         }
-      },
-      {
-        rootMargin: "-12% 0px -48% 0px",
-        threshold: [0.25, 0.4, 0.6, 0.8],
       }
-    );
 
-    observerRef.current = observer;
-    rowGroupsRef.current.forEach((indices) => {
-      const node = reviewRefs.current[indices[0]];
-      if (node) observer.observe(node);
-    });
+      const indices = rowGroupsRef.current[rowIndex] ?? [];
+      setActiveReviewIndices(prev =>
+        arraysMatch(prev, indices) ? prev : indices.slice()
+      );
+    };
+
+    const handleScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        window.requestAnimationFrame(() => {
+          ticking = false;
+          updateActiveFromScroll();
+        });
+      }
+    };
+
+    const handleResize = () => {
+      recomputeRowPositions();
+      updateActiveFromScroll();
+    };
+
+    updateActiveFromScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      observer.disconnect();
-      observerRef.current = null;
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
     };
-  }, [spotlightEnabled, rowGroups]);
+  }, [spotlightEnabled, recomputeRowPositions]);
 
   useEffect(() => {
     if (!spotlightEnabled) {
