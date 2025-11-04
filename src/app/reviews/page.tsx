@@ -45,7 +45,7 @@ export default function ReviewsPage() {
   const router = useRouter();
   const [activeReviewIndices, setActiveReviewIndices] = useState<number[]>([]);
   const [columnCount, setColumnCount] = useState<number>(2);
-  const spotlightEnabled = columnCount >= 3;
+  const [spotlightEnabled, setSpotlightEnabled] = useState(false);
   const reviewRefs = useRef<(HTMLDivElement | null)[]>([]);
   const rowGroupsRef = useRef<number[][]>([]);
   const observerRef = useRef<IntersectionObserver | null>(null);
