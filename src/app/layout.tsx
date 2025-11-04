@@ -112,7 +112,6 @@ export default function RootLayout({
             html,body{background:#FFFFFF;color:#000;}
             body{min-height:100vh;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
             header{contain:paint}
-            img{content-visibility:auto}
           `}}
         />
         {/* Preconnect to CDN/origin for faster image fetches */}
