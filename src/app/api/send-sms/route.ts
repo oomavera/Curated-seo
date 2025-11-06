@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
 
 I just saw your online request.
 
-Would you prefer a Deep cleaning? or consistent standard cleanings?`;
+Would you prefer a Deep cleaning? Or consistent standard cleanings?`;
 
     console.log('Sending personalized SMS:', message);
 
