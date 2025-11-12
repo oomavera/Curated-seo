@@ -96,7 +96,7 @@ export default async function BlogPage() {
   const standardPosts = otherPosts.slice(3);
 
   return (
-    <div className="min-h-screen font-inter" style={{ backgroundColor: '#ffffff' }}>
+    <div className="min-h-screen font-nhd" style={{ backgroundColor: '#ffffff' }}>
       {/* Fixed Blog Header */}
       <BlogHeader variant="blog" />
       

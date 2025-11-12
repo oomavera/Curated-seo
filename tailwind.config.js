@@ -17,6 +17,9 @@ module.exports = {
         snow: '#F8F7F4',
         brand: '#0000F0',
       },
+      fontFamily: {
+        sans: ['"Neue Haas Display"'],
+      },
     },
   },
   plugins: [],

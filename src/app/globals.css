@@ -1,8 +1,41 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* Self-hosted Neue Haas Display */
+@font-face {
+  font-family: 'Neue Haas Display';
+  src: url('/fonts/NeueHaasDisplayLight.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Neue Haas Display';
+  src: url('/fonts/NeueHaasDisplayRoman.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Neue Haas Display';
+  src: url('/fonts/NeueHaasDisplayMediu.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Neue Haas Display';
+  src: url('/fonts/NeueHaasDisplayBold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* Utility to force Neue Haas Display sitewide when needed */
-.font-nhd { font-family: 'Neue Haas Display', var(--font-sora), Sora, Inter, Arial, Helvetica, sans-serif; }
+.font-nhd { font-family: 'Neue Haas Display'; letter-spacing: -0.015em; }
 
 :root {
   /* New Color Palette */
@@ -22,25 +55,25 @@
 
 /* Hero font utility */
 .font-hero {
-  font-family: 'Neue Haas Display', var(--font-sora), Sora, Inter, Arial, Helvetica, sans-serif;
+  font-family: 'Neue Haas Display';
   font-weight: 600;
-  letter-spacing: -0.03em;
-  line-height: 1.08;
+  letter-spacing: -0.045em;
+  line-height: 1.05;
 }
 /* Hero subtext: medium */
 .font-hero-sub {
-  font-family: 'Neue Haas Display', var(--font-sora), Sora, Inter, Arial, Helvetica, sans-serif;
-  font-weight: 500;
-  letter-spacing: -0.01em;
-  line-height: 1.28;
+  font-family: 'Neue Haas Display';
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.32;
 }
 
 /* Hero title heavier (service card titles) */
 .font-hero-title {
-  font-family: 'Neue Haas Display', var(--font-sora), Sora, Inter, Arial, Helvetica, sans-serif;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  line-height: 1.1;
+  font-family: 'Neue Haas Display';
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.12;
 }
 
 /* Force black text inside lead/estimate forms (but keep buttons styled) */
@@ -86,21 +119,70 @@ body {
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: 'Neue Haas Display', var(--font-inter), Inter, Arial, Helvetica, sans-serif;
+  font-family: 'Neue Haas Display';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-weight: 300;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.55;
+  font-feature-settings: "kern","liga","clig","calt";
+  text-rendering: optimizeLegibility;
+}
+
+p, li, label, input, textarea, select, a, small {
+  letter-spacing: -0.01em;
+}
+
+p {
+  line-height: 1.65;
+  font-weight: 400;
+  margin-bottom: 1.25rem;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Neue Haas Display', Sora, Inter, Arial, Helvetica, sans-serif;
-  font-weight: 300;
+  font-family: 'Neue Haas Display';
+  font-weight: 500;
   letter-spacing: -0.025em;
+  margin-bottom: 0.65em;
 }
 
 h1 {
-  font-weight: 200;
-  letter-spacing: -0.04em;
+  font-weight: 600;
+  letter-spacing: -0.05em;
+  line-height: 1.05;
+}
+
+h2 {
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+h3 {
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.22;
+}
+
+h4, h5, h6 {
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+}
+
+a {
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+
+small {
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+strong {
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 /* Glow animation for CTA button */
@@ -220,11 +302,6 @@ a {
     transform: scale(0.5);
     transform-origin: top left;
   }
-}
-
-/* Blog Typography System */
-.font-inter {
-  font-family: var(--font-inter), system-ui, sans-serif;
 }
 
 /* Line clamping utilities */

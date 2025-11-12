@@ -13,9 +13,10 @@ interface QuickEstimateFormProps {
 	showEmail?: boolean;
 	openCalendarOnSuccess?: boolean;
 	page?: string; // Add page identifier (e.g., "home" or "offer")
+	buttonClassName?: string;
 }
 
-export default function QuickEstimateForm({ onSubmitSuccess, title = "Quick Free Estimate", submitLabel = "Get Quick Estimate", trackMetaLead = false, metaEventName = "Lead", showEmail = true, page }: QuickEstimateFormProps) {
+export default function QuickEstimateForm({ onSubmitSuccess, title = "Quick Free Estimate", submitLabel = "Get Quick Estimate", trackMetaLead = false, metaEventName = "Lead", showEmail = true, page, buttonClassName = "" }: QuickEstimateFormProps) {
 	const [formData, setFormData] = useState({
 		name: "",
 		phone: "",
@@ -110,7 +111,7 @@ export default function QuickEstimateForm({ onSubmitSuccess, title = "Quick Free
 					You&apos;re all set. Our phones are open — call now, or we&apos;ll call you within 5 minutes.
 				</p>
 				<PillButton 
-					onClick={() => { window.location.href = 'tel:+14072700379'; }} 
+					onClick={() => { window.location.href = 'tel:+14074701780'; }} 
 					className="w-full justify-center"
 				>
 					Call Now
@@ -200,7 +201,7 @@ export default function QuickEstimateForm({ onSubmitSuccess, title = "Quick Free
 					</div>
 				)}
 
-				<PillButton type="submit" disabled={isSubmitting} className="w-full" animated={!isSubmitting}>
+				<PillButton type="submit" disabled={isSubmitting} className={`w-full ${buttonClassName}`} animated={!isSubmitting}>
 					{isSubmitting ? (
 						<span className="flex items-center justify-center gap-2">
 							<div className="w-4 h-4 border-2 border-arctic border-t-transparent rounded-full animate-spin"></div>

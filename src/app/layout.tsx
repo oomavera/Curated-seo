@@ -1,24 +1,9 @@
 import type { Metadata } from "next";
-import { Inter, Sora } from "next/font/google";
 import "./globals.css";
 import LocalSchema from "../components/LocalSchema";
 import MetaPixel from "../components/MetaPixel";
 import { Analytics } from "@vercel/analytics/react";
 import Script from "next/script";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-  weight: ["300", "400", "600"], // Only include used weights
-});
-
-const sora = Sora({
-  subsets: ["latin"],
-  variable: "--font-sora",
-  display: "swap",
-  weight: ["300", "400", "600"], // Only include used weights
-});
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://curatedcleanings.com";
 
@@ -94,9 +79,6 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://www.google-analytics.com" />
         <link rel="dns-prefetch" href="https://stats.g.doubleclick.net" />
         <link rel="dns-prefetch" href="https://vitals.vercel-insights.com" />
-        {/* Fonts (next/font handles much of this, but preconnect helps initial paint) */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         {/* Preload LCP logo with responsive hints for faster discovery */}
         <link
           rel="preload"
@@ -118,7 +100,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://curatedcleanings.com" />
         <link rel="dns-prefetch" href="https://curatedcleanings.com" />
       </head>
-      <body className={`${inter.variable} ${sora.variable} bg-snow min-h-screen`}>
+      <body className="bg-snow min-h-screen font-nhd">
         <a href="#main-content" className="skip-link">Skip to main content</a>
         {/* GA4 - load after interactive to avoid blocking main thread */}
         {gaId && (

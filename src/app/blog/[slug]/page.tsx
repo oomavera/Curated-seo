@@ -66,7 +66,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   }
 
   return (
-    <article className="min-h-screen font-inter" style={{ backgroundColor: '#ffffff' }}>
+    <article className="min-h-screen font-nhd" style={{ backgroundColor: '#ffffff' }}>
       {/* Fixed Blog Header */}
       <BlogHeader variant="article" />
       
