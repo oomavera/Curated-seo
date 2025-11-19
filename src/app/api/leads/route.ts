@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { addLeadToClickUp } from '@/lib/clickup';
+import { createOpenPhoneContact } from '@/lib/openphone';
 import { sendMetaLeadEvent } from '@/lib/meta';
 import { Client } from '@upstash/qstash';
 
@@ -108,6 +109,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const leadId = (data?.id as string | undefined) || null;
+
     try {
       const clickUpResult = await addLeadToClickUp({
         name: trimmedName,
@@ -126,6 +129,27 @@ export async function POST(request: NextRequest) {
       }
     } catch (err) {
       console.error('ClickUp integration error:', err);
+    }
+
+    try {
+      const openPhoneResult = await createOpenPhoneContact({
+        name: trimmedName,
+        phone: trimmedPhone,
+        email: providedEmail || null,
+        page,
+        source,
+        externalId: leadId,
+      });
+
+      if (openPhoneResult.skipped) {
+        console.log('OpenPhone contact skipped:', openPhoneResult.error);
+      } else if (!openPhoneResult.success) {
+        console.error('OpenPhone contact creation failed:', openPhoneResult.error);
+      } else {
+        console.log('OpenPhone contact created:', openPhoneResult.contactId);
+      }
+    } catch (err) {
+      console.error('OpenPhone integration error:', err);
     }
 
     // Schedule SMS notification for leads from home, /offer, or /offer2 pages
