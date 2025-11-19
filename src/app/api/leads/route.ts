@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { addLeadToClickUp } from '@/lib/clickup';
 import { sendMetaLeadEvent } from '@/lib/meta';
 import { Client } from '@upstash/qstash';
 
@@ -8,6 +9,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     console.log('API received payload:', body);
     const { name, phone, email, eventId, externalId, page } = body as { name?: string; phone?: string; email?: string; eventId?: string; externalId?: string; page?: string };
+    const source = typeof body?.source === 'string' && body.source.trim() ? body.source.trim() : undefined;
 
     // Validate required fields
     if (!name || !phone) {
@@ -18,9 +20,15 @@ export async function POST(request: NextRequest) {
     }
 
     // Optional email validation - only validate if email is provided
-    if (email && email.trim()) {
+    const trimmedName = name.trim();
+    const trimmedPhone = phone.trim();
+    const providedEmail = (email || '').trim();
+    const normalizedEmail = providedEmail ? providedEmail.toLowerCase() : '';
+
+    // Optional email validation - only validate if email is provided
+    if (providedEmail) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
+      if (!emailRegex.test(providedEmail)) {
         return NextResponse.json(
           { error: 'Invalid email format' },
           { status: 400 }
@@ -30,7 +38,7 @@ export async function POST(request: NextRequest) {
 
     // Basic phone validation (US format)
     const phoneRegex = /^[\+]?[1]?[\s\-\.\(\)]?[\d\s\-\.\(\)]{10,}$/;
-    if (!phoneRegex.test(phone.replace(/\D/g, ''))) {
+    if (!phoneRegex.test(trimmedPhone.replace(/\D/g, ''))) {
       return NextResponse.json(
         { error: 'Invalid phone number format' },
         { status: 400 }
@@ -44,13 +52,12 @@ export async function POST(request: NextRequest) {
 
     // First attempt: insert minimal fields (and include quote_payload if provided) so webhook gets answers on INSERT
     const minimalPayload: Record<string, unknown> = {
-      name: name.trim(),
-      phone: phone.trim(),
+      name: trimmedName,
+      phone: trimmedPhone,
       // Provide a placeholder email when none is supplied to satisfy NOT NULL DB constraint
       email: (() => {
-        const provided = (email || '').trim();
-        if (provided) return provided.toLowerCase();
-        const cleanedPhone = phone.replace(/\D/g, '').slice(-10) || 'user';
+        if (normalizedEmail) return normalizedEmail;
+        const cleanedPhone = trimmedPhone.replace(/\D/g, '').slice(-10) || 'user';
         return `noemail+${cleanedPhone}-${Date.now()}@curatedcleanings.com`;
       })(),
       // Include page in initial insert so webhook gets it immediately
@@ -99,6 +106,26 @@ export async function POST(request: NextRequest) {
         { error: 'Failed to save lead' },
         { status: 500 }
       );
+    }
+
+    try {
+      const clickUpResult = await addLeadToClickUp({
+        name: trimmedName,
+        phone: trimmedPhone,
+        email: providedEmail || null,
+        page,
+        source,
+      });
+
+      if (clickUpResult.skipped) {
+        console.log('ClickUp integration skipped:', clickUpResult.error);
+      } else if (!clickUpResult.success) {
+        console.error('ClickUp integration failed:', clickUpResult.error);
+      } else {
+        console.log('ClickUp task created:', clickUpResult.taskId);
+      }
+    } catch (err) {
+      console.error('ClickUp integration error:', err);
     }
 
     // Schedule SMS notification for leads from home, /offer, or /offer2 pages
