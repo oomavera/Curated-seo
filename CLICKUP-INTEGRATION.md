@@ -17,7 +17,7 @@ Set any of the following (all optional) if you want to fine-tune how the ClickUp
 
 | Variable | Notes |
 | --- | --- |
-| `CLICKUP_LEAD_STATUS` | Sets the status column when creating the task. Leave unset to use the List default. |
+| `CLICKUP_LEAD_STATUS` | Sets the status column when creating the task (e.g. `lead` for the Pipeline board). Leave unset to use the List default. |
 | `CLICKUP_LEAD_PRIORITY` | ClickUp priority 1–4. If omitted the default priority is used. |
 | `CLICKUP_LEAD_ASSIGNEE_IDS` | Comma separated ClickUp user IDs to auto-assign. |
 | `CLICKUP_LEAD_PHONE_FIELD_ID` | Custom field ID for storing the phone number (text field). |
