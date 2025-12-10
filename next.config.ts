@@ -21,6 +21,7 @@ const nextConfig: NextConfig = withBundleAnalyzer({
   images: {
     // Fine-tune image optimization for smaller thumbnails and better formats
     formats: ['image/avif', 'image/webp'],
+    qualities: [60, 75, 95],
     deviceSizes: [320, 420, 640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 160, 200, 256, 384],
   },

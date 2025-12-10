@@ -67,33 +67,41 @@ export default function OfferPage() {
 		}
 	}, []);
 
-	// Photo gallery images
+	// Photo gallery images (will be shuffled on mount)
 	const galleryImages = [
-		'/Gallery/top10/IMG_1378.webp',
-		'/Gallery/top10/IMG_2360.webp',
-		'/Gallery/top10/IMG_2479.webp',
-		'/Gallery/top10/IMG_2647.webp',
-		'/Gallery/top10/IMG_2727.webp',
-		'/Gallery/top10/IMG_2780.webp',
-		'/Gallery/top10/IMG_3035.webp',
-		'/Gallery/top10/IMG_3091.webp',
-		'/Gallery/top10/IMG_7136.webp',
-		'/Gallery/top10/IMG_7143.webp',
-		'/Gallery/top10/IMG_7663.webp',
-		'/Gallery/top10/IMG_7667.webp',
+		'/Gallery/windows/Smile3.webp',
+		'/Gallery/windows/Window12.webp',
+		'/Gallery/windows/Window14.webp',
+		'/Gallery/windows/Window6.webp',
+		'/Gallery/windows/Windows15%20(1).webp',
+		'/Gallery/windows/Windows15%20(2).webp',
+		'/Gallery/windows/Windows9.webp',
+		'/Gallery/windows/smile.webp',
+		'/Gallery/windows/smile2.webp',
+		'/Gallery/windows/smile4.webp',
+		'/Gallery/windows/window10.webp',
 	];
 
-	// Preload first gallery image for LCP optimization
+	// Shuffle gallery images once on mount and preload the first shuffled image
+	const [shuffledGallery, setShuffledGallery] = useState<string[]>(galleryImages);
 	useEffect(() => {
-		const link = document.createElement('link');
-		link.rel = 'preload';
-		link.as = 'image';
-		link.href = galleryImages[0];
-		document.head.appendChild(link);
-		return () => {
-			document.head.removeChild(link);
-		};
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		const shuffled = [...galleryImages];
+		for (let i = shuffled.length - 1; i > 0; i--) {
+			const j = Math.floor(Math.random() * (i + 1));
+			[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+		}
+		setShuffledGallery(shuffled);
+
+		if (shuffled.length > 0) {
+			const link = document.createElement('link');
+			link.rel = 'preload';
+			link.as = 'image';
+			link.href = shuffled[0];
+			document.head.appendChild(link);
+			return () => {
+				document.head.removeChild(link);
+			};
+		}
 	}, []);
 
 	
@@ -208,7 +216,7 @@ const [shuffledReviewImages, setShuffledReviewImages] = useState<string[] | null
 									className="w-full h-full"
 									aria-label="Photo gallery showcasing our professional cleaning services"
 								>
-									{galleryImages.map((img, index) => (
+									{shuffledGallery.map((img, index) => (
 										<SwiperSlide key={index}>
 											<Image
 												src={img}

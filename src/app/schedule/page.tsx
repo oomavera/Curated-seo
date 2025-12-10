@@ -137,40 +137,7 @@ export default function SchedulePage() {
                                 <span className="relative z-10">Text now</span>
 						</a>
                         </div>
-
-						{/* Logos directly under Text Now */}
-                        <div className="mt-5 flex items-center justify-center gap-4 opacity-85">
-							<Image 
-								src="/Gallery/logos/Google-Logo-PNG.png" 
-								alt="Google Reviews" 
-								width={96}
-								height={40}
-                                className="h-3.5 w-auto sm:h-4"
-							/>
-							<Image 
-								src="/Gallery/logos/Yelp_Logo.png" 
-								alt="Yelp Reviews" 
-								width={96}
-								height={40}
-                                className="h-3.5 w-auto sm:h-4"
-							/>
-							<Image 
-								src="/Gallery/logos/png-transparent-thumbtack-horizontal-logo-review-platforms-logos.png" 
-								alt="Thumbtack Reviews" 
-								width={120}
-								height={40}
-                                className="h-3.5 w-auto sm:h-4"
-							/>
-						</div>
                     </div>
-
-                    {/* Greviews stacked images under Text Now */}
-                    <section className="py-6">
-                        <div className="max-w-7xl mx-auto px-4">
-                            <GreviewsStack />
-                        </div>
-                    </section>
-
 					
 
                     {/* Calendar embed removed */}
@@ -184,38 +151,6 @@ export default function SchedulePage() {
                     {/* Footer removed for minimalist landing */}
                 </div>
             </section>
-        </div>
-    );
-}
-// Helper component to render the first existing Greviews candidate path; hides if none found
-function GreviewsStack() {
-    const [images, setImages] = useState<string[]>([]);
-    useEffect(() => {
-        let cancelled = false;
-        (async () => {
-            try {
-                const res = await fetch('/api/greviews', { cache: 'no-store' });
-                const json = await res.json();
-                if (!cancelled && Array.isArray(json?.images)) setImages(json.images);
-            } catch {}
-        })();
-        return () => { cancelled = true; };
-    }, []);
-    if (!images.length) return null;
-    return (
-        <div className="space-y-4">
-            {images.map((src: string, i: number) => (
-                <div key={i} className="w-full overflow-hidden flex justify-center">
-                    <Image 
-                        src={src} 
-                        alt="Google review" 
-                        width={1200} 
-                        height={800} 
-                        className="w-full h-auto rounded-xl border border-black/10 mx-auto block"
-                        style={{ transform: 'scale(1.2)', transformOrigin: 'center' }}
-                    />
-                </div>
-            ))}
         </div>
     );
 }

@@ -80,9 +80,10 @@ export default function QuickEstimateForm({ onSubmitSuccess, title = "Quick Free
 					});
 				} catch {}
 			}
-			// Redirect to /Demonstration after successful submission
+			// Redirect to demonstration page after successful submission
 			if (typeof window !== 'undefined') {
-				window.location.assign('/Demonstration');
+				const target = page === 'windows' ? '/WindowDemonstration' : '/Demonstration';
+				window.location.assign(target);
 				return;
 			}
 			onSubmitSuccess?.();
