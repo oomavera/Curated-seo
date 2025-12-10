@@ -4,12 +4,16 @@ export async function POST(request: NextRequest) {
   let fullName = '';
   let phoneNumber = '';
   let firstName = 'there';
+  let page = '';
+  let source = '';
 
   try {
     // Get name and phone from request body if provided
     const body = await request.json().catch(() => ({}));
     fullName = body.name || '';
     phoneNumber = body.phone || '';
+    page = typeof body.page === 'string' ? body.page : '';
+    source = typeof body.source === 'string' ? body.source : '';
 
     // Extract first name (everything before the first space)
     firstName = fullName.trim().split(' ')[0] || 'there';
@@ -50,12 +54,22 @@ export async function POST(request: NextRequest) {
     const formattedPhone = cleanPhone.startsWith('1') ? `+${cleanPhone}` : `+1${cleanPhone}`;
     console.log(`Formatted phone: ${formattedPhone}`);
 
-    // Build personalized message
-    const message = `Hey ${firstName} this is Elias with Curated Cleanings.
+    let message: string;
+
+    if (page === 'windows') {
+      message = `Hey ${firstName} this is Elias with Curated Cleanings.
+
+I just saw your online request.
+
+What time tomorrow would you like your windows to be cleaned?`;
+    } else {
+      // Build personalized message (default)
+      message = `Hey ${firstName} this is Elias with Curated Cleanings.
 
 I just saw your online request.
 
 Would you prefer a Deep cleaning? Or consistent standard cleanings?`;
+    }
 
     console.log('Sending personalized SMS:', message);
 

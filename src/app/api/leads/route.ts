@@ -152,8 +152,8 @@ export async function POST(request: NextRequest) {
       console.error('OpenPhone integration error:', err);
     }
 
-    // Schedule SMS notification for leads from home, /offer, or /offer2 pages
-    if (page && ['home', 'offer', 'offer2'].includes(page)) {
+    // Schedule SMS notification for leads from allowed pages
+    if (page && ['home', 'offer', 'offer2', 'windows'].includes(page)) {
       // ============================================
       // TEMPORARY TEST MODE - REMOVE AFTER TESTING
       // Time window check disabled - SMS will fire at ANY time
@@ -170,26 +170,26 @@ export async function POST(request: NextRequest) {
       const isInWindow = true; // TEMPORARY: Always allow SMS for testing
 
       if (isInWindow) {
-        console.log(`📱 [TEST MODE] Lead from ${page} (${name}, ${phone}) - scheduling SMS via QStash (60 sec delay)`);
+        // Allow runtime control of SMS delay via env; default to immediate for now
+        const smsDelaySeconds = Number(process.env.SMS_DELAY_SECONDS ?? 0);
+        console.log(`📱 Lead from ${page} (${name}, ${phone}) - scheduling SMS via QStash (${smsDelaySeconds}s delay)`);
 
-        // Schedule SMS via QStash with 60-second delay (FOR TESTING)
         // Fire in background and don't let SMS failures affect lead submission
         const qstashToken = process.env.QSTASH_TOKEN;
+        const smsUrl = `${request.nextUrl.origin}/api/send-sms`;
         if (qstashToken) {
           try {
             const qstash = new Client({ token: qstashToken });
-            const smsUrl = `${request.nextUrl.origin}/api/send-sms`;
 
             console.log(`📤 Calling QStash API with URL: ${smsUrl}`);
 
-            // TEMPORARY: 60 seconds for testing (change back to 240 after testing)
             const response = await qstash.publishJSON({
               url: smsUrl,
-              body: { name, phone },
-              delay: 60, // TEMPORARY: 60 seconds for testing (normally 240 = 4 minutes)
+              body: { name, phone, page, source },
+              delay: smsDelaySeconds, // configurable; default 0 (immediate)
             });
 
-            console.log(`✅ [TEST MODE] SMS scheduled via QStash for ${name} (will send in 60 seconds)`);
+            console.log(`✅ SMS scheduled via QStash for ${name} (delay ${smsDelaySeconds}s)`);
             console.log(`📝 QStash Message ID: ${response.messageId}`);
 
             // Store the message ID in the database so we can cancel it later
@@ -231,9 +231,39 @@ export async function POST(request: NextRequest) {
           } catch (err) {
             console.error(`❌ QStash scheduling error for ${name}:`, err);
             console.error(`Error details:`, JSON.stringify(err, null, 2));
+            // Fall back to direct SMS call
+            try {
+              console.log(`📡 Falling back to direct SMS call for ${name}`);
+              const directResp = await fetch(smsUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, phone, page, source }),
+              });
+              console.log(`📡 Direct SMS response status: ${directResp.status}`);
+              if (!directResp.ok) {
+                const text = await directResp.text();
+                console.error(`❌ Direct SMS failed: ${directResp.status} - ${text}`);
+              }
+            } catch (fallbackErr) {
+              console.error(`❌ Direct SMS fallback error for ${name}:`, fallbackErr);
+            }
           }
         } else {
-          console.warn('⚠️ QSTASH_TOKEN not configured - SMS not scheduled');
+          console.warn('⚠️ QSTASH_TOKEN not configured - using direct SMS send');
+          try {
+            const directResp = await fetch(smsUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ name, phone, page, source }),
+            });
+            console.log(`📡 Direct SMS response status: ${directResp.status}`);
+            if (!directResp.ok) {
+              const text = await directResp.text();
+              console.error(`❌ Direct SMS failed: ${directResp.status} - ${text}`);
+            }
+          } catch (fallbackErr) {
+            console.error(`❌ Direct SMS error for ${name}:`, fallbackErr);
+          }
         }
       } else {
         console.log(`⏰ Lead from ${page} outside SMS window - SMS not scheduled`);
