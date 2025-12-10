@@ -137,7 +137,6 @@ export default function DemonstrationPage() {
                       src="https://fast.wistia.net/embed/iframe/z2hbxd80gd?web_component=true&seo=true"
                       title="windowsDemonstration Video"
                       allow="autoplay; fullscreen"
-                      allowtransparency="true"
                       frameBorder={0}
                       scrolling="no"
                       className="wistia_embed scale-100 md:scale-[0.75]"
