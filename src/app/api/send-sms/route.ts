@@ -5,7 +5,6 @@ export async function POST(request: NextRequest) {
   let phoneNumber = '';
   let firstName = 'there';
   let page = '';
-  let source = '';
 
   try {
     // Get name and phone from request body if provided
@@ -13,7 +12,6 @@ export async function POST(request: NextRequest) {
     fullName = body.name || '';
     phoneNumber = body.phone || '';
     page = typeof body.page === 'string' ? body.page : '';
-    source = typeof body.source === 'string' ? body.source : '';
 
     // Extract first name (everything before the first space)
     firstName = fullName.trim().split(' ')[0] || 'there';

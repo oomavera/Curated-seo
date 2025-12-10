@@ -5,7 +5,6 @@ import dynamic from "next/dynamic";
 import logo from "../../../public/Logo2.png";
 import GlassCard from "../../components/ui/GlassCard";
 import PastelBlob from "../../components/ui/PastelBlob";
-import PillButton from "../../components/ui/PillButton";
 import { FaMinus, FaPlus } from "react-icons/fa";
 // Swiper - dynamically imported for performance
 import { Swiper, SwiperSlide } from 'swiper/react';
